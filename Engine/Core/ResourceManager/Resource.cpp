@@ -1,0 +1,44 @@
+#include "Resource.hpp"
+
+#include "../../Utility/FileUtility.hpp"
+
+namespace Engine
+{
+    Resource::Resource(const String& path)
+        : m_file_path(path)
+    {
+        m_extension = FileUtility::GetExtension(path);
+        m_file_name = FileUtility::GetFileName(path);
+        m_wide_path = FileUtility::GetPathWide(path);
+    }
+
+    bool Resource::IsLoaded() const
+    {
+        return m_b_loaded;
+    }
+
+    bool Resource::IsUnloaded() const
+    {
+        return m_b_unloaded;
+    }
+
+    String Resource::FileName() const
+    {
+        return m_file_name;
+    }
+
+    String Resource::FilePath() const
+    {
+        return m_file_path;
+    }
+
+    String Resource::FileExt() const
+    {
+        return m_extension;
+    }
+
+    eResourceType Resource::GetType() const
+    {
+        return m_type;
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "Layout" : "ColorVertex",
+    "Shader Model" : "5_0",
+    "Is Integrated" : true,
+
+    "Vertex Shader Entry":"VS_Main",
+    "Hull Shader Entry":"",
+    "Domain Shader Entry":"",
+    "Geometry Shader Entry":"",
+    "Pixel Shader Entry":"PS_Main",
+    "Compute Shader Entry":"",
+
+    "Vertex Shader Path":"",
+    "Hull Shader Path":"",
+    "Domain Shader Path":"",
+    "Geometry Shader Path":"",
+    "Pixel Shader Path":"",
+    "Compute Shader Path":""
+    
+}
