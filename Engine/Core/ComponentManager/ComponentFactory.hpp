@@ -13,12 +13,11 @@ namespace Engine
         virtual ~ComponentFactory()
         {
         }
-
-        virtual Component* Create(SPtr<Object> owner, AppState* space) = 0;
-        virtual Component* Clone(Component* origin, SPtr<Object> dest, AppState* space) = 0;
+        virtual Component* Create() = 0;
 
     protected:
         friend class ComponentRegistry;
         String m_type;
+        size_t m_id = 0;
     };
 }

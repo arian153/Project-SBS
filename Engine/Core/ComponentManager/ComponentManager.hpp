@@ -19,14 +19,14 @@ namespace Engine
         void Shutdown();
 
         Component* Create(const String& type, SPtr<Object> owner);
-        Component* Clone(Component* origin, SPtr<Object> dest);
+        Component* Clone(Component* source, SPtr<Object> dest_object);
         void       Remove(Component* component);
         void       Remove(Component* component, SPtr<Object> owner);
         void       Remove(SPtr<Object> owner);
         void       Clear();
 
     private:
-        std::unordered_multimap<size_t, Component*> m_components;
+        HashMulMap<size_t, Component*> m_components; //object id - component map
 
         AppState* m_space = nullptr;
     };

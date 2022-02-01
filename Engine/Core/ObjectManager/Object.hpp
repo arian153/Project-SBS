@@ -60,8 +60,6 @@ namespace Engine
         void RemoveComponent(Component* component);
         void RemoveComponent(const String& type);
 
-        bool CloneComponents(SPtr<Object> cloned_object, ComponentManager* manager) const;
-
     private:
         friend class ComponentManager;
         friend class ObjectManager;

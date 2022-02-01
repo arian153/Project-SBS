@@ -41,7 +41,7 @@ namespace Engine
 
     SPtr<Object> Object::Clone()
     {
-        return m_object_manager->CloneObject(m_name, shared_from_this());
+        return m_object_manager->CloneObject(shared_from_this());
     }
 
     void Object::ClearComponents()
@@ -75,6 +75,15 @@ namespace Engine
     bool Object::Save(Json::Value& data) const
     {
         data["Name"] = m_name;
+
+        for (auto& compo : m_components)
+        {
+            Json::Value value;
+            value["Type"] = compo->Type();
+            compo->Save(value["Value"]);
+            data["Components"].append(value);
+        }
+
         return true;
     }
 
@@ -100,7 +109,7 @@ namespace Engine
             component->Initialize();
             return component;
         }
-        return nullptr;
+        return found->second;
     }
 
     //Create and add new component
@@ -115,7 +124,7 @@ namespace Engine
             created->Initialize();
             return created;
         }
-        return nullptr;
+        return found->second;
     }
 
     Component* Object::GetComponent(const String& type)
@@ -159,14 +168,5 @@ namespace Engine
             m_component_manager->Remove(found->second, shared_from_this());
             m_component_map.erase(found);
         }
-    }
-
-    bool Object::CloneComponents(SPtr<Object> cloned_object, ComponentManager* manager) const
-    {
-        for (const auto& [fst, snd] : m_component_map)
-        {
-            cloned_object->AddComponent(manager->Clone(snd, cloned_object));
-        }
-        return true;
     }
 }

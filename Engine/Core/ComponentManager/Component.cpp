@@ -4,11 +4,6 @@
 
 namespace Engine
 {
-    Component::Component(Object* owner)
-        : m_owner(owner)
-    {
-    }
-
     Component::~Component()
     {
     }
@@ -18,22 +13,7 @@ namespace Engine
         return m_type;
     }
 
-    const char* Component::TypeCStr() const
-    {
-        return m_type.c_str();
-    }
-
-    bool Component::IsLoaded() const
-    {
-        return m_b_loaded;
-    }
-
-    bool Component::IsUnloaded() const
-    {
-        return m_b_unloaded;
-    }
-
-    Object* Component::GetOwner() const
+    SPtr<Object> Component::GetOwner() const
     {
         return m_owner;
     }
@@ -46,5 +26,15 @@ namespace Engine
     void Component::SetSpace(AppState* space)
     {
         m_space = space;
+    }
+
+    void Component::SetOwner(SPtr<Object> owner)
+    {
+        m_owner = owner;
+    }
+
+    void Component::ClearOwner()
+    {
+        m_owner.reset();
     }
 }

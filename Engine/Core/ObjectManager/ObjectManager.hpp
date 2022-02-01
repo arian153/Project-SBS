@@ -19,7 +19,7 @@ namespace Engine
         void Shutdown();
 
         SPtr<Object> AddObject(const String& name);
-        SPtr<Object> CloneObject(const String& name, SPtr<Object> origin);
+        SPtr<Object> CloneObject(SPtr<Object> source);
 
         void         FindObjects(const String& name, std::vector<SPtr<Object>>& objects);
         SPtr<Object> FindObjectFirst(const String& name);

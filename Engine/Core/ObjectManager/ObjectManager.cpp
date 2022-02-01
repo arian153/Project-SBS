@@ -2,6 +2,7 @@
 #include "Object.hpp"
 #include "../../Utility/UUIDUtility.hpp"
 #include "../AppStateManager/AppState.hpp"
+#include "../ComponentManager/ComponentManager.hpp"
 
 namespace Engine
 {
@@ -39,10 +40,14 @@ namespace Engine
         return object;
     }
 
-    SPtr<Object> ObjectManager::CloneObject(const String& name, SPtr<Object> origin)
+    SPtr<Object> ObjectManager::CloneObject(SPtr<Object> source)
     {
-        SPtr<Object> cloned_object = AddObject(name);
-        origin->CloneComponents(cloned_object, m_space->GetComponentManager().get());
+        SPtr<Object> cloned_object = AddObject(source->GetName());
+        for (auto& component : source->m_components)
+        {
+            cloned_object->AddComponent(m_space->GetComponentManager()->Clone(component, cloned_object));
+        }
+
         return cloned_object;
     }
 

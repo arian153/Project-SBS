@@ -29,20 +29,25 @@ namespace Engine
         auto found = ComponentRegistry::m_factories.find(type);
         if (found != ComponentRegistry::m_factories.end())
         {
-            auto created = found->second->Create(owner, m_space);
+            auto created = found->second->Create();
+            created->SetOwner(owner);
+            created->SetSpace(m_space);
             m_components.emplace(owner->m_uuid, created);
             return created;
         }
         return nullptr;
     }
 
-    Component* ComponentManager::Clone(Component* origin, SPtr<Object> dest)
+    Component* ComponentManager::Clone(Component* source, SPtr<Object> dest_object)
     {
-        auto found = ComponentRegistry::m_factories.find(origin->m_type);
+        auto found = ComponentRegistry::m_factories.find(source->m_type);
         if (found != ComponentRegistry::m_factories.end())
         {
-            auto cloned = found->second->Clone(origin, dest, m_space);
-            m_components.emplace(dest->m_uuid, cloned);
+            auto cloned = found->second->Create();
+            cloned->SetOwner(dest_object);
+            cloned->SetSpace(m_space);
+            source->CloneTo(cloned);
+            m_components.emplace(dest_object->m_uuid, cloned);
             return cloned;
         }
         return nullptr;

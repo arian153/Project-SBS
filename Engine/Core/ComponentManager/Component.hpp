@@ -15,8 +15,7 @@ namespace Engine
     class Component
     {
     public:
-        explicit Component(Object* owner);
-        virtual  ~Component();
+        virtual ~Component();
 
         virtual void Initialize() = 0;
         virtual void Update(Real dt) = 0;
@@ -24,28 +23,28 @@ namespace Engine
         virtual bool Load(const Json::Value& data) = 0;
         virtual void Save(Json::Value& data) const = 0;
         virtual void Edit(CommandRegistry* command_registry) = 0;
+        virtual void CloneTo(Component* destination) = 0;
 
-        String      Type() const;
-        const char* TypeCStr() const;
-        bool        IsLoaded() const;
-        bool        IsUnloaded() const;
-        Object*     GetOwner() const;
-        AppState*   GetSpace() const;
-        void        SetSpace(AppState* space);
+        String       Type() const;
+        SPtr<Object> GetOwner() const;
+        AppState*    GetSpace() const;
 
     protected:
         virtual void Subscribe() = 0;
         virtual void Unsubscribe() = 0;
 
     protected:
-        Object*   m_owner = nullptr;
-        AppState* m_space = nullptr;
-        String    m_type;
-        bool      m_b_loaded   = false;
-        bool      m_b_unloaded = false;
-        bool      m_b_open     = true;
+        SPtr<Object> m_owner = nullptr;
+        AppState*    m_space = nullptr;
+        String       m_type;
 
     private:
         friend class ComponentManager;
+        friend class Object;
+
+    private:
+        void SetSpace(AppState* space);
+        void SetOwner(SPtr<Object> owner);
+        void ClearOwner();
     };
 }
