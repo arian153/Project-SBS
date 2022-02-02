@@ -5,12 +5,11 @@
 
 namespace Engine
 {
-    class MeshComp final : public Component
+    class MeshCompo final : public Component
     {
-    protected:
-        MeshComp();
     public:
-        ~MeshComp() override;
+        MeshCompo();
+        ~MeshCompo() override;
 
         void Initialize() override;
         void Update(Real dt) override;
@@ -18,7 +17,7 @@ namespace Engine
         bool Load(const Json::Value& data) override;
         void Save(Json::Value& data) const override;
         void Edit(CommandRegistry* command_registry) override;
-        void CloneTo(Component* destination) override;
+        void CloneTo(RPtr<Component> destination) override;
 
     protected:
         void Subscribe() override;
@@ -36,6 +35,6 @@ namespace Engine
         MeshFactory();
         ~MeshFactory() override;
 
-        Component* Create() override;
+        RPtr<Component> Create() override;
     };
 }

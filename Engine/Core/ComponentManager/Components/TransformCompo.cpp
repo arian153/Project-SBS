@@ -1,4 +1,4 @@
-#include "TransformComp.hpp"
+#include "TransformCompo.hpp"
 
 #include "../../AppStateManager/AppState.hpp"
 #include "../../ResourceManager/ResourceType/JsonData.hpp"
@@ -41,7 +41,7 @@ namespace Engine
     {
     }
 
-    void TransformCompo::CloneTo(Component* destination)
+    void TransformCompo::CloneTo(RPtr<Component> destination)
     {
     }
 
@@ -57,15 +57,15 @@ namespace Engine
 
     TransformFactory::TransformFactory()
     {
-        m_type = typeid(TransformCompo).name();
-        m_id   = typeid(TransformCompo).hash_code();
+        m_type_name = typeid(TransformCompo).name();
+        m_type_id   = typeid(TransformCompo).hash_code();
     }
 
     TransformFactory::~TransformFactory()
     {
     }
 
-    Component* TransformFactory::Create()
+    RPtr<Component> TransformFactory::Create()
     {
         return new TransformCompo();
     }

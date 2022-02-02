@@ -23,9 +23,10 @@ namespace Engine
         virtual bool Load(const Json::Value& data) = 0;
         virtual void Save(Json::Value& data) const = 0;
         virtual void Edit(CommandRegistry* command_registry) = 0;
-        virtual void CloneTo(Component* destination) = 0;
+        virtual void CloneTo(RPtr<Component> destination) = 0;
 
-        String       Type() const;
+        String       TypeName() const;
+        size_t       TypeID() const;
         SPtr<Object> GetOwner() const;
         AppState*    GetSpace() const;
 
@@ -36,7 +37,8 @@ namespace Engine
     protected:
         SPtr<Object> m_owner = nullptr;
         AppState*    m_space = nullptr;
-        String       m_type;
+        String       m_type_name;
+        size_t       m_type_id = 0;
 
     private:
         friend class ComponentManager;

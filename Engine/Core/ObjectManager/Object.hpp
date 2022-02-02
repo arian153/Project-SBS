@@ -37,13 +37,13 @@ namespace Engine
 
     public: //template member functions
         template <typename T>
-        T* AddComponent();
+        RPtr<T> AddComponent();
 
         template <typename T>
         bool HasComponent() const;
 
         template <typename T>
-        T* GetComponent() const;
+        RPtr<T> GetComponent() const;
 
         template <typename T>
         void RemoveComponent();
@@ -52,12 +52,12 @@ namespace Engine
         void SetManager(ObjectManager* object_manager);
         void SetManager(ComponentManager* component_manager);
 
-        Component* AddComponent(Component* component);
-        Component* AddComponent(const String& type);
-        Component* GetComponent(const String& type);
+        RPtr<Component> AddComponent(RPtr<Component> component);
+        RPtr<Component> AddComponent(const String& type);
+        RPtr<Component> GetComponent(const String& type);
 
         bool HasComponent(const String& type);
-        void RemoveComponent(Component* component);
+        void RemoveComponent(RPtr<Component> component);
         void RemoveComponent(const String& type);
 
     private:
@@ -66,13 +66,13 @@ namespace Engine
 
     private:
         //identifier
-        size_t m_index = std::numeric_limits<size_t>::max();
+        size_t m_index = 0;
         size_t m_uuid  = 0;
         String m_name;
 
         //components
-        HashMap<String, Component*> m_component_map;
-        std::vector<Component*>     m_components;
+        HashMap<String, RPtr<Component>> m_component_map;
+        std::vector<RPtr<Component>>     m_components;
 
         //others
         ObjectManager*    m_object_manager    = nullptr;

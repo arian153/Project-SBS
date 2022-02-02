@@ -1,6 +1,7 @@
 #include "TestSquare.h"
 
 #include <iostream>
+#include <Core/ObjectManager/Object.hpp>
 using namespace Engine;
 
 namespace Client
@@ -48,6 +49,11 @@ namespace Client
         material->SetReal(2, 0.3f);
         material->SetTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());
         m_mesh->SetMaterial(material);
+
+        auto obj = m_object_manager->AddObject("new_obj");
+        obj->AddComponent<TransformCompo>();
+
+
     }
 
     void TestSquare::Update(float dt)

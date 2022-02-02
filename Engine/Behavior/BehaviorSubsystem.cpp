@@ -1,6 +1,6 @@
 #include "BehaviorSubsystem.hpp"
 
-#include "../Core/ComponentManager/Components/TransformComp.hpp"
+#include "../Core/ComponentManager/Components/TransformCompo.hpp"
 
 namespace Engine
 {
@@ -26,6 +26,7 @@ namespace Engine
 
     void BehaviorSubsystem::Shutdown()
     {
+        m_transforms.clear();
     }
 
     void BehaviorSubsystem::AddTransform(RPtr<TransformCompo> compo)

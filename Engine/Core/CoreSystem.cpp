@@ -4,6 +4,7 @@
 #include "../GUI/GUISystem.hpp"
 #include "../Utility/TimeUtility.hpp"
 #include "AppStateManager/AppStateManager.hpp"
+#include "ComponentManager/ComponentRegistry.hpp"
 #include "ResourceManager/ResourceManager.hpp"
 #include "Win32Manager/InputManager.hpp"
 #include "Win32Manager/Win32Manager.hpp"
@@ -37,6 +38,8 @@ namespace Engine
         m_app_state_manager = std::make_unique<AppStateManager>();
         m_resource_manager  = std::make_unique<ResourceManager>();
         m_gui_system        = std::make_unique<GUISystem>();
+
+        ComponentRegistry::Initialize();
 
         m_win32_manager->Initialize();
         m_input_manager->Initialize();
@@ -91,6 +94,7 @@ namespace Engine
         }
 
         m_gui_system->CleanUpImGUI();
+        ComponentRegistry::Shutdown();
     }
 
     void CoreSystem::OnFullscreen() const

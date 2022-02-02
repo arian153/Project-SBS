@@ -61,7 +61,7 @@ namespace Engine
                 if (JsonData::HasMember(*it, "Type") && (*it)["Type"].isString())
                 {
                     String     type    = (*it)["Type"].asString();
-                    Component* created = AddComponent(type);
+                    RPtr<Component> created = AddComponent(type);
                     if (created != nullptr)
                     {
                         created->Load((*it)["Value"]);
@@ -79,7 +79,7 @@ namespace Engine
         for (auto& compo : m_components)
         {
             Json::Value value;
-            value["Type"] = compo->Type();
+            value["Type"] = compo->TypeName();
             compo->Save(value["Value"]);
             data["Components"].append(value);
         }
@@ -98,9 +98,9 @@ namespace Engine
     }
 
     //Add component that have already been created
-    Component* Object::AddComponent(Component* component)
+    RPtr<Component> Object::AddComponent(RPtr<Component> component)
     {
-        auto type  = component->Type();
+        auto type  = component->TypeName();
         auto found = m_component_map.find(type);
         if (found == m_component_map.end())
         {
@@ -113,7 +113,7 @@ namespace Engine
     }
 
     //Create and add new component
-    Component* Object::AddComponent(const String& type)
+    RPtr<Component> Object::AddComponent(const String& type)
     {
         auto found = m_component_map.find(type);
         if (found == m_component_map.end())
@@ -127,7 +127,7 @@ namespace Engine
         return found->second;
     }
 
-    Component* Object::GetComponent(const String& type)
+    RPtr<Component> Object::GetComponent(const String& type)
     {
         auto found = m_component_map.find(type);
         if (found != m_component_map.end())
@@ -139,17 +139,12 @@ namespace Engine
 
     bool Object::HasComponent(const String& type)
     {
-        auto found = m_component_map.find(type);
-        if (found != m_component_map.end())
-        {
-            return true;
-        }
-        return false;
+        return m_component_map.find(type) != m_component_map.end();
     }
 
-    void Object::RemoveComponent(Component* component)
+    void Object::RemoveComponent(RPtr<Component> component)
     {
-        auto type  = component->Type();
+        auto type  = component->TypeName();
         auto found = m_component_map.find(type);
         if (found != m_component_map.end())
         {

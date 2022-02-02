@@ -7,9 +7,8 @@ namespace Engine
 {
     class TransformCompo final : public Component
     {
-    protected:
-        TransformCompo();
     public:
+        TransformCompo();
         ~TransformCompo() override;
 
         void Initialize() override;
@@ -18,7 +17,7 @@ namespace Engine
         bool Load(const Json::Value& data) override;
         void Save(Json::Value& data) const override;
         void Edit(CommandRegistry* command_registry) override;
-        void CloneTo(Component* destination) override;
+        void CloneTo(RPtr<Component> destination) override;
 
     protected:
         void Subscribe() override;
@@ -37,6 +36,6 @@ namespace Engine
         TransformFactory();
         ~TransformFactory() override;
 
-        Component* Create() override;
+        RPtr<Component> Create() override;
     };
 }

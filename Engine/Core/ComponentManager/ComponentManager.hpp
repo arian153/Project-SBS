@@ -18,15 +18,16 @@ namespace Engine
         void Initialize(AppState* space);
         void Shutdown();
 
-        Component* Create(const String& type, SPtr<Object> owner);
-        Component* Clone(Component* source, SPtr<Object> dest_object);
-        void       Remove(Component* component);
-        void       Remove(Component* component, SPtr<Object> owner);
-        void       Remove(SPtr<Object> owner);
-        void       Clear();
+        RPtr<Component> Create(const String& type, SPtr<Object> owner);
+        RPtr<Component> Clone(RPtr<Component> source, SPtr<Object> dest_object);
+
+        void Remove(RPtr<Component> component);
+        void Remove(RPtr<Component> component, SPtr<Object> owner);
+        void Remove(SPtr<Object> owner);
+        void Clear();
 
     private:
-        HashMulMap<size_t, Component*> m_components; //object id - component map
+        HashMulMap<size_t, RPtr<Component>> m_components; //object id - component map
 
         AppState* m_space = nullptr;
     };

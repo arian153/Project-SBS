@@ -13,11 +13,15 @@ namespace Engine
         virtual ~ComponentFactory()
         {
         }
-        virtual Component* Create() = 0;
+
+        virtual RPtr<Component> Create() = 0;
 
     protected:
         friend class ComponentRegistry;
-        String m_type;
-        size_t m_id = 0;
+        friend class ComponentManager;
+
+    protected:
+        String m_type_name;
+        size_t m_type_id = 0;
     };
 }

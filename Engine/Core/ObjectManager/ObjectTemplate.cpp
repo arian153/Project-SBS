@@ -1,18 +1,16 @@
 namespace Engine
 {
     template <typename T>
-    T* Object::AddComponent()
+    RPtr<T> Object::AddComponent()
     {
         auto type = typeid(T).name();
         auto found = m_component_map.find(type);
-
         if (found == m_component_map.end())
         {
-            auto created = m_component_manager->Create(type, this);
+            auto created = m_component_manager->Create(type, shared_from_this());
             m_component_map.emplace(type, created);
             m_components.push_back(created);
             created->Initialize();
-
             return static_cast<T*>(created);
         }
 
@@ -22,17 +20,11 @@ namespace Engine
     template <typename T>
     bool Object::HasComponent() const
     {
-        auto type = typeid(T).name();
-        auto found = m_component_map.find(type);
-
-        if (found != m_component_map.end())
-            return true;
-
-        return false;
+        return m_component_map.find(typeid(T).name()) != m_component_map.end();
     }
 
     template <typename T>
-    T* Object::GetComponent() const
+    RPtr<T> Object::GetComponent() const
     {
         auto type = typeid(T).name();
         auto found = m_component_map.find(type);
@@ -52,7 +44,7 @@ namespace Engine
         if (found != m_component_map.end())
         {
             m_components.erase(std::find(m_components.begin(), m_components.end(), found->second));
-            m_component_manager->Remove(found->second, this);
+            m_component_manager->Remove(found->second, shared_from_this());
             m_component_map.erase(found);
         }
     }

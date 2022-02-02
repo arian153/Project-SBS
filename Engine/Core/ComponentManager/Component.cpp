@@ -8,9 +8,14 @@ namespace Engine
     {
     }
 
-    String Component::Type() const
+    String Component::TypeName() const
     {
-        return m_type;
+        return m_type_name;
+    }
+
+    size_t Component::TypeID() const
+    {
+        return m_type_id;
     }
 
     SPtr<Object> Component::GetOwner() const
