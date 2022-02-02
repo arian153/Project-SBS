@@ -2,7 +2,7 @@
 #include "../../EngineDefine.hpp"
 #include "../Algebra/Quaternion.hpp"
 #include "../Algebra/Vector3.hpp"
-#include "../Structure/VqsTransform.hpp"
+#include "../Structure/VecQuatScale.hpp"
 
 namespace Engine
 {
@@ -61,7 +61,7 @@ namespace Engine
         virtual Vector3 GetNormal(const Vector3& local_point_on_primitive) = 0;
 
     public:
-        VqsTransform transform;
+        VecQuatScale transform;
 
     protected:
         ePrimitiveType m_type = ePrimitiveType::Last;

@@ -5,7 +5,7 @@
 
 namespace Engine
 {
-    class VqsTransform;
+    class VecQuatScale;
     class Line;
     class Ray
     {
@@ -22,8 +22,8 @@ namespace Engine
         Real    DistanceSquared(const Vector3& point, Real& t) const;
         Vector3Pair ClosestPoint(const Ray& ray) const;
 
-        Ray ToLocal(const VqsTransform& transform) const;
-        Ray ToWorld(const VqsTransform& transform) const;
+        Ray ToLocal(const VecQuatScale& transform) const;
+        Ray ToWorld(const VecQuatScale& transform) const;
 
         Ray&    operator=(const Ray& rhs);
         bool    operator==(const Ray& rhs) const;

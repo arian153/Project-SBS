@@ -1,7 +1,7 @@
 #include "Ray.hpp"
 #include "../../Utility/Utility.hpp"
 #include "Line.hpp"
-#include "../../Structure/VqsTransform.hpp"
+#include "../../Structure/VecQuatScale.hpp"
 
 namespace Engine
 {
@@ -160,12 +160,12 @@ namespace Engine
         return Vector3Pair(position + s_c * direction, ray.position + t_c * ray.direction);
     }
 
-    Ray Ray::ToLocal(const VqsTransform& transform) const
+    Ray Ray::ToLocal(const VecQuatScale& transform) const
     {
         return Ray(transform.WorldToLocalPoint(position), transform.WorldToLocalVector(direction));
     }
 
-    Ray Ray::ToWorld(const VqsTransform& transform) const
+    Ray Ray::ToWorld(const VecQuatScale& transform) const
     {
         return Ray(transform.LocalToWorldPoint(position), transform.LocalToWorldVector(direction));
     }
