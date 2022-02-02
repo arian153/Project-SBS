@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "../Algebra/Vector3.hpp"
-#include "../Algebra/Quaternion.hpp"
 #include "../Algebra/Matrix44.hpp"
+#include "../Algebra/Quaternion.hpp"
+#include "../Algebra/Vector3.hpp"
 
 namespace Engine
 {
@@ -14,6 +14,8 @@ namespace Engine
         Transform& operator=(const Transform& rhs);
 
         Matrix44 LocalToWorldMatrix() const;
+
+        void SetAffineMatrix(const Matrix44& affine);
 
         Vector3 LocalToWorldPoint(const Vector3& local_point) const;
         Vector3 WorldToLocalPoint(const Vector3& world_point) const;

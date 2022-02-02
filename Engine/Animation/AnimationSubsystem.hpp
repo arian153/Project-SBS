@@ -4,9 +4,17 @@
 
 namespace Engine
 {
-    class AnimationSubsystem : public Subsystem
+    class AnimationSubsystem final : public Subsystem
     {
     public:
-        
+        AnimationSubsystem();
+        ~AnimationSubsystem() override;
+
+        void Initialize() override;
+        void Update(Real dt) override;
+        void Render() override;
+        void Shutdown() override;
+
+    private:
     };
 }

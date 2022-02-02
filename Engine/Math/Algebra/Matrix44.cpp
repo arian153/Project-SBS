@@ -9,10 +9,10 @@
 namespace Engine
 {
     Matrix44::Matrix44(
-        Real c00, Real c01, Real c02, Real c03,
-        Real c04, Real c05, Real c06, Real c07,
-        Real c08, Real c09, Real c10, Real c11,
-        Real c12, Real c13, Real c14, Real c15)
+            Real c00, Real c01, Real c02, Real c03,
+            Real c04, Real c05, Real c06, Real c07,
+            Real c08, Real c09, Real c10, Real c11,
+            Real c12, Real c13, Real c14, Real c15)
     {
         data[0]  = c00;
         data[1]  = c01;
@@ -716,7 +716,24 @@ namespace Engine
         return result;
     }
 
-    Vector3 Matrix44::TransformPoint(const Vector3& point)
+    Matrix33 Matrix44::GetRotationMatrix() const
+    {
+        Matrix33 result;
+
+        result.data[0] = data[0];
+        result.data[1] = data[1];
+        result.data[2] = data[2];
+        result.data[3] = data[4];
+        result.data[4] = data[5];
+        result.data[5] = data[6];
+        result.data[6] = data[8];
+        result.data[7] = data[9];
+        result.data[8] = data[10];
+
+        return result;
+    }
+
+    Vector3 Matrix44::TransformPoint(const Vector3& point) const
     {
         Vector3 result;
         result.x = data[0] * point.x + data[4] * point.y + data[8] * point.z + data[12];
@@ -725,7 +742,7 @@ namespace Engine
         return result;
     }
 
-    Vector3 Matrix44::TransformVector(const Vector3& vector)
+    Vector3 Matrix44::TransformVector(const Vector3& vector) const
     {
         Vector3 result;
         result.x = data[0] * vector.x + data[4] * vector.y + data[8] * vector.z;
@@ -734,7 +751,7 @@ namespace Engine
         return result;
     }
 
-    Vector3 Matrix44::TransformVectorRotatingOrigin(const Vector3& vector, const Vector3& origin)
+    Vector3 Matrix44::TransformVectorRotatingOrigin(const Vector3& vector, const Vector3& origin) const
     {
         Vector3 vec = vector - origin;
         Vector3 result;

@@ -7,7 +7,7 @@ namespace Client
 {
     TestSquare::TestSquare()
     {
-        m_creation_flag = eSubsystemFlag::EntityManager | eSubsystemFlag::ComponentManager;
+        m_creation_flag = eSubsystemFlag::ObjectManager | eSubsystemFlag::ComponentManager | eSubsystemFlag::BehaviorSubsystem | eSubsystemFlag::RenderSubsystem;
     }
 
     TestSquare::~TestSquare()

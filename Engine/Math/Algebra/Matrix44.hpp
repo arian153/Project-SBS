@@ -69,10 +69,11 @@ namespace Engine
         Matrix44 Inverse() const;
         Matrix44 Transpose() const;
         Matrix44 HadamardProduct(const Matrix44& rhs) const;
+        Matrix33 GetRotationMatrix() const;
 
-        Vector3 TransformPoint(const Vector3& point);
-        Vector3 TransformVector(const Vector3& vector);
-        Vector3 TransformVectorRotatingOrigin(const Vector3& vector, const Vector3& origin);
+        Vector3 TransformPoint(const Vector3& point) const;
+        Vector3 TransformVector(const Vector3& vector) const;
+        Vector3 TransformVectorRotatingOrigin(const Vector3& vector, const Vector3& origin) const;
 
         Vector3 GetPosition() const;
 

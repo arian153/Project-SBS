@@ -1,7 +1,10 @@
 #include "AppState.hpp"
 
 #include "SubsystemFlag.hpp"
+#include "../../Animation/AnimationSubsystem.hpp"
+#include "../../Behavior/BehaviorSubsystem.hpp"
 #include "../../Graphics/RenderSubsystem.hpp"
+#include "../../Physics/PhysicsSubsystem.hpp"
 #include "../ComponentManager/ComponentManager.hpp"
 #include "../ObjectManager/ObjectManager.hpp"
 
@@ -21,6 +24,17 @@ namespace Engine
         return m_component_manager;
     }
 
+    void AppState::SetDefaultSubsystems()
+    {
+        m_creation_flag = eSubsystemFlag::ComponentManager | eSubsystemFlag::ObjectManager |
+                eSubsystemFlag::RenderSubsystem | eSubsystemFlag::BehaviorSubsystem |
+                eSubsystemFlag::PhysicsSubsystem | eSubsystemFlag::AnimationSubsystem;
+
+        m_update_flag       = eSubsystemFlag::RenderSubsystem | eSubsystemFlag::BehaviorSubsystem;
+        m_fixed_update_flag = eSubsystemFlag::PhysicsSubsystem | eSubsystemFlag::AnimationSubsystem;
+        m_render_flag       = eSubsystemFlag::RenderSubsystem | eSubsystemFlag::BehaviorSubsystem |
+                eSubsystemFlag::PhysicsSubsystem | eSubsystemFlag::AnimationSubsystem;
+    }
 
     void AppState::InitializeEngineSys(AppState* app_state)
     {
@@ -30,7 +44,7 @@ namespace Engine
             m_component_manager->Initialize(app_state);
         }
 
-        if (HasFlag(m_creation_flag, eSubsystemFlag::EntityManager))
+        if (HasFlag(m_creation_flag, eSubsystemFlag::ObjectManager))
         {
             m_object_manager = std::make_shared<ObjectManager>();
             m_object_manager->Initialize(app_state);
@@ -38,6 +52,7 @@ namespace Engine
 
         if (HasFlag(m_creation_flag, eSubsystemFlag::BehaviorSubsystem))
         {
+            m_behavior_subsystem = std::make_unique<BehaviorSubsystem>();
             m_behavior_subsystem->Initialize();
         }
 

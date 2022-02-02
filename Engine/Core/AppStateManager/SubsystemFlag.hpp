@@ -6,11 +6,11 @@ namespace Engine
     {
         None = 0x00,
         ComponentManager = 0x1,
-        EntityManager = 0x2,
+        ObjectManager = 0x2,
         RenderSubsystem = 0x4,
         PhysicsSubsystem = 0x8,
-        BehaviorSubsystem = 0x16,
-        AnimationSubsystem = 0x32
+        BehaviorSubsystem = 0x10,
+        AnimationSubsystem = 0x20
     };
 
     constexpr eSubsystemFlag operator^(eSubsystemFlag a, eSubsystemFlag b)

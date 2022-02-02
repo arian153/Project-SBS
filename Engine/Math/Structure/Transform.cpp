@@ -1,5 +1,8 @@
 ﻿#include "Transform.hpp"
+
+#include "../Algebra/Matrix33.hpp"
 #include "../Utility/MatrixUtility.hpp"
+#include "../Utility/Utility.hpp"
 
 namespace Engine
 {
@@ -29,6 +32,25 @@ namespace Engine
         result.AddVectorColumn(3, position);
         result.SetTranspose();
         return result;
+    }
+
+    void Transform::SetAffineMatrix(const Matrix44& affine)
+    {
+        position = affine.GetColumn(3);
+
+        scale = Vector3(
+                        Vector3(affine.GetColumn(0)).Length(),
+                        Vector3(affine.GetColumn(1)).Length(),
+                        Vector3(affine.GetColumn(2)).Length()
+                       );
+
+        Matrix33 rotation_mat = affine.GetRotationMatrix();
+        rotation_mat.SetColumns(
+                                Math::IsZero(scale.x) ? Vector3() : (rotation_mat.GetColumn(0) / scale.x),
+                                Math::IsZero(scale.y) ? Vector3() : rotation_mat.GetColumn(1) / scale.y,
+                                Math::IsZero(scale.z) ? Vector3() : rotation_mat.GetColumn(2) / scale.z);
+
+        orientation = rotation_mat.ToQuaternion();
     }
 
     Vector3 Transform::LocalToWorldPoint(const Vector3& local_point) const

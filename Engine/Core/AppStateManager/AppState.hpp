@@ -4,6 +4,10 @@
 
 namespace Engine
 {
+    class BehaviorSubsystem;
+    class AnimationSubsystem;
+    class PhysicsSubsystem;
+    class SpaceSubsystem;
     class ComponentManager;
     class ObjectManager;
     class RenderSubsystem;
@@ -23,6 +27,9 @@ namespace Engine
     public:
         SPtr<ObjectManager>    GetObjectManager() const;
         SPtr<ComponentManager> GetComponentManager() const;
+
+    protected:
+        void SetDefaultSubsystems();
 
     private:
         void InitializeEngineSys(AppState* app_state);
@@ -48,9 +55,10 @@ namespace Engine
         SPtr<ObjectManager>    m_object_manager;
         SPtr<ComponentManager> m_component_manager;
         //engine subsystem list
-        UPtr<RenderSubsystem> m_behavior_subsystem;
-        UPtr<RenderSubsystem> m_animation_subsystem;
-        UPtr<RenderSubsystem> m_physics_subsystem;
-        UPtr<RenderSubsystem> m_render_subsystem;
+        UPtr<SpaceSubsystem>     m_space_subsystem;
+        UPtr<PhysicsSubsystem>   m_physics_subsystem;
+        UPtr<RenderSubsystem>    m_render_subsystem;
+        UPtr<BehaviorSubsystem>  m_behavior_subsystem;
+        UPtr<AnimationSubsystem> m_animation_subsystem;
     };
 }
