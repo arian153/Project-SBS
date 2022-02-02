@@ -30,12 +30,15 @@ namespace Engine
 
     void BehaviorSubsystem::AddTransform(RPtr<TransformCompo> compo)
     {
-        size_t index = m_transforms.size();
-        m_transforms.push_back(Transform());
-        //compo->m_transform = &m_transforms[index];
+        m_transforms.push_back(compo);
     }
 
     void BehaviorSubsystem::RemoveTransform(RPtr<TransformCompo> compo)
     {
+        auto found = std::find(m_transforms.begin(), m_transforms.end(), compo);
+        if (found != m_transforms.end())
+        {
+            m_transforms.erase(found);
+        }
     }
 }

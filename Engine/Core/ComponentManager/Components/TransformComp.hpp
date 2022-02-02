@@ -28,7 +28,7 @@ namespace Engine
         friend class TransformFactory;
 
     private:
-        RPtr<Transform> m_transform = nullptr;
+        Transform m_transform;
     };
 
     class TransformFactory final : public ComponentFactory

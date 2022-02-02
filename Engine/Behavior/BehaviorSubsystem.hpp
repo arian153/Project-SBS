@@ -21,6 +21,6 @@ namespace Engine
         void RemoveTransform(RPtr<TransformCompo> compo);
 
     private:
-        std::vector<Transform> m_transforms;
+        std::vector<RPtr<TransformCompo>> m_transforms;
     };
 }
