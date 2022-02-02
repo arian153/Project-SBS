@@ -2,6 +2,7 @@
 #include "../../EngineDefine.hpp"
 #include "../Algebra/Quaternion.hpp"
 #include "../Algebra/Vector3.hpp"
+#include "../Structure/VqsTransform.hpp"
 
 namespace Engine
 {
@@ -45,8 +46,6 @@ namespace Engine
 
         ePrimitiveType Type() const;
 
-        void AddPosition(const Vector3& delta_pos);
-
     public:
         virtual void Initialize() = 0;
         virtual void Shutdown() = 0;
@@ -62,8 +61,7 @@ namespace Engine
         virtual Vector3 GetNormal(const Vector3& local_point_on_primitive) = 0;
 
     public:
-        Vector3    position;
-        Quaternion orientation;
+        VqsTransform transform;
 
     protected:
         ePrimitiveType m_type = ePrimitiveType::Last;

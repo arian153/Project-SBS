@@ -78,7 +78,7 @@ namespace Engine
             Vector3 plane_intersection = local_ray.position + local_ray.direction * plane_t;
 
             //define circle.
-            if ((plane_intersection - position).LengthSquared() < radius * radius)
+            if ((plane_intersection - transform.position).LengthSquared() < radius * radius)
             {
                 minimum_t = maximum_t = plane_t;
             }

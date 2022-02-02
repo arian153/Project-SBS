@@ -10,8 +10,9 @@ namespace Engine
     }
 
     Primitive::Primitive(const Vector3& position, const Quaternion& orientation)
-        : position(position), orientation(orientation)
     {
+        transform.position = position;
+        transform.rotation = orientation;
     }
 
     Primitive::~Primitive()
@@ -87,29 +88,27 @@ namespace Engine
 
     Vector3 Primitive::LocalToWorldPoint(const Vector3& local_point) const
     {
-        return orientation.Rotate(local_point) + position;
+        return transform.LocalToWorldPoint(local_point);
     }
 
     Vector3 Primitive::WorldToLocalPoint(const Vector3& world_point) const
     {
-        return orientation.Inverse().Rotate((world_point - position));
+        return transform.WorldToLocalPoint(world_point);
     }
 
     Vector3 Primitive::LocalToWorldVector(const Vector3& local_vector) const
     {
-        return orientation.Rotate(local_vector);
+        return transform.LocalToWorldVector(local_vector);
     }
 
     Vector3 Primitive::WorldToLocalVector(const Vector3& world_vector) const
     {
-        return orientation.Inverse().Rotate(world_vector);
+        return transform.LocalToWorldVector(world_vector);
     }
 
     Matrix44 Primitive::LocalToWorldMatrix() const
     {
-        Matrix44 result = Math::Matrix44::Rotation(orientation);
-        result.AddVectorColumn(3, position);
-        return result;
+        return transform.ToMatrix();
     }
 
     ePrimitiveType Primitive::Type() const
@@ -117,8 +116,4 @@ namespace Engine
         return m_type;
     }
 
-    void Primitive::AddPosition(const Vector3& delta_pos)
-    {
-        position += delta_pos;
-    }
-}
+   }

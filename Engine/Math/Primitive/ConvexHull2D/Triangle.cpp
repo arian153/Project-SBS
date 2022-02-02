@@ -215,11 +215,11 @@ namespace Engine
 
     void Triangle::SetTriangle(const Vector2& p0, const Vector2& p1, const Vector2& p2)
     {
-        position    = (p0 + p1 + p2) / 3.0f;
-        auto c      = position.GrepVec2(Math::Vector::X, Math::Vector::Y);
-        vertices[0] = p0 - c;
-        vertices[1] = p1 - c;
-        vertices[2] = p2 - c;
+        transform.position = (p0 + p1 + p2) / 3.0f;
+        auto c             = transform.position.GrepVec2(Math::Vector::X, Math::Vector::Y);
+        vertices[0]        = p0 - c;
+        vertices[1]        = p1 - c;
+        vertices[2]        = p2 - c;
     }
 
     void Triangle::SetTriangle(const Vector3& p0, const Vector3& p1, const Vector3& p2)
@@ -228,19 +228,19 @@ namespace Engine
         Vector3    ac     = p2 - p0;
         Vector3    normal = ab.CrossProduct(ac).Normalize();
         Quaternion rotation(normal, Math::Vector3::Z_AXIS);
-        position    = (p0 + p1 + p2) / 3.0f;
-        auto v0     = p0 - position;
-        auto v1     = p1 - position;
-        auto v2     = p2 - position;
-        vertices[0] = rotation.Rotate(v0);
-        vertices[1] = rotation.Rotate(v1);
-        vertices[2] = rotation.Rotate(v2);
-        orientation = rotation.Inverse();
+        transform.position = (p0 + p1 + p2) / 3.0f;
+        auto v0            = p0 - transform.position;
+        auto v1            = p1 - transform.position;
+        auto v2            = p2 - transform.position;
+        vertices[0]        = rotation.Rotate(v0);
+        vertices[1]        = rotation.Rotate(v1);
+        vertices[2]        = rotation.Rotate(v2);
+        transform.rotation = rotation.Inverse();
     }
 
     Vector3 Triangle::Vertex(size_t i) const
     {
-        return orientation.Rotate(Vector3(vertices[i])) + position;
+        return transform.LocalToWorldPoint(Vector3(vertices[i]));
     }
 
     Vector3 Triangle::ClosestPoint(const Vector3& point) const

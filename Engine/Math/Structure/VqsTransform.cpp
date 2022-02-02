@@ -88,6 +88,24 @@ namespace Engine
         return inv_scale * rotation.Inverse().Rotate(world_vector);
     }
 
+    VqsTransform VqsTransform::Concatenate(const VqsTransform& a, const VqsTransform& b)
+    {
+        return VqsTransform(a.rotation.Rotate(a.scale * b.position) + a.position, a.rotation * b.rotation, a.scale * b.scale);
+    }
+
+    VqsTransform VqsTransform::Interpolation(const VqsTransform& start, const VqsTransform& end, Real t)
+    {
+        return VqsTransform(
+                            Lerp(start.position, end.position, t),
+                            Slerp(start.rotation, end.rotation, t),
+                            Elerp(start.scale, end.scale, t));
+    }
+
+    Matrix44 VqsTransform::Concatenate(const Matrix44& a, const Matrix44& b)
+    {
+        return a * b;
+    }
+
     VqsTransform& VqsTransform::operator=(const VqsTransform& vqs)
     {
         if (this != &vqs)
@@ -117,24 +135,6 @@ namespace Engine
     Vector3 VqsTransform::operator*(const Vector3& rhs) const
     {
         return rotation.Rotate(scale * rhs) + position;
-    }
-
-    VqsTransform Concatenate(const VqsTransform& a, const VqsTransform& b)
-    {
-        return VqsTransform(a.rotation.Rotate(a.scale * b.position) + a.position, a.rotation * b.rotation, a.scale * b.scale);
-    }
-
-    VqsTransform Interpolation(const VqsTransform& start, const VqsTransform& end, Real t)
-    {
-        return VqsTransform(
-                            Lerp(start.position, end.position, t),
-                            Slerp(start.rotation, end.rotation, t),
-                            Elerp(start.scale, end.scale, t));
-    }
-
-    Matrix44 Concatenate(const Matrix44& a, const Matrix44& b)
-    {
-        return a * b;
     }
 
     std::ostream& operator<<(std::ostream& os, const VqsTransform& vqs)

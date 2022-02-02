@@ -16,7 +16,7 @@ namespace Engine
         void Set(const Vector3& pos, const Quaternion& rot, Real s);
         Matrix44 ToMatrix() const;
 
-        VqsTransform Identity();
+        static VqsTransform Identity();
         VqsTransform Inverse() const;
 
         Vector3 ApplyTransform(const Vector3& point) const;
@@ -27,10 +27,9 @@ namespace Engine
         Vector3 LocalToWorldVector(const Vector3& local_vector) const;
         Vector3 WorldToLocalVector(const Vector3& world_vector) const;
 
-        friend VqsTransform Concatenate(const VqsTransform& a, const VqsTransform& b);
-        friend VqsTransform Interpolation(const VqsTransform& start, const VqsTransform& end, Real t);
-        friend Matrix44 Concatenate(const Matrix44& a, const Matrix44& b);
-     
+        static VqsTransform Concatenate(const VqsTransform& a, const VqsTransform& b);
+        static VqsTransform Interpolation(const VqsTransform& start, const VqsTransform& end, Real t);
+        static Matrix44 Concatenate(const Matrix44& a, const Matrix44& b);
 
     public:
         VqsTransform& operator=(const VqsTransform& vqs);

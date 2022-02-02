@@ -69,10 +69,9 @@ namespace Engine
         return local_point_on_primitive.Normalize();
     }
 
-    
     bool Sphere::HasIntersection(const Sphere& sphere) const
     {
-        Real sq_d = position.DistanceSquaredTo(sphere.position);
+        Real sq_d = transform.position.DistanceSquaredTo(sphere.transform.position);
         return sq_d <= (radius + sphere.radius) * (radius + sphere.radius);
     }
 }
