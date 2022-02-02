@@ -1,11 +1,10 @@
 #include "DefaultAppState.hpp"
-#include "../../Graphics/RenderSubsystem.hpp"
 
 namespace Engine
 {
     DefaultAppState::DefaultAppState()
-        : AppState()
     {
+        SetDefaultSubsystems();
     }
 
     DefaultAppState::~DefaultAppState()

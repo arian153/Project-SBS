@@ -1,13 +1,5 @@
 #include "AppState.hpp"
 
-#include "SubsystemFlag.hpp"
-#include "../../Animation/AnimationSubsystem.hpp"
-#include "../../Behavior/BehaviorSubsystem.hpp"
-#include "../../Graphics/RenderSubsystem.hpp"
-#include "../../Physics/PhysicsSubsystem.hpp"
-#include "../ComponentManager/ComponentManager.hpp"
-#include "../ObjectManager/ObjectManager.hpp"
-
 namespace Engine
 {
     AppState::~AppState()
@@ -22,6 +14,26 @@ namespace Engine
     SPtr<ComponentManager> AppState::GetComponentManager() const
     {
         return m_component_manager;
+    }
+
+    RPtr<PhysicsSubsystem> AppState::GetPhysicsSubsystem() const
+    {
+        return m_physics_subsystem.get();
+    }
+
+    RPtr<RenderSubsystem> AppState::GetRenderSubsystem() const
+    {
+        return m_render_subsystem.get();
+    }
+
+    RPtr<BehaviorSubsystem> AppState::GetBehaviorSubsystem() const
+    {
+        return m_behavior_subsystem.get();
+    }
+
+    RPtr<AnimationSubsystem> AppState::GetAnimationSubsystem() const
+    {
+        return m_animation_subsystem.get();
     }
 
     void AppState::SetDefaultSubsystems()

@@ -1,5 +1,6 @@
 #include "TransformComp.hpp"
 
+#include "../../AppStateManager/AppState.hpp"
 #include "../../ResourceManager/ResourceType/JsonData.hpp"
 
 namespace Engine
@@ -46,10 +47,12 @@ namespace Engine
 
     void TransformCompo::Subscribe()
     {
+        m_space->GetBehaviorSubsystem()->AddTransform(this);
     }
 
     void TransformCompo::Unsubscribe()
     {
+        m_space->GetBehaviorSubsystem()->RemoveTransform(this);
     }
 
     TransformFactory::TransformFactory()

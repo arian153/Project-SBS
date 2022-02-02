@@ -1,18 +1,16 @@
 #pragma once
-#include "SubsystemFlag.hpp"
 #include "../../EngineDefine.hpp"
+
+#include "SubsystemFlag.hpp"
+#include "../../Animation/AnimationSubsystem.hpp"
+#include "../../Behavior/BehaviorSubsystem.hpp"
+#include "../../Graphics/RenderSubsystem.hpp"
+#include "../../Physics/PhysicsSubsystem.hpp"
+#include "../ComponentManager/ComponentManager.hpp"
+#include "../ObjectManager/ObjectManager.hpp"
 
 namespace Engine
 {
-    class BehaviorSubsystem;
-    class AnimationSubsystem;
-    class PhysicsSubsystem;
-    class SpaceSubsystem;
-    class ComponentManager;
-    class ObjectManager;
-    class RenderSubsystem;
-    class Subsystem;
-
     class AppState
     {
     public:
@@ -25,8 +23,12 @@ namespace Engine
         virtual void Shutdown() = 0;
 
     public:
-        SPtr<ObjectManager>    GetObjectManager() const;
-        SPtr<ComponentManager> GetComponentManager() const;
+        SPtr<ObjectManager>      GetObjectManager() const;
+        SPtr<ComponentManager>   GetComponentManager() const;
+        RPtr<PhysicsSubsystem>   GetPhysicsSubsystem() const;
+        RPtr<RenderSubsystem>    GetRenderSubsystem() const;
+        RPtr<BehaviorSubsystem>  GetBehaviorSubsystem() const;
+        RPtr<AnimationSubsystem> GetAnimationSubsystem() const;
 
     protected:
         void SetDefaultSubsystems();
@@ -55,7 +57,6 @@ namespace Engine
         SPtr<ObjectManager>    m_object_manager;
         SPtr<ComponentManager> m_component_manager;
         //engine subsystem list
-        UPtr<SpaceSubsystem>     m_space_subsystem;
         UPtr<PhysicsSubsystem>   m_physics_subsystem;
         UPtr<RenderSubsystem>    m_render_subsystem;
         UPtr<BehaviorSubsystem>  m_behavior_subsystem;

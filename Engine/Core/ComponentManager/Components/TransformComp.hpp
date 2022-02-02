@@ -1,6 +1,7 @@
 #pragma once
 #include "../Component.hpp"
 #include "../ComponentFactory.hpp"
+#include "../../../Math/Structure/Transform.hpp"
 
 namespace Engine
 {
@@ -27,6 +28,7 @@ namespace Engine
         friend class TransformFactory;
 
     private:
+        RPtr<Transform> m_transform = nullptr;
     };
 
     class TransformFactory final : public ComponentFactory

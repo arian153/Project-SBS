@@ -1,5 +1,7 @@
 #include "BehaviorSubsystem.hpp"
 
+#include "../Core/ComponentManager/Components/TransformComp.hpp"
+
 namespace Engine
 {
     BehaviorSubsystem::BehaviorSubsystem()
@@ -28,11 +30,12 @@ namespace Engine
 
     void BehaviorSubsystem::AddTransform(RPtr<TransformCompo> compo)
     {
-
+        size_t index = m_transforms.size();
+        m_transforms.push_back(Transform());
+        //compo->m_transform = &m_transforms[index];
     }
 
     void BehaviorSubsystem::RemoveTransform(RPtr<TransformCompo> compo)
     {
-
     }
 }

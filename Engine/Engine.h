@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Animation/AnimationIncludes.h"
+#include "Behavior/BehaviorIncludes.h"
 #include "Core/CoreIncludes.h"
 #include "Graphics/GraphicsIncludes.h"
 #include "GUI/GUIIncludes.h"
