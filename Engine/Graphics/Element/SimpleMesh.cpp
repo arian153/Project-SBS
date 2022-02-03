@@ -9,26 +9,26 @@
 
 namespace Engine
 {
-    void SimpleMesh::Init(const std::vector<ColorVertex>& vertices, const std::vector<Uint32>& indices)
+    void SimpleMesh::Init(const std::vector<TexVertex>& vertices, const std::vector<Uint32>& indices)
     {
         m_vertex_buffer.Initialize(vertices, true);
         m_index_buffer.Initialize(indices);
     }
 
-    void SimpleMesh::Update(const std::vector<ColorVertex>& vertices) const
+    void SimpleMesh::Update(const std::vector<TexVertex>& vertices) const
     {
         m_vertex_buffer.Update(vertices);
     }
 
     void SimpleMesh::Render() const
     {
+        m_material->Bind();
         CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         m_vertex_buffer.Bind();
         m_index_buffer.Bind();
 
         CONSTANT_BUFFER(eConstantBufferType::Transform)->PushData(&m_offset, sizeof(m_offset));
-        m_material->Bind();
 
         DESCRIPTOR_HEAP->CommitTable();
         m_index_buffer.Draw();

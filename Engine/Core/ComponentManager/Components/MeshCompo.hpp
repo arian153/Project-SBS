@@ -27,6 +27,8 @@ namespace Engine
         friend class MeshFactory;
 
     private:
+
+
     };
 
     class MeshFactory final : public ComponentFactory

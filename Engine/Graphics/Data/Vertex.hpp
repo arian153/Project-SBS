@@ -8,13 +8,17 @@
 
 namespace Engine
 {
-   
+    class PosVertex
+    {
+    public:
+        Vector3 pos;
+    };
+
     class ColorVertex
     {
     public:
         Vector3 pos;
         Color   color;
-        Vector2 tex;
     };
 
     class TexVertex
@@ -28,7 +32,7 @@ namespace Engine
     {
     public:
         Vector3 pos;
-        Vector3 normal;
+        Vector3 n;
     };
 
     class LightVertex
@@ -36,7 +40,7 @@ namespace Engine
     public:
         Vector3 pos;
         Vector2 tex;
-        Vector3 normal;
+        Vector3 n;
     };
 
     class GeneralVertex
@@ -44,9 +48,9 @@ namespace Engine
     public:
         Vector3 pos;
         Vector2 tex;
-        Vector3 normal;
-        Vector3 tangent;
-        Vector3 binormal;
+        Vector3 n; //normal
+        Vector3 t; //tangent
+        Vector3 b; //binormal or bitangent
     };
 
     struct IVector4
@@ -62,10 +66,21 @@ namespace Engine
     public:
         Vector3  pos;
         Vector2  tex;
-        Vector3  normal;
-        Vector3  tangent;
-        Vector3  binormal;
-        Vector4  weights;
-        IVector4 indices;
+        Vector3  n; //normal
+        Vector3  t; //tangent
+        Vector3  b; //binormal or bitangent
+        Vector4  w; //weight
+        IVector4 i; //bone-indices
+    };
+
+    enum class eVertexType
+    {
+        ColorVertex,
+        PosVertex,
+        TexVertex,
+        NormalVertex,
+        LightVertex,
+        GeneralVertex,
+        SkinnedVertex
     };
 }

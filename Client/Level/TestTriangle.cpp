@@ -28,9 +28,9 @@ namespace Client
         indices[4] = 2;
         indices[5] = 3;
 
-        m_mesh->Init(vertices, indices);
+        //m_mesh->Init(vertices, indices);
 
-        m_shader = GET_SHADER_BY_NAME("Default.shader");
+        //m_shader = GET_SHADER_BY_NAME("Default.shader");
     }
 
     void TestTriangle::Update(float dt)
@@ -57,23 +57,8 @@ namespace Client
             m_offset.y += dt;
         }
 
-        if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::Space))
-        {
-            std::vector<ColorVertex> vertices(4);
-            vertices[0].pos = Vector3(-0.5f, 0, 0);
-            vertices[0].color = Color(1.f, 0.f, 0.f, 1.f);
-            vertices[1].pos = Vector3(0, 0.5f, 0);
-            vertices[1].color = Color(0.f, 1.0f, 0.f, 1.f);
-            vertices[2].pos = Vector3(0.5f, 0, 0);
-            vertices[2].color = Color(0.f, 0.f, 1.f, 1.f);
-            vertices[3].pos = Vector3(0, -0.5f, 0);
-            vertices[3].color = Color(0.f, 0.f, 0.f, 1.f);
-
-            m_mesh->Update(vertices);
-
-        }
-
-        m_mesh->SetOffset(m_offset);
+       
+       // m_mesh->SetOffset(m_offset);
     }
 
     void TestTriangle::FixedUpdate(float dt)
@@ -82,9 +67,9 @@ namespace Client
 
     void TestTriangle::Render()
     {
-        m_shader->Bind();
+      /*  m_shader->Bind();
 
-        m_mesh->Render();
+        m_mesh->Render();*/
     }
 
     void TestTriangle::Shutdown()

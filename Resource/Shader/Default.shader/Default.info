@@ -1,5 +1,5 @@
 {
-    "Layout" : "ColorVertex",
+    "Layout" : "TexVertex",
     "Shader Model" : "5_0",
     "Is Integrated" : true,
 

@@ -203,12 +203,21 @@ namespace Engine
             InputLayout color_layout;
             color_layout.PushAttribute(eAttributeType::R32, 3, "POSITION", 0, eInputSlotType::VertexData, 0, 0);
             color_layout.PushAttribute(eAttributeType::R32, 4, "COLOR", 0, eInputSlotType::VertexData, 0, 0);
-            color_layout.PushAttribute(eAttributeType::R32, 2, "TEXCOORD", 0, eInputSlotType::VertexData, 0, 0);
 
             String name = MK_STRING(ColorVertex);
             AddInputLayout(name, color_layout);
             color_layout.PushLayout(instance_layout);
             AddInputLayout("Instance" + name, color_layout);
+        }
+
+        {
+            InputLayout pos_layout;
+            pos_layout.PushAttribute(eAttributeType::R32, 3, "POSITION", 0, eInputSlotType::VertexData, 0, 0);
+
+            String name = MK_STRING(PosVertex);
+            AddInputLayout(name, pos_layout);
+            pos_layout.PushLayout(instance_layout);
+            AddInputLayout("Instance" + name, pos_layout);
         }
 
         RESOURCE_MANAGER->GetShaderResources(m_shader_resources);

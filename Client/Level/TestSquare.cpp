@@ -17,20 +17,16 @@ namespace Client
 
     void TestSquare::Initialize()
     {
-        std::vector<ColorVertex> vertices(4);
+        std::vector<TexVertex> vertices(4);
 
-        vertices[0].pos   = Vector3(-0.5f, 0.5f, 0.5f);
-        vertices[0].color = Color(1.f, 0.f, 0.f, 1.f);
-        vertices[0].tex   = Vector2(0.f, 0.f);
-        vertices[1].pos   = Vector3(0.5f, 0.5f, 0.5f);
-        vertices[1].color = Color(0.f, 1.f, 0.f, 1.f);
-        vertices[1].tex   = Vector2(1.f, 0.f);
-        vertices[2].pos   = Vector3(0.5f, -0.5f, 0.5f);
-        vertices[2].color = Color(0.f, 0.f, 1.f, 1.f);
-        vertices[2].tex   = Vector2(1.f, 1.f);
-        vertices[3].pos   = Vector3(-0.5f, -0.5f, 0.5f);
-        vertices[3].color = Color(0.f, 1.f, 0.f, 1.f);
-        vertices[3].tex   = Vector2(0.f, 1.f);
+        vertices[0].pos = Vector3(-0.5f, 0.5f, 0.5f);
+        vertices[0].tex = Vector2(0.f, 0.f);
+        vertices[1].pos = Vector3(0.5f, 0.5f, 0.5f);
+        vertices[1].tex = Vector2(1.f, 0.f);
+        vertices[2].pos = Vector3(0.5f, -0.5f, 0.5f);
+        vertices[2].tex = Vector2(1.f, 1.f);
+        vertices[3].pos = Vector3(-0.5f, -0.5f, 0.5f);
+        vertices[3].tex = Vector2(0.f, 1.f);
 
         std::vector<Uint32> indices(6);
         indices[0] = 0;
@@ -52,8 +48,6 @@ namespace Client
 
         auto obj = m_object_manager->AddObject("new_obj");
         obj->AddComponent<TransformCompo>();
-
-
     }
 
     void TestSquare::Update(float dt)

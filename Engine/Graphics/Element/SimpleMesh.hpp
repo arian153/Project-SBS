@@ -13,8 +13,8 @@ namespace Engine
     class SimpleMesh
     {
     public:
-        void Init(const std::vector<ColorVertex>& vertices, const std::vector<Uint32>& indices);
-        void Update(const std::vector<ColorVertex>& vertices) const;
+        void Init(const std::vector<TexVertex>& vertices, const std::vector<Uint32>& indices);
+        void Update(const std::vector<TexVertex>& vertices) const;
         void Render() const;
 
         void SetOffset(const Vector4& offset);
