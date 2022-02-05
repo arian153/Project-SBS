@@ -14,7 +14,7 @@ namespace Engine
     {
     }
 
-    std::shared_ptr<Texture> TextureResource::GetTexture() const
+    SPtr<Texture> TextureResource::GetTexture() const
     {
         return m_texture;
     }

@@ -3,6 +3,18 @@
 
 namespace Engine
 {
+    class Face
+    {
+    public:
+        Face();
+        Face(Uint32 a, Uint32 b, Uint32 c);
+
+    public:
+        Uint32 a;
+        Uint32 b;
+        Uint32 c;
+    };
+
     class MeshData
     {
     public:
@@ -19,5 +31,6 @@ namespace Engine
         eVertexType                vertex_type = eVertexType::SkinnedVertex;
         std::vector<SkinnedVertex> vertices;
         std::vector<Uint32>        indices;
+        std::vector<Face>          faces;
     };
 }

@@ -211,6 +211,12 @@ namespace Engine
         }
         else if (type == ".obj")
         {
+            auto [pair, result] = m_model_map.emplace(path, ModelResource(path));
+            if (result)
+            {
+                resource = &pair->second;
+            }
+
         }
         else if (type == ".json")
         {

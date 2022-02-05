@@ -11,7 +11,7 @@ namespace Engine
         explicit TextureResource(const String& path);
         ~TextureResource() override;
 
-        std::shared_ptr<Texture> GetTexture() const;
+        SPtr<Texture> GetTexture() const;
 
     private:
         void Initialize() override;
@@ -22,6 +22,6 @@ namespace Engine
         friend class ResourceManager;
 
     private:
-        std::shared_ptr<Texture> m_texture = nullptr;
+       SPtr<Texture> m_texture = nullptr;
     };
 }

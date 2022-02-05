@@ -131,4 +131,9 @@ namespace Engine
     {
         return std::filesystem::path(path).generic_wstring();
     }
+
+    size_t FileUtility::GetFileSize(const String& path)
+    {
+        return std::filesystem::file_size(std::filesystem::path(path));
+    }
 }

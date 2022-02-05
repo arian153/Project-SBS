@@ -18,7 +18,7 @@ debugdir ""
 systemversion "10.0"
 flags {"MultiProcessorCompile", "NoMinimalRebuild", "NoBufferSecurityCheck"}
 warnings "Extra"
-includedirs {"Include/**"}
+includedirs {"Include/", "Include/**"}
 links {}
 libdirs {"Lib/%{cfg.buildcfg}"}
 files {"./Engine/**.h", "./Engine/**.hpp", "./Engine/**.cpp", "./Engine/**.inl", "./Engine/**.shader"}
@@ -51,7 +51,7 @@ debugdir ""
 systemversion "10.0"
 flags {"MultiProcessorCompile", "NoMinimalRebuild", "NoBufferSecurityCheck"}
 warnings "Extra"
-includedirs {"Include/**", "Engine"}
+includedirs {"Include/", "Include/**", "Engine"}
 links {"dxgi", "d3d12", "d3dcompiler", "dxguid", "winmm", "Xinput9_1_0", "GAM450-Engine", "assimp-vc142", "DirectXTex"}
 libdirs {"Lib/%{cfg.buildcfg}", "Bin/%{cfg.buildcfg}"}
 files {"./Client/**.h", "./Client/**.hpp", "./Client/**.cpp", "./Client/**.inl", "./Resource/**.json"}

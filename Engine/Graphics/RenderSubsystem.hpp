@@ -1,5 +1,7 @@
 #pragma once
 #include "../System.hpp"
+#include "../Core/ComponentManager/Components/MeshCompo.hpp"
+#include "Element/Mesh.hpp"
 
 namespace Engine
 {
@@ -13,7 +15,14 @@ namespace Engine
         void Update(Real dt) override;
         void Render() override;
         void Shutdown() override;
+
+        void AddMeshCompo(RPtr<MeshCompo> compo);
+        void RemoveMeshCompo(RPtr<MeshCompo> compo);
+
     private:
 
+
+        std::vector<SPtr<Mesh>>      m_meshes;
+        std::vector<RPtr<MeshCompo>> m_mesh_compos;
     };
 }

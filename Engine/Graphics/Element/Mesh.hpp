@@ -16,7 +16,7 @@ namespace Engine
         void Render() const;
 
     private:
-
+        eVertexType m_vertex_type = eVertexType::SkinnedVertex;
 
         VertexBuffer m_vertex_buffer;
         IndexBuffer  m_index_buffer;

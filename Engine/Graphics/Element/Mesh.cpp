@@ -6,6 +6,7 @@ namespace Engine
 {
     void Mesh::Init(const MeshData& mesh_data)
     {
+        m_vertex_type = mesh_data.vertex_type;
         if (mesh_data.vertex_type == eVertexType::PosVertex)
         {
             std::vector<PosVertex> vertices;
@@ -46,6 +47,9 @@ namespace Engine
 
     void Mesh::Update(const MeshData& mesh_data) const
     {
+        if (m_vertex_type != mesh_data.vertex_type)
+            return;
+
         if (mesh_data.vertex_type == eVertexType::PosVertex)
         {
             std::vector<PosVertex> vertices;

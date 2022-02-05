@@ -24,5 +24,21 @@ namespace Engine
 
     void RenderSubsystem::Shutdown()
     {
+        m_mesh_compos.clear();
+        m_meshes.clear();
+    }
+
+    void RenderSubsystem::AddMeshCompo(RPtr<MeshCompo> compo)
+    {
+        m_mesh_compos.push_back(compo);
+    }
+
+    void RenderSubsystem::RemoveMeshCompo(RPtr<MeshCompo> compo)
+    {
+        auto found = std::find(m_mesh_compos.begin(), m_mesh_compos.end(), compo);
+        if (found != m_mesh_compos.end())
+        {
+            m_mesh_compos.erase(found);
+        }
     }
 }

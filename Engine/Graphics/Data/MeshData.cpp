@@ -2,6 +2,16 @@
 
 namespace Engine
 {
+    Face::Face()
+        : a(0), b(0), c(0)
+    {
+    }
+
+    Face::Face(Uint32 a, Uint32 b, Uint32 c)
+        : a(a), b(b), c(c)
+    {
+    }
+
     void MeshData::SetNormalize(Vector3& min, Vector3& max)
     {
         Uint32 size = static_cast<Uint32>(vertices.size());
