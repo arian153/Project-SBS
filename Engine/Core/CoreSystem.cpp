@@ -1,7 +1,10 @@
 #include "CoreSystem.hpp"
 
+#include "../Animation/AnimationSystem.hpp"
+#include "../Behavior/BehaviorSystem.hpp"
 #include "../Graphics/RenderSystem.hpp"
 #include "../GUI/GUISystem.hpp"
+#include "../Physics/PhysicsSystem.hpp"
 #include "../Utility/TimeUtility.hpp"
 #include "AppStateManager/AppStateManager.hpp"
 #include "ComponentManager/ComponentRegistry.hpp"
@@ -38,6 +41,9 @@ namespace Engine
         m_app_state_manager = std::make_unique<AppStateManager>();
         m_resource_manager  = std::make_unique<ResourceManager>();
         m_gui_system        = std::make_unique<GUISystem>();
+        m_physics_system    = std::make_unique<PhysicsSystem>();
+        m_behavior_system   = std::make_unique<BehaviorSystem>();
+        m_animation_system  = std::make_unique<AnimationSystem>();
 
         ComponentRegistry::Initialize();
 
@@ -52,6 +58,10 @@ namespace Engine
 
         m_resource_manager->SetRootPath(setting.resource_path);
         m_resource_manager->Initialize();
+
+        m_physics_system->Initialize();
+        m_animation_system->Initialize();
+        m_behavior_system->Initialize();
 
         m_render_system->PostInitialize();
 
@@ -147,5 +157,20 @@ namespace Engine
     GUISystem* CoreSystem::GetGUISystem() const
     {
         return m_gui_system.get();
+    }
+
+    RPtr<PhysicsSystem> CoreSystem::GetPhysicsSystem() const
+    {
+        return m_physics_system.get();
+    }
+
+    RPtr<BehaviorSystem> CoreSystem::GetBehaviorSystem() const
+    {
+        return m_behavior_system.get();
+    }
+
+    RPtr<AnimationSystem> CoreSystem::GetAnimationSystem() const
+    {
+        return m_animation_system.get();
     }
 }

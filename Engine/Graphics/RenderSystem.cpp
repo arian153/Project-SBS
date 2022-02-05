@@ -74,10 +74,18 @@ namespace Engine
         m_dx12_layer->RenderEnd();
     }
 
+    SPtr<RenderSubsystem> RenderSystem::CreateSubsystem()
+    {
+        auto subsystem = std::make_shared<RenderSubsystem>();
+        m_subsystems.push_back(subsystem);
+        return subsystem;
+    }
+
     void RenderSystem::OnResize(Sint32 width, Sint32 height)
     {
         m_window_info.width  = width;
         m_window_info.height = height;
+        m_viewport_manager.SetClientRect(width, height);
 
         if (m_dx12_layer == nullptr)
         {
@@ -85,6 +93,11 @@ namespace Engine
         }
 
         m_dx12_layer->OnResize(width, height, m_window_info.b_windowed);
+
+        for (auto& render_subsystem : m_subsystems)
+        {
+            render_subsystem->OnResize(m_viewport_manager.GetPerspectiveMatrix(), m_viewport_manager.GetOrthoGraphicMatrix());
+        }
     }
 
     void RenderSystem::OnFullscreen(bool b_fullscreen)
@@ -146,5 +159,15 @@ namespace Engine
     SPtr<ConstantBuffer> RenderSystem::GetConstantBuffer(eConstantBufferType type)
     {
         return m_constant_buffers[static_cast<Uint32>(type)];
+    }
+
+    ViewportManager& RenderSystem::GetViewportManager()
+    {
+        return m_viewport_manager;
+    }
+
+    const ViewportManager& RenderSystem::GetViewportManager() const
+    {
+        return m_viewport_manager;
     }
 }

@@ -3,7 +3,9 @@
 
 #include "../System.hpp"
 #include "../Core/ApplicationSetting.hpp"
+#include "../Math/Utility/MathDef.hpp"
 #include "DirectX12/DirectXIncludes.hpp"
+#include "Utility/ViewportManager.hpp"
 
 namespace Engine
 {
@@ -23,6 +25,8 @@ namespace Engine
 
         void RenderBegin() const;
         void RenderEnd() const;
+
+        SPtr<RenderSubsystem> CreateSubsystem();
 
     private:
         void Initialize() override;
@@ -47,6 +51,8 @@ namespace Engine
         SPtr<TableDescriptorHeap> GetTableDescriptorHeap();
         SPtr<ShaderManager>       GetShaderManager();
         SPtr<ConstantBuffer>      GetConstantBuffer(eConstantBufferType type);
+        ViewportManager&          GetViewportManager();
+        const ViewportManager&    GetViewportManager() const;
 
     private:
         WindowInfo m_window_info;
@@ -55,10 +61,11 @@ namespace Engine
         SPtr<RootSignature>       m_root_signature;
         SPtr<TableDescriptorHeap> m_table_descriptor_heap;
         SPtr<ShaderManager>       m_shader_manager;
+        ViewportManager           m_viewport_manager;
 
         bool m_b_init = false;
 
         std::vector<SPtr<ConstantBuffer>>  m_constant_buffers;
-        std::vector<UPtr<RenderSubsystem>> m_subsystems;
+        std::vector<SPtr<RenderSubsystem>> m_subsystems;
     };
 }

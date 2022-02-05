@@ -1,6 +1,7 @@
 #pragma once
 #include "../System.hpp"
 #include "../Core/ComponentManager/Components/MeshCompo.hpp"
+#include "../Math/Algebra/Matrix44.hpp"
 #include "Element/Mesh.hpp"
 
 namespace Engine
@@ -19,8 +20,11 @@ namespace Engine
         void AddMeshCompo(RPtr<MeshCompo> compo);
         void RemoveMeshCompo(RPtr<MeshCompo> compo);
 
-    private:
+        void OnResize(const Matrix44& perspective, const Matrix44& orthographic);
 
+    private:
+        Matrix44 m_perspective;
+        Matrix44 m_orthographic;
 
         std::vector<SPtr<Mesh>>      m_meshes;
         std::vector<RPtr<MeshCompo>> m_mesh_compos;

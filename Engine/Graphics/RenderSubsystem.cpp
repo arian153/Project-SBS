@@ -41,4 +41,10 @@ namespace Engine
             m_mesh_compos.erase(found);
         }
     }
+
+    void RenderSubsystem::OnResize(const Matrix44& perspective, const Matrix44& orthographic)
+    {
+        m_perspective  = perspective;
+        m_orthographic = orthographic;
+    }
 }

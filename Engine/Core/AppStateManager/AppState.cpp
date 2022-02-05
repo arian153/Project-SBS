@@ -1,5 +1,11 @@
 #include "AppState.hpp"
 
+#include "../CoreSystem.hpp"
+#include "../../Animation/AnimationSystem.hpp"
+#include "../../Behavior/BehaviorSystem.hpp"
+#include "../../Graphics/RenderSystem.hpp"
+#include "../../Physics/PhysicsSystem.hpp"
+
 namespace Engine
 {
     AppState::~AppState()
@@ -64,22 +70,25 @@ namespace Engine
 
         if (HasFlag(m_creation_flag, eSubsystemFlag::BehaviorSubsystem))
         {
-            m_behavior_subsystem = std::make_unique<BehaviorSubsystem>();
+            m_behavior_subsystem = g_core->GetBehaviorSystem()->CreateSubsystem();
             m_behavior_subsystem->Initialize();
         }
 
         if (HasFlag(m_creation_flag, eSubsystemFlag::AnimationSubsystem))
         {
+            m_animation_subsystem = g_core->GetAnimationSystem()->CreateSubsystem();
             m_animation_subsystem->Initialize();
         }
 
         if (HasFlag(m_creation_flag, eSubsystemFlag::PhysicsSubsystem))
         {
+            m_physics_subsystem = g_core->GetPhysicsSystem()->CreateSubsystem();
             m_physics_subsystem->Initialize();
         }
 
         if (HasFlag(m_creation_flag, eSubsystemFlag::RenderSubsystem))
         {
+            m_render_subsystem = g_core->GetRenderSystem()->CreateSubsystem();
             m_render_subsystem->Initialize();
         }
     }

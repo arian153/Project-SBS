@@ -1,5 +1,7 @@
 #include "PhysicsSystem.hpp"
 
+#include "PhysicsSubsystem.hpp"
+
 namespace Engine
 {
     PhysicsSystem::PhysicsSystem()
@@ -20,5 +22,12 @@ namespace Engine
 
     void PhysicsSystem::Shutdown()
     {
+    }
+
+    SPtr<PhysicsSubsystem> PhysicsSystem::CreateSubsystem()
+    {
+        auto subsystem = std::make_shared<PhysicsSubsystem>();
+        m_subsystems.push_back(subsystem);
+        return subsystem;
     }
 }

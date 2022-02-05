@@ -57,9 +57,9 @@ namespace Engine
         SPtr<ObjectManager>    m_object_manager;
         SPtr<ComponentManager> m_component_manager;
         //engine subsystem list
-        UPtr<PhysicsSubsystem>   m_physics_subsystem;
-        UPtr<RenderSubsystem>    m_render_subsystem;
-        UPtr<BehaviorSubsystem>  m_behavior_subsystem;
-        UPtr<AnimationSubsystem> m_animation_subsystem;
+        SPtr<PhysicsSubsystem>   m_physics_subsystem;
+        SPtr<RenderSubsystem>    m_render_subsystem;
+        SPtr<BehaviorSubsystem>  m_behavior_subsystem;
+        SPtr<AnimationSubsystem> m_animation_subsystem;
     };
 }
