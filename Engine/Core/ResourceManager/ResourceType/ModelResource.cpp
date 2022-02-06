@@ -28,10 +28,14 @@ namespace Engine
         return m_meshes[i];
     }
 
-    MeshData& ModelResource::ReloadAndGetMeshData(size_t i)
+    TexturePaths& ModelResource::GetPathData(size_t i)
     {
-        Load();
-        return m_meshes[i];
+        return m_materials[i];
+    }
+
+    const TexturePaths& ModelResource::GetPathData(size_t i) const
+    {
+        return m_materials[i];
     }
 
     size_t ModelResource::Count() const
@@ -50,6 +54,8 @@ namespace Engine
 
     void ModelResource::Load()
     {
+        m_directory = FileUtility::GetDirectory(m_file_path);
+
         Assimp::Importer importer;
         const aiScene*   ai_scene = importer.ReadFile(
                                                       m_file_path,
@@ -73,6 +79,7 @@ namespace Engine
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
             m_meshes.push_back(ProcessMesh(mesh, scene));
+            m_materials.push_back(ProcessMaterial(mesh, scene, m_directory));
         }
 
         for (Uint32 i = 0; i < node->mNumChildren; i++)
@@ -81,7 +88,7 @@ namespace Engine
         }
     }
 
-    MeshData ModelResource::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+    MeshData ModelResource::ProcessMesh(aiMesh* mesh, [[maybe_unused]] const aiScene* scene)
     {
         // Data to fill
         MeshData mesh_data;
@@ -136,10 +143,41 @@ namespace Engine
             mesh_data.indices[3 * i + 2] = mesh_data.faces[i].c = face.mIndices[2];
         }
 
-        // Process Material
-
         // Process Animation, Bone
 
         return mesh_data;
+    }
+
+    TexturePaths ModelResource::ProcessMaterial(aiMesh* mesh, const aiScene* scene, const String& dir)
+    {
+        TexturePaths material_path;
+        aiMaterial*  material = scene->mMaterials[mesh->mMaterialIndex];
+
+        for (Uint32 i = 0; i < material->GetTextureCount(aiTextureType_DIFFUSE); i++)
+        {
+            aiString ai_path;
+            material->GetTexture(aiTextureType_DIFFUSE, i, &ai_path);
+            String path = ai_path.C_Str();
+            material_path.diff.push_back(dir + "/" + path);
+        }
+
+        for (Uint32 i = 0; i < material->GetTextureCount(aiTextureType_SPECULAR); i++)
+        {
+            aiString ai_path;
+            material->GetTexture(aiTextureType_SPECULAR, i, &ai_path);
+            String path = ai_path.C_Str();
+            material_path.spec.push_back(dir + "/" + path);
+        }
+
+        //bump map, normal map...
+        for (Uint32 i = 0; i < material->GetTextureCount(aiTextureType_HEIGHT); i++)
+        {
+            aiString ai_path;
+            material->GetTexture(aiTextureType_HEIGHT, i, &ai_path);
+            String path = ai_path.C_Str();
+            material_path.norm.push_back(dir + "/" + path);
+        }
+
+        return material_path;
     }
 }

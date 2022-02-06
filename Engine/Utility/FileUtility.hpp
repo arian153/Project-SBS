@@ -37,6 +37,8 @@ namespace Engine
 
         static StringWide GetPathWide(const String& path);
 
+        static String GetDirectory(const String& path);
+
         static size_t GetFileSize(const String& path);
     private:
     };

@@ -132,6 +132,11 @@ namespace Engine
         return std::filesystem::path(path).generic_wstring();
     }
 
+    String FileUtility::GetDirectory(const String& path)
+    {
+        return std::filesystem::path(path).parent_path().generic_string();
+    }
+
     size_t FileUtility::GetFileSize(const String& path)
     {
         return std::filesystem::file_size(std::filesystem::path(path));

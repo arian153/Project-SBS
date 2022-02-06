@@ -11,6 +11,13 @@ namespace Engine
     constexpr Uint32 MATERIAL_REAL_COUNT    = 5;
     constexpr Uint32 MATERIAL_TEXTURE_COUNT = 5;
 
+    struct TexturePaths
+    {
+        std::vector<String> diff;
+        std::vector<String> spec;
+        std::vector<String> norm;
+    };
+
     struct MaterialParams
     {
         void SetSint(Uint32 index, Sint32 value);
