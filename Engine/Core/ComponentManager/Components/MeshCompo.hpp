@@ -5,6 +5,12 @@
 
 namespace Engine
 {
+    class Texture;
+    class ShaderProgram;
+    class MeshData;
+    class ModelResource;
+    class Model;
+
     class MeshCompo final : public Component
     {
     public:
@@ -19,6 +25,13 @@ namespace Engine
         void Edit(CommandRegistry* command_registry) override;
         void CloneTo(RPtr<Component> destination) override;
 
+        void SetModelResource(RPtr<ModelResource> resource);
+        void SetMaterialInfoReal(Uint32 index, Real value) const;
+        void SetMaterialInfo(Uint32 index, Sint32 value) const;
+        void SetMaterialTexture(Uint32 index, SPtr<Texture> texture) const;
+        void SetMeshData(const MeshData& mesh_data);
+        void SetShader(SPtr<ShaderProgram> shader) const;
+
     protected:
         void Subscribe() override;
         void Unsubscribe() override;
@@ -27,8 +40,9 @@ namespace Engine
         friend class MeshFactory;
 
     private:
+        SPtr<Model> m_model = nullptr;
 
-
+        RPtr<ModelResource> m_model_resource = nullptr;
     };
 
     class MeshFactory final : public ComponentFactory

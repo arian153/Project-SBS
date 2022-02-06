@@ -4,6 +4,7 @@
 
 namespace Engine
 {
+    class ShaderProgram;
     class Material;
     class ModelResource;
 
@@ -14,6 +15,10 @@ namespace Engine
         ~Model();
 
         void SetUp(RPtr<ModelResource> model_resource);
+        void SetMeshData(const MeshData& mesh_data);
+
+        void SetShader(SPtr<ShaderProgram> shader);
+        void SetShader(size_t i, SPtr<ShaderProgram> shader);
 
         void Bind() const;
         void Render() const;
@@ -23,10 +28,18 @@ namespace Engine
 
         void Shutdown();
 
-    private:
-        size_t m_mesh_count = 0;
+        Material&       GetMaterial(size_t i);
+        const Material& GetMaterial(size_t i) const;
 
-        std::vector<Mesh>           m_meshes;
-        std::vector<SPtr<Material>> m_materials;
+        Mesh& GetMesh(size_t i);
+        const Mesh& GetMesh(size_t i) const;
+
+        size_t Count() const;
+
+    private:
+        size_t m_count = 0;
+
+        std::vector<Mesh>     m_meshes;
+        std::vector<Material> m_materials;
     };
 }

@@ -42,7 +42,7 @@ namespace Engine
         m_textures[index] = texture;
     }
 
-    void Material::Bind()
+    void Material::Bind() const
     {
         CONSTANT_BUFFER(eConstantBufferType::Material)->PushData(&m_material_params, sizeof(m_material_params));
 

@@ -15,6 +15,7 @@ namespace Engine
 
     void TransformCompo::Initialize()
     {
+        Subscribe();
     }
 
     void TransformCompo::Update(Real dt)
@@ -23,6 +24,7 @@ namespace Engine
 
     void TransformCompo::Shutdown()
     {
+        Unsubscribe();
     }
 
     bool TransformCompo::Load(const Json::Value& data)

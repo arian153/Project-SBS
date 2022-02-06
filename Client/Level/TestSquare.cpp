@@ -17,7 +17,7 @@ namespace Client
 
     void TestSquare::Initialize()
     {
-        std::vector<TexVertex> vertices(4);
+       /* std::vector<TexVertex> vertices(4);
 
         vertices[0].pos = Vector3(-0.5f, 0.5f, 0.5f);
         vertices[0].tex = Vector2(0.f, 0.f);
@@ -44,10 +44,44 @@ namespace Client
         material->SetReal(1, 0.4f);
         material->SetReal(2, 0.3f);
         material->SetTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());
-        m_mesh->SetMaterial(material);
+        m_mesh->SetMaterial(material);*/
 
-        auto obj = m_object_manager->AddObject("new_obj");
-        obj->AddComponent<TransformCompo>();
+        {
+            auto obj       = m_object_manager->AddObject("new_obj");
+            auto transform = obj->AddComponent<TransformCompo>();
+            auto mesh      = obj->AddComponent<MeshCompo>();
+
+            MeshData mesh_data;
+            mesh_data.vertices.resize(4);
+            mesh_data.indices.resize(6);
+
+            mesh_data.vertices[0].pos = Vector3(-0.5f, 0.5f, 0.5f);
+            mesh_data.vertices[0].tex = Vector2(0.f, 0.f);
+            mesh_data.vertices[1].pos = Vector3(0.5f, 0.5f, 0.5f);
+            mesh_data.vertices[1].tex = Vector2(1.f, 0.f);
+            mesh_data.vertices[2].pos = Vector3(0.5f, -0.5f, 0.5f);
+            mesh_data.vertices[2].tex = Vector2(1.f, 1.f);
+            mesh_data.vertices[3].pos = Vector3(-0.5f, -0.5f, 0.5f);
+            mesh_data.vertices[3].tex = Vector2(0.f, 1.f);
+
+            mesh_data.indices[0] = 0;
+            mesh_data.indices[1] = 1;
+            mesh_data.indices[2] = 2;
+            mesh_data.indices[3] = 0;
+            mesh_data.indices[4] = 2;
+            mesh_data.indices[5] = 3;
+
+            mesh_data.vertex_type = eVertexType::TexVertex;
+
+            mesh->SetMeshData(mesh_data);
+
+            mesh->SetShader(GET_SHADER_BY_NAME("Default.shader"));
+            mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());
+
+            mesh->SetMaterialInfoReal(0, 0.3f);
+            mesh->SetMaterialInfoReal(1, -0.4f);
+            mesh->SetMaterialInfoReal(2, 0.3f);
+        }
     }
 
     void TestSquare::Update(float dt)
@@ -125,7 +159,6 @@ namespace Client
  
          ImGui::End();*/
 
-        m_mesh->SetOffset(m_offset);
     }
 
     void TestSquare::FixedUpdate(float dt)
@@ -134,7 +167,6 @@ namespace Client
 
     void TestSquare::Render()
     {
-        m_mesh->Render();
     }
 
     void TestSquare::Shutdown()

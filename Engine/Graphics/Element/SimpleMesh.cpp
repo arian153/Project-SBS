@@ -22,13 +22,11 @@ namespace Engine
 
     void SimpleMesh::Render() const
     {
-        m_material->Bind();
         CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
         m_vertex_buffer.Bind();
         m_index_buffer.Bind();
 
-        CONSTANT_BUFFER(eConstantBufferType::Transform)->PushData(&m_offset, sizeof(m_offset));
+        m_material->Bind();
 
         DESCRIPTOR_HEAP->CommitTable();
         m_index_buffer.Draw();

@@ -6,6 +6,9 @@
 
 namespace Engine
 {
+    class ModelResource;
+    class Model;
+
     class RenderSubsystem final : public Subsystem
     {
     public:
@@ -22,11 +25,16 @@ namespace Engine
 
         void OnResize(const Matrix44& perspective, const Matrix44& orthographic);
 
+        SPtr<Model> CreateModel();
+
+    private:
+       
+
     private:
         Matrix44 m_perspective;
         Matrix44 m_orthographic;
 
-        std::vector<SPtr<Mesh>>      m_meshes;
         std::vector<RPtr<MeshCompo>> m_mesh_compos;
+        std::vector<SPtr<Model>> m_models;
     };
 }

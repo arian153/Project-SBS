@@ -1,5 +1,7 @@
 #include "RenderSubsystem.hpp"
 
+#include "Element/Model.hpp"
+
 namespace Engine
 {
     RenderSubsystem::RenderSubsystem()
@@ -20,12 +22,17 @@ namespace Engine
 
     void RenderSubsystem::Render()
     {
+        for (auto& model : m_models)
+        {
+            model->Bind();
+            model->Render();
+        }
     }
 
     void RenderSubsystem::Shutdown()
     {
         m_mesh_compos.clear();
-        m_meshes.clear();
+        m_models.clear();
     }
 
     void RenderSubsystem::AddMeshCompo(RPtr<MeshCompo> compo)
@@ -46,5 +53,12 @@ namespace Engine
     {
         m_perspective  = perspective;
         m_orthographic = orthographic;
+    }
+
+    SPtr<Model> RenderSubsystem::CreateModel()
+    {
+        auto model = std::make_shared<Model>();
+        m_models.push_back(model);
+        return model;
     }
 }

@@ -37,7 +37,7 @@ namespace Engine
         void SetReal(Uint32 index, Real value);
         void SetTexture(Uint32 index, SPtr<Texture> texture);
 
-        void Bind();
+        void Bind() const;
 
     private:
         SPtr<ShaderProgram> m_shader;
