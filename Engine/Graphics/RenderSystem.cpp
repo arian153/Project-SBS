@@ -35,8 +35,7 @@ namespace Engine
         m_dx12_layer->Initialize(m_window_info);
         m_root_signature->Initialize();
 
-        CreateConstantBuffer(eCBVRegister::b0, sizeof(Vector4), 256);
-        CreateConstantBuffer(eCBVRegister::b1, sizeof(MaterialParams), 256);
+   
 
         m_table_descriptor_heap->Init(256);
 
@@ -63,7 +62,12 @@ namespace Engine
     void RenderSystem::RenderBegin() const
     {
         m_dx12_layer->RenderBegin(COLOR[static_cast<Uint32>(eColorInfo::LightSkyBlue)]);
-        ClearConstantBuffers();
+
+        for (auto& subsystem : m_subsystems)
+        {
+            subsystem->ClearConstantBuffers();
+        }
+
         m_table_descriptor_heap->Clear();
         ID3D12DescriptorHeap* desc_heap = m_table_descriptor_heap->GetDescriptorHeap().Get();
         m_dx12_layer->GetCmdList()->SetDescriptorHeaps(1, &desc_heap);
@@ -118,24 +122,6 @@ namespace Engine
         m_dx12_layer->WaitSync();
     }
 
-    void RenderSystem::CreateConstantBuffer(eCBVRegister reg, Uint32 buffer_size, Uint32 count)
-    {
-        Uint32 idx = static_cast<Uint32>(reg);
-        assert(m_constant_buffers.size() == idx);
-
-        auto buffer = std::make_shared<ConstantBuffer>();
-        buffer->Init(reg, buffer_size, count);
-        m_constant_buffers.push_back(buffer);
-    }
-
-    void RenderSystem::ClearConstantBuffers() const
-    {
-        for (auto& buffer : m_constant_buffers)
-        {
-            buffer->Clear();
-        }
-    }
-
     SPtr<DirectX12Layer> RenderSystem::GetDirectX12Layer()
     {
         return m_dx12_layer;
@@ -156,11 +142,7 @@ namespace Engine
         return m_shader_manager;
     }
 
-    SPtr<ConstantBuffer> RenderSystem::GetConstantBuffer(eConstantBufferType type)
-    {
-        return m_constant_buffers[static_cast<Uint32>(type)];
-    }
-
+   
     ViewportManager& RenderSystem::GetViewportManager()
     {
         return m_viewport_manager;

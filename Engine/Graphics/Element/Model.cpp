@@ -72,12 +72,12 @@ namespace Engine
         m_materials[i].SetShader(shader);
     }
 
-    void Model::Bind() const
+    void Model::Bind(SPtr<ConstantBuffer> material_buffer) const
     {
         for (size_t i = 0; i < m_count; ++i)
         {
             m_meshes[i].Bind();
-            m_materials[i].Bind();
+            m_materials[i].Bind(material_buffer);
         }
     }
 
@@ -89,10 +89,10 @@ namespace Engine
         }
     }
 
-    void Model::Bind(size_t i) const
+    void Model::Bind(size_t i, SPtr<ConstantBuffer> material_buffer) const
     {
         m_meshes[i].Bind();
-        m_materials[i].Bind();
+        m_materials[i].Bind(material_buffer);
     }
 
     void Model::Render(size_t i) const

@@ -42,9 +42,9 @@ namespace Engine
         m_textures[index] = texture;
     }
 
-    void Material::Bind() const
+    void Material::Bind(SPtr<ConstantBuffer> material_buffer) const
     {
-        CONSTANT_BUFFER(eConstantBufferType::Material)->PushData(&m_material_params, sizeof(m_material_params));
+        material_buffer->PushData(&m_material_params, sizeof(m_material_params));
 
         for (size_t i = 0; i < m_textures.size(); i++)
         {

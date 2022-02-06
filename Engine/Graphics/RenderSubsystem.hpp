@@ -2,10 +2,12 @@
 #include "../System.hpp"
 #include "../Core/ComponentManager/Components/MeshCompo.hpp"
 #include "../Math/Algebra/Matrix44.hpp"
+#include "DirectX12/Buffer/ConstantBuffer.hpp"
 #include "Element/Mesh.hpp"
 
 namespace Engine
 {
+    class Camera;
     class ModelResource;
     class Model;
 
@@ -25,16 +27,28 @@ namespace Engine
 
         void OnResize(const Matrix44& perspective, const Matrix44& orthographic);
 
-        SPtr<Model> CreateModel();
+        SPtr<Model>  CreateModel();
+        SPtr<Camera> CreateCamera();
+
+        void SetCurrentCamera(SPtr<Camera> camera);
+
+        SPtr<ConstantBuffer> GetConstantBuffer(eConstantBufferType type);
 
     private:
-       
+        friend class RenderSystem;
+    private:
+        void CreateConstantBuffer(eCBVRegister reg, Uint32 buffer_size, Uint32 count);
+        void ClearConstantBuffers() const;
 
     private:
         Matrix44 m_perspective;
         Matrix44 m_orthographic;
 
-        std::vector<RPtr<MeshCompo>> m_mesh_compos;
-        std::vector<SPtr<Model>> m_models;
+        SPtr<Camera> m_curr_camera = nullptr;
+
+        std::vector<SPtr<Camera>>         m_cameras;
+        std::vector<RPtr<MeshCompo>>      m_mesh_compos;
+        std::vector<SPtr<Model>>          m_models;
+        std::vector<SPtr<ConstantBuffer>> m_constant_buffers;
     };
 }

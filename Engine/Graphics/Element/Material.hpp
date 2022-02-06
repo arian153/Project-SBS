@@ -5,6 +5,7 @@
 
 namespace Engine
 {
+    class ConstantBuffer;
     class Texture;
     class ShaderProgram;
     constexpr Uint32 MATERIAL_SINT_COUNT    = 5;
@@ -37,7 +38,7 @@ namespace Engine
         void SetReal(Uint32 index, Real value);
         void SetTexture(Uint32 index, SPtr<Texture> texture);
 
-        void Bind() const;
+        void Bind(SPtr<ConstantBuffer> material_buffer) const;
 
     private:
         SPtr<ShaderProgram> m_shader;

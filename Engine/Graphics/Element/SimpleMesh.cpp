@@ -26,7 +26,7 @@ namespace Engine
         m_vertex_buffer.Bind();
         m_index_buffer.Bind();
 
-        m_material->Bind();
+        //m_material->Bind();
 
         DESCRIPTOR_HEAP->CommitTable();
         m_index_buffer.Draw();

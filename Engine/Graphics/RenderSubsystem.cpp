@@ -1,5 +1,7 @@
 #include "RenderSubsystem.hpp"
 
+#include "Element/Camera.hpp"
+#include "Element/Material.hpp"
 #include "Element/Model.hpp"
 
 namespace Engine
@@ -14,6 +16,8 @@ namespace Engine
 
     void RenderSubsystem::Initialize()
     {
+        CreateConstantBuffer(eCBVRegister::b0, sizeof(Vector4), 256);
+        CreateConstantBuffer(eCBVRegister::b1, sizeof(MaterialParams), 256);
     }
 
     void RenderSubsystem::Update(Real dt)
@@ -24,7 +28,7 @@ namespace Engine
     {
         for (auto& model : m_models)
         {
-            model->Bind();
+            model->Bind(GetConstantBuffer(eConstantBufferType::Material));
             model->Render();
         }
     }
@@ -60,5 +64,40 @@ namespace Engine
         auto model = std::make_shared<Model>();
         m_models.push_back(model);
         return model;
+    }
+
+    SPtr<Camera> RenderSubsystem::CreateCamera()
+    {
+        auto camera = std::make_shared<Camera>();
+        m_cameras.push_back(camera);
+        return camera;
+    }
+
+    void RenderSubsystem::SetCurrentCamera(SPtr<Camera> camera)
+    {
+        m_curr_camera = camera;
+    }
+
+    SPtr<ConstantBuffer> RenderSubsystem::GetConstantBuffer(eConstantBufferType type)
+    {
+        return m_constant_buffers[static_cast<Uint32>(type)];
+    }
+
+    void RenderSubsystem::CreateConstantBuffer(eCBVRegister reg, Uint32 buffer_size, Uint32 count)
+    {
+        Uint32 idx = static_cast<Uint32>(reg);
+        assert(m_constant_buffers.size() == idx);
+
+        auto buffer = std::make_shared<ConstantBuffer>();
+        buffer->Init(reg, buffer_size, count);
+        m_constant_buffers.push_back(buffer);
+    }
+
+    void RenderSubsystem::ClearConstantBuffers() const
+    {
+        for (auto& buffer : m_constant_buffers)
+        {
+            buffer->Clear();
+        }
     }
 }

@@ -4,6 +4,7 @@
 
 namespace Engine
 {
+    class ConstantBuffer;
     class ShaderProgram;
     class Material;
     class ModelResource;
@@ -20,10 +21,10 @@ namespace Engine
         void SetShader(SPtr<ShaderProgram> shader);
         void SetShader(size_t i, SPtr<ShaderProgram> shader);
 
-        void Bind() const;
+        void Bind(SPtr<ConstantBuffer> material_buffer) const;
         void Render() const;
 
-        void Bind(size_t i) const;
+        void Bind(size_t i, SPtr<ConstantBuffer> material_buffer) const;
         void Render(size_t i) const;
 
         void Shutdown();
@@ -38,6 +39,7 @@ namespace Engine
 
     private:
         size_t m_count = 0;
+        
 
         std::vector<Mesh>     m_meshes;
         std::vector<Material> m_materials;

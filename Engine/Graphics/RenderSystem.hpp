@@ -39,8 +39,7 @@ namespace Engine
         void OnFullscreen(bool b_fullscreen);
 
         void PostInitialize();
-        void CreateConstantBuffer(eCBVRegister reg, Uint32 buffer_size, Uint32 count);
-        void ClearConstantBuffers() const;
+
 
     private:
         friend class CoreSystem;
@@ -50,7 +49,7 @@ namespace Engine
         SPtr<RootSignature>       GetRootSignature();
         SPtr<TableDescriptorHeap> GetTableDescriptorHeap();
         SPtr<ShaderManager>       GetShaderManager();
-        SPtr<ConstantBuffer>      GetConstantBuffer(eConstantBufferType type);
+       
         ViewportManager&          GetViewportManager();
         const ViewportManager&    GetViewportManager() const;
 
@@ -65,7 +64,7 @@ namespace Engine
 
         bool m_b_init = false;
 
-        std::vector<SPtr<ConstantBuffer>>  m_constant_buffers;
+  
         std::vector<SPtr<RenderSubsystem>> m_subsystems;
     };
 }

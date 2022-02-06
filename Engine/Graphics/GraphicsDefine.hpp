@@ -23,8 +23,6 @@ namespace Engine
 
     #define SHADER_MANAGER g_core->GetRenderSystem()->GetShaderManager()
 
-    #define CONSTANT_BUFFER(type)	g_core->GetRenderSystem()->GetConstantBuffer(type)
-
     #define GET_SHADER_BY_NAME(s) g_core->GetRenderSystem()->GetShaderManager()->GetShaderProgramName(s)
     #define GET_SHADER_BY_PATH(s) g_core->GetRenderSystem()->GetShaderManager()->GetShaderProgramPath(s)
 }
