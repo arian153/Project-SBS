@@ -12,6 +12,7 @@ namespace Engine
 
         bool       HasSubResource() const;
         bool       IsIntegrated() const;
+        bool       IsHeader() const;
         StringWide GetShaderPath() const;
         StringWide GetShaderPath(eShaderStage stage) const;
 
@@ -32,6 +33,7 @@ namespace Engine
     private:
         bool m_has_sub_resource = false;
         bool m_b_integrated     = true;
+        bool m_b_header         = false;
 
         String m_integrated_shader = "";
         String m_info_path         = "";

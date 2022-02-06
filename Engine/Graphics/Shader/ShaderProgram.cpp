@@ -61,7 +61,10 @@ namespace Engine
         if (FAILED(result))
         {
             #ifdef _DEBUG
-            ::MessageBoxA(nullptr, "Failed Shader Compilation!", nullptr, MB_OK);
+
+            String msg = "Failed Shader Compilation : " + ToString(path);
+
+            ::MessageBoxA(nullptr, msg.c_str(), nullptr, MB_OK);
             #endif
             return false;
         }

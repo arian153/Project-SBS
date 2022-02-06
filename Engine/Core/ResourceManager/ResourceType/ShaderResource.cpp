@@ -29,6 +29,11 @@ namespace Engine
         return m_b_integrated;
     }
 
+    bool ShaderResource::IsHeader() const
+    {
+        return m_b_header;
+    }
+
     StringWide ShaderResource::GetShaderPath() const
     {
         if (m_has_sub_resource)
