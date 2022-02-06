@@ -35,7 +35,7 @@ namespace Engine
 
         Real m_theta  = -Math::HALF_PI;
         Real m_phi    = Math::HALF_PI;
-        Real m_radius = 10.0f;
+        Real m_radius = 60.0f;
 
         Vector3 m_eye_pos;
         Vector3 m_target_pos;

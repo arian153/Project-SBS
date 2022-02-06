@@ -67,6 +67,16 @@ namespace Engine
         m_transform.scale = scale;
     }
 
+    void TransformCompo::SetPosition(const Vector3& pos)
+    {
+        m_transform.position = pos;
+    }
+
+    Vector3 TransformCompo::GetPosition() const
+    {
+        return m_transform.position;
+    }
+
     void TransformCompo::Subscribe()
     {
         m_space->GetBehaviorSubsystem()->AddTransform(this);

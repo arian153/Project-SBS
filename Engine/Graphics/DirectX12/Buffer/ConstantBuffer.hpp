@@ -5,6 +5,7 @@ namespace Engine
 {
     enum class eConstantBufferType : Uint32
     {
+        GlobalPerFrame,
         Transform,
         Material,
         End
@@ -23,6 +24,10 @@ namespace Engine
         void Clear();
         void PushData(void* buffer, Uint32 size);
         void PushData(const void* buffer, Uint32 size);
+
+
+        void SetGlobalData(void* buffer, Uint32 size) const;
+
 
         D3D12_GPU_VIRTUAL_ADDRESS   GetGpuVirtualAddress(Uint32 index) const;
         D3D12_CPU_DESCRIPTOR_HANDLE GetCpuHandle(Uint32 index) const;

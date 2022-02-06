@@ -3,6 +3,15 @@
 
 namespace Engine
 {
+    struct MatrixParams
+    {
+        Matrix44 world;
+        Matrix44 view;
+        Matrix44 proj;
+        Matrix44 wv;
+        Matrix44 wvp;
+    };
+
     class ViewportManager
     {
     public:

@@ -25,6 +25,9 @@ namespace Engine
         void SetTransform(const Transform& transform);
 
         void SetScale(const Vector3& scale);
+        void SetPosition(const Vector3& pos);
+
+        Vector3 GetPosition() const;
     protected:
         void Subscribe() override;
         void Unsubscribe() override;

@@ -7,12 +7,11 @@
 
 namespace Engine
 {
+    class LightCompo;
     class OrbitCameraCompo;
     class Camera;
     class ModelResource;
     class Model;
-
-   
 
     class RenderSubsystem final : public Subsystem
     {
@@ -30,6 +29,9 @@ namespace Engine
 
         void AddOrbitCompo(RPtr<OrbitCameraCompo> compo);
         void RemoveOrbitCompo(RPtr<OrbitCameraCompo> compo);
+
+        void AddLightCompo(RPtr<LightCompo> compo);
+        void RemoveLightCompo(RPtr<LightCompo> compo);
 
         void OnResize(const Matrix44& perspective, const Matrix44& orthographic);
 
@@ -53,6 +55,7 @@ namespace Engine
         SPtr<Camera> m_curr_camera = nullptr;
 
         std::vector<SPtr<Camera>>           m_cameras;
+        std::vector<RPtr<LightCompo>>       m_light_compos;
         std::vector<RPtr<MeshCompo>>        m_mesh_compos;
         std::vector<SPtr<Model>>            m_models;
         std::vector<RPtr<OrbitCameraCompo>> m_orbit_compos;

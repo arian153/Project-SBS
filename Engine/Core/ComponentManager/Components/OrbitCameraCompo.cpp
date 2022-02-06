@@ -50,7 +50,7 @@ namespace Engine
             //camera->AddDistanceInUpDirection(-dt * dy);
             //camera->AddDistanceInRightDirection(dt * dx);
             m_theta += dx;
-            m_phi += dy;
+            //m_phi += dy;
             // Restrict the angle phi.
             m_phi = Math::Clamp(m_phi, 0.1f, Math::PI - 0.1f);
             // Convert Spherical to Cartesian coordinates.

@@ -61,7 +61,7 @@ namespace Engine
 
     void RenderSystem::RenderBegin() const
     {
-        m_dx12_layer->RenderBegin(COLOR[static_cast<Uint32>(eColorInfo::LightSkyBlue)]);
+        m_dx12_layer->RenderBegin(COLOR[static_cast<Uint32>(eColorInfo::Black)]);
 
         for (auto& subsystem : m_subsystems)
         {

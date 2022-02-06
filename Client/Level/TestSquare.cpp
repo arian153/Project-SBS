@@ -1,6 +1,7 @@
 #include "TestSquare.h"
 
 #include <iostream>
+#include <Core/ComponentManager/Components/LightCompo.hpp>
 #include <Core/ComponentManager/Components/OrbitCameraCompo.hpp>
 #include <Core/ObjectManager/Object.hpp>
 using namespace Engine;
@@ -18,30 +19,7 @@ namespace Client
 
     void TestSquare::Initialize()
     {
-        {
-            MeshData mesh_data;
-            mesh_data.vertices.resize(4);
-            mesh_data.indices.resize(6);
-
-            mesh_data.vertices[0].pos = Vector3(-5.5f, 5.5f, 0.f);
-            mesh_data.vertices[0].tex = Vector2(0.f, 0.f);
-            mesh_data.vertices[1].pos = Vector3(5.5f, 5.5f, 0.f);
-            mesh_data.vertices[1].tex = Vector2(1.f, 0.f);
-            mesh_data.vertices[2].pos = Vector3(5.5f, -5.5f, 0.f);
-            mesh_data.vertices[2].tex = Vector2(1.f, 1.f);
-            mesh_data.vertices[3].pos = Vector3(-5.5f, -5.5f, 0.f);
-            mesh_data.vertices[3].tex = Vector2(0.f, 1.f);
-
-            mesh_data.indices[0] = 0;
-            mesh_data.indices[1] = 1;
-            mesh_data.indices[2] = 2;
-            mesh_data.indices[3] = 0;
-            mesh_data.indices[4] = 2;
-            mesh_data.indices[5] = 3;
-
-            mesh_data.vertex_type = eVertexType::TexVertex;
-        }
-
+        
         //Mesh Object
         {
             auto obj       = m_object_manager->AddObject("new_obj");
@@ -49,9 +27,8 @@ namespace Client
             auto mesh      = obj->AddComponent<MeshCompo>();
 
             Transform tf;
-            tf.position = Vector3(5, 0, 0);
-            tf.scale = Vector3(5, 5, 5);
-            tf.orientation.Set(EulerAngle(2, 2, 2));
+            tf.position = Vector3(0, -10, 0);
+            tf.scale    = Vector3(100, 100, 100);
 
             transform->SetTransform(tf);
 
@@ -65,12 +42,52 @@ namespace Client
             mesh->SetMaterialInfoReal(2, 0.3f);
         }
 
-        //Mesh Object
+        //Camera Object
         {
             auto obj = m_object_manager->AddObject("camera");
             obj->AddComponent<TransformCompo>();
             auto camera = obj->AddComponent<OrbitCameraCompo>();
             camera->SetAsMainCamera();
+        }
+
+        //Light 1 Green Directional Light
+        {
+            auto obj = m_object_manager->AddObject("Directional");
+            obj->AddComponent<TransformCompo>();
+            auto light = obj->AddComponent<LightCompo>();
+            light->SetLightDirection(Vector3(0.f, -1.f, 0.f));
+            light->SetLightType(eLightType::DirectionalLight);
+            light->SetDiffuse(Color(0.1f, 1.f, 0.1f, 1.0f));
+            light->SetAmbient(Color(0.f, 0.1f, 0.f, 1.0f));
+            light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
+        }
+
+        //Light 2 Red Point Light
+        {
+            auto obj       = m_object_manager->AddObject("Point");
+            auto transform = obj->AddComponent<TransformCompo>();
+            transform->SetPosition(Vector3(150.f, 150.f, 150.f));
+            auto light = obj->AddComponent<LightCompo>();
+            light->SetLightType(eLightType::PointLight);
+            light->SetDiffuse(Color(1.f, 0.1f, 0.1f, 1.0f));
+            light->SetAmbient(Color(0.1f, 0.f, 0.f, 1.0f));
+            light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
+            light->SetLightRange(10000.f);
+        }
+
+        //Light 3 Blue Spot Light
+        {
+            auto obj       = m_object_manager->AddObject("Spot");
+            auto transform = obj->AddComponent<TransformCompo>();
+            transform->SetPosition(Vector3(-150.f, 0.f, 150.f));
+            auto light = obj->AddComponent<LightCompo>();
+            light->SetLightDirection(Vector3(1.f, 0.f, 0.f));
+            light->SetLightType(eLightType::SpotLight);
+            light->SetAmbient(Color(0.0f, 0.f, 0.f, 1.0f));
+            light->SetDiffuse(Color(0.f, 0.1f, 1.f, 1.0f));
+            light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
+            light->SetLightRange(10000.f);
+            light->SetLightAngle(XM_PI / 4);
         }
     }
 

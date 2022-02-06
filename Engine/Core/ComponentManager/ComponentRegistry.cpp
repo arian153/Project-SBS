@@ -2,6 +2,7 @@
 #include "ComponentFactory.hpp"
 
 //factories
+#include "Components/LightCompo.hpp"
 #include "Components/MeshCompo.hpp"
 #include "Components/OrbitCameraCompo.hpp"
 #include "Components/TransformCompo.hpp"
@@ -13,6 +14,7 @@ namespace Engine
         AddFactory(new TransformFactory());
         AddFactory(new MeshFactory());
         AddFactory(new OrbitCameraFactory());
+        AddFactory(new LightFactory());
 
         return true;
     }

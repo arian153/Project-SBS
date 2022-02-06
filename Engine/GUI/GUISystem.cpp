@@ -26,6 +26,12 @@ namespace Engine
 
     void GUISystem::Update()
     {
+        ImGui::Begin("GAM450 Project");
+        ImGui::Text("Test UI");
+        ImGui::Text("Press Mouse RB to Rotate Camera");
+        ImGui::Text("Press WASD to move Camera");
+        ImGui::End();
+
         ImGui::ShowDemoWindow();
     }
 

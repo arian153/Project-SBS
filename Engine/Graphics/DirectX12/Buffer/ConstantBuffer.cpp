@@ -66,6 +66,13 @@ namespace Engine
         m_current_index++;
     }
 
+    void ConstantBuffer::SetGlobalData(void* buffer, Uint32 size) const
+    {
+        assert(m_element_size == ((size + 255) & ~255));
+        ::memcpy(&m_mapped_buffer[0], buffer, size);
+        CMD_LIST->SetGraphicsRootConstantBufferView(0, GetGpuVirtualAddress(0));
+    }
+
     D3D12_GPU_VIRTUAL_ADDRESS ConstantBuffer::GetGpuVirtualAddress(Uint32 index) const
     {
         D3D12_GPU_VIRTUAL_ADDRESS obj_cb_address = m_cbv_buffer->GetGPUVirtualAddress();

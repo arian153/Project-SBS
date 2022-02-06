@@ -3,44 +3,52 @@
 
 struct LightColor
 {
-    float4      diffuse;
-    float4      ambient;
-    float4      specular;
+    float4 diffuse;
+    float4 ambient;
+    float4 specular;
 };
 
 struct LightInfo
 {
-    LightColor  color;
-    float4	    position;
-    float4	    direction;
-    int		    light_type;
-    float	    range;
-    float	    angle;
-    int  	    padding;
+    LightColor color;
+    float3     position;
+    float      padding0;
+    float3     direction;
+    float      padding1;
+    int        light_type;
+    float      range;
+    float      angle;
+    int        padding2;
 };
 
-
-cbuffer TRANSFORM_PARAMS : register(b0)
+cbuffer GLOBAL_PARAMS : register(b0)
 {
-    row_major matrix g_mat_world;
-    row_major matrix g_mat_view;
-    row_major matrix g_mat_projection;
-    row_major matrix g_mat_wv;
-    row_major matrix g_mat_wvp;
+int       g_light_count;
+float3    g_light_padding;
+LightInfo g_light[50];
+}
+
+cbuffer TRANSFORM_PARAMS : register(b1)
+{
+row_major matrix g_mat_world;
+row_major matrix g_mat_view;
+row_major matrix g_mat_proj;
+row_major matrix g_mat_wv;
+row_major matrix g_mat_wvp;
 };
 
-cbuffer MATERIAL_PARAMS : register(b1)
+cbuffer MATERIAL_PARAMS : register(b2)
 {
-    int     g_int_0;
-    int     g_int_1;
-    int     g_int_2;
-    int     g_int_3;
-    int     g_int_4;
-    float   g_float_0;
-    float   g_float_1;
-    float   g_float_2;
-    float   g_float_3;
-    float   g_float_4;
+int   g_int_0;
+int   g_int_1;
+int   g_int_2;
+int   g_int_3;
+int   g_int_4;
+float g_float_0;
+float g_float_1;
+float g_float_2;
+float g_float_3;
+float g_float_4;
 };
 
 Texture2D g_tex_0 : register(t0);

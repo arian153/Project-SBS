@@ -9,14 +9,14 @@ namespace Engine
         m_group_count = count;
 
         D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-        desc.NumDescriptors             = count * REGISTER_COUNT;
+        desc.NumDescriptors             = count * (REGISTER_COUNT - 1);
         desc.Flags                      = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         desc.Type                       = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
         DEVICE->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_desc_heap));
 
         m_handle_size = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-        m_group_size  = m_handle_size * REGISTER_COUNT;
+        m_group_size  = m_handle_size * (REGISTER_COUNT - 1);
     }
 
     void TableDescriptorHeap::Clear()
@@ -60,7 +60,7 @@ namespace Engine
     {
         D3D12_GPU_DESCRIPTOR_HANDLE handle = m_desc_heap->GetGPUDescriptorHandleForHeapStart();
         handle.ptr += m_current_group_index * m_group_size;
-        CMD_LIST->SetGraphicsRootDescriptorTable(0, handle);
+        CMD_LIST->SetGraphicsRootDescriptorTable(1, handle);
 
         m_current_group_index++;
     }
@@ -84,7 +84,7 @@ namespace Engine
     {
         D3D12_CPU_DESCRIPTOR_HANDLE handle = m_desc_heap->GetCPUDescriptorHandleForHeapStart();
         handle.ptr += m_current_group_index * m_group_size;
-        handle.ptr += reg * m_handle_size;
+        handle.ptr += (reg - 1) * m_handle_size;
         return handle;
     }
 }
