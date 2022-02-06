@@ -26,6 +26,9 @@ namespace Engine
         TextureResource* GetTextureResourcePath(const String& file_path);
         TextureResource* GetTextureResourceName(const String& file_name);
 
+        ModelResource* GetModelResourcePath(const String& file_path);
+        ModelResource* GetModelResourceName(const String& file_name);
+
 
     private:
         void Initialize() override;

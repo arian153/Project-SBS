@@ -48,4 +48,19 @@ namespace Engine
     {
         return m_basis;
     }
+
+    Transform& Camera::GetTransform()
+    {
+        return m_transform;
+    }
+
+    void Camera::SetPosition(const Vector3& position)
+    {
+        m_transform.position = position;
+    }
+
+    void Camera::AddPosition(const Vector3& delta_pos)
+    {
+        m_transform.position += delta_pos;
+    }
 }

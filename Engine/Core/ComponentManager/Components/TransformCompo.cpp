@@ -47,6 +47,26 @@ namespace Engine
     {
     }
 
+    Matrix44 TransformCompo::GetLocalToWorldMatrix() const
+    {
+        return m_transform.LocalToWorldMatrix();
+    }
+
+    Matrix44 TransformCompo::GetWorldToLocalMatrix() const
+    {
+        return m_transform.LocalToWorldMatrix().Inverse();
+    }
+
+    void TransformCompo::SetTransform(const Transform& transform)
+    {
+        m_transform = transform;
+    }
+
+    void TransformCompo::SetScale(const Vector3& scale)
+    {
+        m_transform.scale = scale;
+    }
+
     void TransformCompo::Subscribe()
     {
         m_space->GetBehaviorSubsystem()->AddTransform(this);

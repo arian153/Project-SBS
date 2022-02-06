@@ -2,6 +2,7 @@
 
 #include "../Component.hpp"
 #include "../ComponentFactory.hpp"
+#include "../../../Math/Algebra/Matrix44.hpp"
 
 namespace Engine
 {
@@ -31,6 +32,9 @@ namespace Engine
         void SetMaterialTexture(Uint32 index, SPtr<Texture> texture) const;
         void SetMeshData(const MeshData& mesh_data);
         void SetShader(SPtr<ShaderProgram> shader) const;
+
+        void     Render() const;
+        Matrix44 GetWorldMatrix() const;
 
     protected:
         void Subscribe() override;

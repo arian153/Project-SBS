@@ -19,6 +19,12 @@ namespace Engine
         void Edit(CommandRegistry* command_registry) override;
         void CloneTo(RPtr<Component> destination) override;
 
+        Matrix44 GetLocalToWorldMatrix() const;
+        Matrix44 GetWorldToLocalMatrix() const;
+
+        void SetTransform(const Transform& transform);
+
+        void SetScale(const Vector3& scale);
     protected:
         void Subscribe() override;
         void Unsubscribe() override;

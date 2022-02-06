@@ -1,7 +1,9 @@
 
 cbuffer TEST_B0 : register(b0)
 {
-    float4 offset0;
+    row_major matrix world;
+    row_major matrix view;
+    row_major matrix proj;
 };
 
 cbuffer MATERIAL_PARAMS : register(b1)
@@ -40,16 +42,12 @@ struct VS_OUT
 
 VS_OUT VS_Main(VS_IN input)
 {
-    VS_OUT output = (VS_OUT)0;
+    VS_OUT output;
 
-    output.pos = float4(input.pos, 1.f);
-
-    output.pos.x += float_0;
-    output.pos.y += float_1;
-    output.pos.z += float_2;
-
+    output.pos = mul(float4(input.pos, 1.f), world);
+    output.pos = mul(output.pos, view);
+    output.pos = mul(output.pos, proj);
     output.uv = input.uv;
-
     return output;
 }
 

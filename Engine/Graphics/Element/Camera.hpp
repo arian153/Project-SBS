@@ -19,6 +19,11 @@ namespace Engine
         Matrix44   GetViewMatrix() const;
         Basis      GetBasis() const;
 
+        Transform& GetTransform();
+
+        void SetPosition(const Vector3& position);
+        void AddPosition(const Vector3& delta_pos);
+
     private:
         Matrix44  m_view_matrix;
         Transform m_transform;

@@ -1,5 +1,6 @@
 #include "RenderSubsystem.hpp"
 
+#include "../Core/ComponentManager/Components/OrbitCameraCompo.hpp"
 #include "Element/Camera.hpp"
 #include "Element/Material.hpp"
 #include "Element/Model.hpp"
@@ -22,15 +23,39 @@ namespace Engine
 
     void RenderSubsystem::Update(Real dt)
     {
+        for (auto& orbit_cam : m_orbit_compos)
+        {
+            orbit_cam->Update(dt);
+        }
+
+        if (m_curr_camera != nullptr)
+            m_curr_camera->UpdateViewMatrix();
     }
+
+    struct MatrixParams
+    {
+        std::array<Matrix44, 3> matrix_param = {};
+    };
 
     void RenderSubsystem::Render()
     {
-        for (auto& model : m_models)
+
+        MatrixParams matrix_params;
+        matrix_params.matrix_param[1] = m_curr_camera->GetViewMatrix();
+        matrix_params.matrix_param[2] = m_perspective;
+
+        for (auto& mesh_compo : m_mesh_compos)
         {
-            model->Bind(GetConstantBuffer(eConstantBufferType::Material));
-            model->Render();
+            matrix_params.matrix_param[0] = mesh_compo->GetWorldMatrix();
+            GetConstantBuffer(eConstantBufferType::Transform)->PushData(&matrix_params, sizeof(matrix_params));
+            mesh_compo->Render();
         }
+
+        /* for (auto& model : m_models)
+         {
+             model->Bind(GetConstantBuffer(eConstantBufferType::Material));
+             model->Render();
+         }*/
     }
 
     void RenderSubsystem::Shutdown()
@@ -50,6 +75,20 @@ namespace Engine
         if (found != m_mesh_compos.end())
         {
             m_mesh_compos.erase(found);
+        }
+    }
+
+    void RenderSubsystem::AddOrbitCompo(RPtr<OrbitCameraCompo> compo)
+    {
+        m_orbit_compos.push_back(compo);
+    }
+
+    void RenderSubsystem::RemoveOrbitCompo(RPtr<OrbitCameraCompo> compo)
+    {
+        auto found = std::find(m_orbit_compos.begin(), m_orbit_compos.end(), compo);
+        if (found != m_orbit_compos.end())
+        {
+            m_orbit_compos.erase(found);
         }
     }
 

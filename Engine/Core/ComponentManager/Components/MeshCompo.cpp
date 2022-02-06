@@ -1,8 +1,10 @@
 #include "MeshCompo.hpp"
 
+#include "TransformCompo.hpp"
 #include "../../../Graphics/Element/Material.hpp"
 #include "../../../Graphics/Element/Model.hpp"
 #include "../../AppStateManager/AppState.hpp"
+#include "../../ObjectManager/Object.hpp"
 #include "../../ResourceManager/ResourceType/JsonData.hpp"
 #include "../../ResourceManager/ResourceType/ModelResource.hpp"
 
@@ -104,6 +106,21 @@ namespace Engine
     void MeshCompo::SetShader(SPtr<ShaderProgram> shader) const
     {
         m_model->SetShader(shader);
+    }
+
+    void MeshCompo::Render() const
+    {
+        m_model->Bind(m_space->GetRenderSubsystem()->GetConstantBuffer(eConstantBufferType::Material));
+        m_model->Render();
+    }
+
+    Matrix44 MeshCompo::GetWorldMatrix() const
+    {
+        if (m_owner->HasComponent<TransformCompo>())
+        {
+            return m_owner->GetComponent<TransformCompo>()->GetLocalToWorldMatrix();
+        }
+        return Matrix44::Identity();
     }
 
     void MeshCompo::Subscribe()

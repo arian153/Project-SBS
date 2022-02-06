@@ -81,6 +81,7 @@ namespace Engine
     SPtr<RenderSubsystem> RenderSystem::CreateSubsystem()
     {
         auto subsystem = std::make_shared<RenderSubsystem>();
+        subsystem->OnResize(m_viewport_manager.GetPerspectiveMatrix(), m_viewport_manager.GetOrthoGraphicMatrix());
         m_subsystems.push_back(subsystem);
         return subsystem;
     }

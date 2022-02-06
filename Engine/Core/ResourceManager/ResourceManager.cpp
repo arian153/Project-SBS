@@ -126,6 +126,29 @@ namespace Engine
         return nullptr;
     }
 
+    ModelResource* ResourceManager::GetModelResourcePath(const String& file_path)
+    {
+        auto found = m_model_map.find(file_path);
+        if (found != m_model_map.end())
+        {
+            return &found->second;
+        }
+
+        return nullptr;
+    }
+
+    ModelResource* ResourceManager::GetModelResourceName(const String& file_name)
+    {
+        for (auto& [path, resource] : m_model_map)
+        {
+            if (resource.FileName() == file_name)
+            {
+                return &resource;
+            }
+        }
+        return nullptr;
+    }
+
     void ResourceManager::Initialize()
     {
         BuildResource();
@@ -177,7 +200,7 @@ namespace Engine
     void ResourceManager::AddResource(const String& path)
     {
         Resource* resource = nullptr;
-        String    type = FileUtility::GetExtension(path);
+        String    type     = FileUtility::GetExtension(path);
         if (type == ".fx" || type == ".hlsl" || type == ".hlsli")
         {
             auto [pair, result] = m_shader_map.emplace(path, ShaderResource(path));
@@ -216,7 +239,6 @@ namespace Engine
             {
                 resource = &pair->second;
             }
-
         }
         else if (type == ".json")
         {

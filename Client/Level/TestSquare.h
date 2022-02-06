@@ -16,9 +16,7 @@ namespace Client
         void Shutdown() override;
 
     private:
-        std::shared_ptr<Engine::SimpleMesh>    m_mesh    = std::make_shared<Engine::SimpleMesh>();
 
-        Engine::Vector4 m_offset;
     };
 
     class TestSquareFactory final : public Engine::AppStateFactory
