@@ -6,6 +6,7 @@
 #include "Components/MeshCompo.hpp"
 #include "Components/OrbitCameraCompo.hpp"
 #include "Components/TransformCompo.hpp"
+#include "Components/RigidBodyCompo.hpp"
 
 namespace Engine
 {
@@ -15,6 +16,7 @@ namespace Engine
         AddFactory(new MeshFactory());
         AddFactory(new OrbitCameraFactory());
         AddFactory(new LightFactory());
+        AddFactory(new RigidBodyFactory());
 
         return true;
     }

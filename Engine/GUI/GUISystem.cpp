@@ -30,9 +30,11 @@ namespace Engine
         ImGui::Text("Test UI");
         ImGui::Text("Press Mouse RB to Rotate Camera");
         ImGui::Text("Press WASD to move Camera");
+        ImGui::Text("Press Arrow Key to apply force to mesh");
+        ImGui::Text("Press Space Bar to Clear All velocity");
         ImGui::End();
 
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
     }
 
     void GUISystem::Shutdown()

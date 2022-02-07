@@ -23,6 +23,9 @@
 
 #include "ComponentManager/Components/MeshCompo.hpp"
 #include "ComponentManager/Components/TransformCompo.hpp"
+#include "ComponentManager/Components/LightCompo.hpp"
+#include "ComponentManager/Components/OrbitCameraCompo.hpp"
+#include "ComponentManager/Components/RigidBodyCompo.hpp"
 
 #include "ObjectManager/Object.hpp"
 #include "ObjectManager/ObjectManager.hpp"

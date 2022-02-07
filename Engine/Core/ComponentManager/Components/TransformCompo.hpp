@@ -26,8 +26,12 @@ namespace Engine
 
         void SetScale(const Vector3& scale);
         void SetPosition(const Vector3& pos);
+        void SetOrientation(const Quaternion& orientation);
 
-        Vector3 GetPosition() const;
+        Vector3    GetPosition() const;
+        Quaternion GetOrientation() const;
+
+
     protected:
         void Subscribe() override;
         void Unsubscribe() override;

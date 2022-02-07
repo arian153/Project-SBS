@@ -72,9 +72,19 @@ namespace Engine
         m_transform.position = pos;
     }
 
+    void TransformCompo::SetOrientation(const Quaternion& orientation)
+    {
+        m_transform.orientation = orientation;
+    }
+
     Vector3 TransformCompo::GetPosition() const
     {
         return m_transform.position;
+    }
+
+    Quaternion TransformCompo::GetOrientation() const
+    {
+        return m_transform.orientation;
     }
 
     void TransformCompo::Subscribe()

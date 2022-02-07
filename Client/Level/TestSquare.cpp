@@ -25,6 +25,7 @@ namespace Client
             auto obj       = m_object_manager->AddObject("new_obj");
             auto transform = obj->AddComponent<TransformCompo>();
             auto mesh      = obj->AddComponent<MeshCompo>();
+            obj->AddComponent<RigidBodyCompo>();
 
             Transform tf;
             tf.position = Vector3(0, -10, 0);

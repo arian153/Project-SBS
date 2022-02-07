@@ -3,6 +3,8 @@
 
 namespace Engine
 {
+    class RigidBodyCompo;
+
     class PhysicsSubsystem final : public Subsystem
     {
     public:
@@ -14,7 +16,10 @@ namespace Engine
         void Render() override;
         void Shutdown() override;
 
+        void AddCompo(RPtr<RigidBodyCompo> compo);
+        void RemoveCompo(RPtr<RigidBodyCompo> compo);
 
     private:
+        std::vector<RPtr<RigidBodyCompo>> m_rigid_body_compos;
     };
 }
