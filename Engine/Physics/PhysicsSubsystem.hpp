@@ -1,5 +1,6 @@
 #pragma once
 #include "../System.hpp"
+#include "Dynamics/RigidBody.hpp"
 
 namespace Engine
 {
@@ -19,7 +20,13 @@ namespace Engine
         void AddCompo(RPtr<RigidBodyCompo> compo);
         void RemoveCompo(RPtr<RigidBodyCompo> compo);
 
+
+
     private:
         std::vector<RPtr<RigidBodyCompo>> m_rigid_body_compos;
+        std::vector<RigidBody>            m_rigid_bodies;
+
+
+
     };
 }
