@@ -64,6 +64,15 @@ namespace Engine
     class SkinnedVertex
     {
     public:
+        SkinnedVertex() = default;
+
+        SkinnedVertex(Real px, Real py, Real pz, Real u, Real v, Real nx, Real ny, Real nz, Real tx, Real ty, Real tz)
+            : pos(px, py, pz), tex(u, v), n(nx, ny, nz), t(tx, ty, tz)
+        {
+            b = CrossProduct(t, n).Normalize();
+        }
+
+    public:
         Vector3  pos;
         Vector2  tex;
         Vector3  n; //normal
