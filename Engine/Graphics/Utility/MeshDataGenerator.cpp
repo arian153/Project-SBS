@@ -135,13 +135,16 @@ namespace Engine
             // Vertices of ring.
             for (Uint32 j = 0; j <= slice_count; ++j)
             {
-                Real    theta = j * theta_step;
-                Vector3 position(radius * sinf(phi) * cosf(theta), radius * cosf(phi), radius * sinf(phi) * sinf(theta));
-                Vector2 uv(theta / Math::TWO_PI, phi / Math::PI);
-                Vector3 normal = position.Normalize();
-                Vector3 tangent(-radius * sinf(phi) * sinf(theta), 0.0f, radius * sinf(phi) * cosf(theta));
-                tangent.SetNormalize();
-                mesh_data.vertices.emplace_back(position, uv, normal, tangent);
+                Real theta = j * theta_step;
+
+                SkinnedVertex vertex;
+                vertex.pos = Vector3(radius * sinf(phi) * cosf(theta), radius * cosf(phi), radius * sinf(phi) * sinf(theta));
+                vertex.tex = Vector2(theta / Math::TWO_PI, phi / Math::PI);
+                vertex.n   = vertex.pos.Normalize();
+                vertex.t   = Vector3(-radius * sinf(phi) * sinf(theta), 0.0f, radius * sinf(phi) * cosf(theta)).Normalize();
+                vertex.b   = CrossProduct(vertex.t, vertex.n).Normalize();
+
+                mesh_data.vertices.push_back(vertex);
             }
         }
         mesh_data.vertices.push_back(bottom_vertex);
@@ -222,16 +225,66 @@ namespace Engine
         };
         Uint32 k[60] =
         {
-            1, 4, 0, 4, 9, 0,
-            4, 5, 9, 8, 5, 4,
-            1, 8, 4, 1, 10, 8,
-            10, 3, 8, 8, 3, 5,
-            3, 2, 5, 3, 7, 2,
-            3, 10, 7, 10, 6, 7,
-            6, 11, 7, 6, 0, 11,
-            6, 1, 0, 10, 1, 6,
-            11, 0, 9, 2, 11, 9,
-            5, 2, 9, 11, 2, 7
+            1,
+            4,
+            0,
+            4,
+            9,
+            0,
+            4,
+            5,
+            9,
+            8,
+            5,
+            4,
+            1,
+            8,
+            4,
+            1,
+            10,
+            8,
+            10,
+            3,
+            8,
+            8,
+            3,
+            5,
+            3,
+            2,
+            5,
+            3,
+            7,
+            2,
+            3,
+            10,
+            7,
+            10,
+            6,
+            7,
+            6,
+            11,
+            7,
+            6,
+            0,
+            11,
+            6,
+            1,
+            0,
+            10,
+            1,
+            6,
+            11,
+            0,
+            9,
+            2,
+            11,
+            9,
+            5,
+            2,
+            9,
+            11,
+            2,
+            7
         };
         mesh_data.vertices.resize(12);
         mesh_data.indices.assign(&k[0], &k[60]);
@@ -276,16 +329,19 @@ namespace Engine
             Real d_theta = Math::TWO_PI / slice_count;
             for (Uint32 j = 0; j <= slice_count; ++j)
             {
-                Real    c  = cosf(j * d_theta);
-                Real    s  = sinf(j * d_theta);
-                Real    dr = bottom_radius - top_radius;
-                Vector3 p(r * c, y, r * s);
-                Vector2 uv(static_cast<Real>(j) / slice_count, 1.0f - static_cast<Real>(i) / stack_count);
-                Vector3 t         = Vector3(-s, 0.0f, c).Normalize();
+                Real    c         = cosf(j * d_theta);
+                Real    s         = sinf(j * d_theta);
+                Real    dr        = bottom_radius - top_radius;
                 Vector3 bitangent = Vector3(dr * c, -height, dr * s).Normalize();
-                Vector3 n         = CrossProduct(t, bitangent).Normalize();
-                Vector3 b         = CrossProduct(t, n).Normalize();
-                mesh_data.vertices.emplace_back(p, uv, n, t, b);
+
+                SkinnedVertex vertex;
+                vertex.pos = Vector3(r * c, y, r * s);
+                vertex.tex = Vector2(static_cast<Real>(j) / slice_count, 1.0f - static_cast<Real>(i) / stack_count);
+                vertex.t   = Vector3(-s, 0.0f, c).Normalize();
+                vertex.n   = CrossProduct(vertex.t, bitangent).Normalize();
+                vertex.b   = CrossProduct(vertex.t, vertex.n).Normalize();
+
+                mesh_data.vertices.push_back(vertex);
             }
         }
         // Add one because we duplicate the first and last vertex per ring
