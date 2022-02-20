@@ -152,6 +152,13 @@ namespace Engine
         Color(1.0000f, 1.0000f, 0.0000f, 1.0f),
         Color(0.6039f, 0.8039f, 0.1960f, 1.0f)
     };
+
+    class ColorFlag
+    {
+    public:
+        bool  b_flag = false;
+        Color color  = Color(1, 1, 1, 1);
+    };
 }
 
 namespace Engine::X11ColorData
