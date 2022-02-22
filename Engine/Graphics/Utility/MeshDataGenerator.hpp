@@ -20,6 +20,5 @@ namespace Engine
         static void Subdivide(MeshData& mesh_data);
         static void BuildCylinderTopCap(Real top_radius, Real height, Uint32 slice_count, MeshData& mesh_data);
         static void BuildCylinderBottomCap(Real bottom_radius, Real height, Uint32 slice_count, MeshData& mesh_data);
-        static void CalculateBinormal(MeshData& mesh_data);
     };
 }

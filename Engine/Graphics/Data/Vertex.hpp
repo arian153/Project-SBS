@@ -46,11 +46,17 @@ namespace Engine
     class GeneralVertex
     {
     public:
+        GeneralVertex() = default;
+
+        GeneralVertex(Real px, Real py, Real pz, Real u, Real v, Real nx, Real ny, Real nz, Real tx, Real ty, Real tz)
+            : pos(px, py, pz), tex(u, v), n(nx, ny, nz), t(tx, ty, tz)
+        {
+        }
+    public:
         Vector3 pos;
         Vector2 tex;
         Vector3 n; //normal
         Vector3 t; //tangent
-        Vector3 b; //binormal or bitangent
     };
 
     struct IVector4
@@ -69,7 +75,6 @@ namespace Engine
         SkinnedVertex(Real px, Real py, Real pz, Real u, Real v, Real nx, Real ny, Real nz, Real tx, Real ty, Real tz)
             : pos(px, py, pz), tex(u, v), n(nx, ny, nz), t(tx, ty, tz)
         {
-            b = CrossProduct(t, n).Normalize();
         }
 
     public:
@@ -77,7 +82,6 @@ namespace Engine
         Vector2  tex;
         Vector3  n; //normal
         Vector3  t; //tangent
-        Vector3  b; //binormal or bitangent
         Vector4  w; //weight
         IVector4 i; //bone-indices
     };

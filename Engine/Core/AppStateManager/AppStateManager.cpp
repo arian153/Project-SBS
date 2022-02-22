@@ -41,6 +41,7 @@ namespace Engine
                     m_b_resume_restart = false;
                     ShutdownState(m_app_state);
                     InitializeState(m_app_state);
+                    m_in_app_editor.SetAppState(m_app_state);
                 }
             }
             else
@@ -49,6 +50,7 @@ namespace Engine
                 m_b_restart = false;
                 m_app_state = CreateState(m_curr);
                 InitializeState(m_app_state);
+                m_in_app_editor.SetAppState(m_app_state);
             }
         }
 
@@ -72,6 +74,7 @@ namespace Engine
             }
 
             g_core->GetGUISystem()->Update();
+            m_in_app_editor.Update(time_step);
 
             g_core->GetGUISystem()->EndImGUI();
             RenderState(m_app_state, time_step);
@@ -246,25 +249,25 @@ namespace Engine
         return created;
     }
 
-    void AppStateManager::InitializeState(AppState* app_state) const
+    void AppStateManager::InitializeState(AppState* app_state)
     {
         app_state->InitializeEngineSys(app_state);
         app_state->Initialize();
     }
 
-    void AppStateManager::UpdateState(AppState* app_state, Real dt) const
+    void AppStateManager::UpdateState(AppState* app_state, Real dt)
     {
         app_state->Update(dt);
         app_state->UpdateEngineSys(dt, app_state->m_update_flag);
     }
 
-    void AppStateManager::FixedUpdateState(AppState* app_state, Real dt) const
+    void AppStateManager::FixedUpdateState(AppState* app_state, Real dt)
     {
         app_state->FixedUpdate(dt);
         app_state->UpdateEngineSys(dt, app_state->m_fixed_update_flag);
     }
 
-    void AppStateManager::RenderState(AppState* app_state, Real dt) const
+    void AppStateManager::RenderState(AppState* app_state, Real dt)
     {
         GetCore()->GetRenderSystem()->RenderBegin();
         app_state->Render();
@@ -273,7 +276,7 @@ namespace Engine
         GetCore()->GetRenderSystem()->RenderEnd();
     }
 
-    void AppStateManager::ShutdownState(AppState* app_state) const
+    void AppStateManager::ShutdownState(AppState* app_state)
     {
         app_state->ShutdownEngineSys();
         app_state->Shutdown();

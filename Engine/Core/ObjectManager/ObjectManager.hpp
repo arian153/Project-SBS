@@ -46,6 +46,7 @@ namespace Engine
 
     private:
         friend class Object;
+        friend class InAppEditor;
 
     private:
         HashMulMap<String, SPtr<Object>> m_object_name_map;

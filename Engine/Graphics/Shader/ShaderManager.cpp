@@ -142,7 +142,6 @@ namespace Engine
             general_layout.PushAttribute(eAttributeType::R32, 2, "TEXCOORD", 0, eInputSlotType::VertexData, 0, 0);
             general_layout.PushAttribute(eAttributeType::R32, 3, "NORMAL", 0, eInputSlotType::VertexData, 0, 0);
             general_layout.PushAttribute(eAttributeType::R32, 3, "TANGENT", 0, eInputSlotType::VertexData, 0, 0);
-            general_layout.PushAttribute(eAttributeType::R32, 3, "BINORMAL", 0, eInputSlotType::VertexData, 0, 0);
 
             String name = MK_STRING(GeneralVertex);
             AddInputLayout(name, general_layout);
@@ -157,7 +156,6 @@ namespace Engine
             skinned_layout.PushAttribute(eAttributeType::R32, 2, "TEXCOORD", 0, eInputSlotType::VertexData, 0, 0);
             skinned_layout.PushAttribute(eAttributeType::R32, 3, "NORMAL", 0, eInputSlotType::VertexData, 0, 0);
             skinned_layout.PushAttribute(eAttributeType::R32, 3, "TANGENT", 0, eInputSlotType::VertexData, 0, 0);
-            skinned_layout.PushAttribute(eAttributeType::R32, 3, "BINORMAL", 0, eInputSlotType::VertexData, 0, 0);
             skinned_layout.PushAttribute(eAttributeType::R32, 4, "WEIGHTS", 0, eInputSlotType::VertexData, 0, 0);
             skinned_layout.PushAttribute(eAttributeType::I32, 4, "BONEINDICES", 0, eInputSlotType::VertexData, 0, 0);
             String name = MK_STRING(SkinnedVertex);

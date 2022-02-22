@@ -2,6 +2,7 @@
 
 #include "TransformCompo.hpp"
 #include "../../CoreDefine.hpp"
+#include "../../../External/imgui/imgui.h"
 #include "../../../External/JSONCPP/json/json.h"
 #include "../../../Graphics/Element/Camera.hpp"
 #include "../../../Math/Utility/Utility.hpp"
@@ -50,7 +51,7 @@ namespace Engine
             //camera->AddDistanceInUpDirection(-dt * dy);
             //camera->AddDistanceInRightDirection(dt * dx);
             m_theta += dx;
-            //m_phi += dy;
+            m_phi += dy;
             // Restrict the angle phi.
             m_phi = Math::Clamp(m_phi, 0.1f, Math::PI - 0.1f);
             // Convert Spherical to Cartesian coordinates.
@@ -125,6 +126,7 @@ namespace Engine
 
     void OrbitCameraCompo::Edit(CommandRegistry* command_registry)
     {
+        ImGui::CollapsingHeader(MK_STRING(OrbitCameraCompo));
     }
 
     void OrbitCameraCompo::CloneTo(RPtr<Component> destination)

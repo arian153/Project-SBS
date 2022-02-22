@@ -44,7 +44,6 @@ namespace Engine
         mesh_data.vertices[21] = SkinnedVertex(+w2, +h2, -d2, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
         mesh_data.vertices[22] = SkinnedVertex(+w2, +h2, +d2, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
         mesh_data.vertices[23] = SkinnedVertex(+w2, -h2, +d2, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-        mesh_data.vertices.assign(&mesh_data.vertices[0], &mesh_data.vertices[24]);
         // Create the indices.
 
         mesh_data.indices.resize(36);
@@ -142,7 +141,6 @@ namespace Engine
                 vertex.tex = Vector2(theta / Math::TWO_PI, phi / Math::PI);
                 vertex.n   = vertex.pos.Normalize();
                 vertex.t   = Vector3(-radius * sinf(phi) * sinf(theta), 0.0f, radius * sinf(phi) * cosf(theta)).Normalize();
-                vertex.b   = CrossProduct(vertex.t, vertex.n).Normalize();
 
                 mesh_data.vertices.push_back(vertex);
             }
@@ -260,7 +258,6 @@ namespace Engine
 
             vertex.tex = Vector2(theta / Math::TWO_PI, phi / Math::PI);
             vertex.t   = Vector3(-radius * sinf(phi) * sinf(theta), 0.0f, radius * sinf(phi) * cosf(theta)).Normalize();
-            vertex.b   = CrossProduct(vertex.t, vertex.n).Normalize();
         }
         return mesh_data;
     }
@@ -291,7 +288,6 @@ namespace Engine
                 vertex.tex = Vector2(static_cast<Real>(j) / slice_count, 1.0f - static_cast<Real>(i) / stack_count);
                 vertex.t   = Vector3(-s, 0.0f, c).Normalize();
                 vertex.n   = CrossProduct(vertex.t, bitangent).Normalize();
-                vertex.b   = CrossProduct(vertex.t, vertex.n).Normalize();
 
                 mesh_data.vertices.push_back(vertex);
             }
@@ -352,7 +348,6 @@ namespace Engine
                 mesh_data.vertices[i * n + j].tex = Vector2(j * du, i * dv);
                 mesh_data.vertices[i * n + j].n   = Math::Vector3::Y_AXIS;
                 mesh_data.vertices[i * n + j].t   = Math::Vector3::X_AXIS;
-                mesh_data.vertices[i * n + j].b   = CrossProduct(Math::Vector3::X_AXIS, Math::Vector3::Y_AXIS).Normalize();
             }
         }
 
@@ -436,7 +431,6 @@ namespace Engine
         mid_vertex.tex = (v0.tex + v1.tex).Half();
         mid_vertex.n   = (v0.n + v1.n).Half().Normalize();
         mid_vertex.t   = (v0.t + v1.t).Half().Normalize();
-        mid_vertex.b   = CrossProduct(mid_vertex.t, mid_vertex.n).Normalize();
 
         return mid_vertex;
     }
@@ -547,11 +541,4 @@ namespace Engine
         }
     }
 
-    void MeshDataGenerator::CalculateBinormal(MeshData& mesh_data)
-    {
-        for (size_t i = 0; i < mesh_data.vertices.size(); ++i)
-        {
-            mesh_data.vertices[i].b = CrossProduct(mesh_data.vertices[i].t, mesh_data.vertices[i].n).Normalize();
-        }
-    }
-}
+   }

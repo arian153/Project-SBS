@@ -27,6 +27,7 @@ namespace Engine
 
         String GetName() const;
         void   SetName(const String& name);
+        const char* GetCStrName() const;
 
         SPtr<Object> Clone();
 
@@ -63,6 +64,7 @@ namespace Engine
     private:
         friend class ComponentManager;
         friend class ObjectManager;
+        friend class InAppEditor;
 
     private:
         //identifier

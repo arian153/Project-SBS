@@ -2,6 +2,7 @@
 
 #include "TransformCompo.hpp"
 #include "../../CoreDefine.hpp"
+#include "../../../External/imgui/imgui.h"
 #include "../../../External/JSONCPP/json/json.h"
 #include "../../AppStateManager/AppState.hpp"
 #include "../../ObjectManager/Object.hpp"
@@ -87,6 +88,7 @@ namespace Engine
 
     void RigidBodyCompo::Edit(CommandRegistry* command_registry)
     {
+        ImGui::CollapsingHeader(MK_STRING(RigidBodyCompo));
     }
 
     void RigidBodyCompo::CloneTo(RPtr<Component> destination)

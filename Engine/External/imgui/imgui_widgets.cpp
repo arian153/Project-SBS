@@ -6481,6 +6481,47 @@ bool ImGui::ListBox(const char* label, int* current_item, bool (*items_getter)(v
     return value_changed;
 }
 
+bool ImGui::ListBox(const char* label, int* current_item, bool(* items_getter)(void* data, int idx, const char** out_text), void* data, int items_count, ImVec2 listbox_size)
+{
+    ImGuiContext& g = *GImGui;
+
+    ImVec2 size = listbox_size;
+
+    if (!BeginListBox(label, size))
+        return false;
+
+    // Assume all items have even height (= 1 line of text). If you need items of different height,
+    // you can create a custom version of ListBox() in your code without using the clipper.
+    bool value_changed = false;
+    ImGuiListClipper clipper;
+    clipper.Begin(items_count, GetTextLineHeightWithSpacing()); // We know exactly our line height here so we pass it as a minor optimization, but generally you don't need to.
+    while (clipper.Step())
+        for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)
+        {
+            const char* item_text;
+            if (!items_getter(data, i, &item_text))
+                item_text = "*Unknown item*";
+
+            PushID(i);
+            const bool item_selected = (i == *current_item);
+            if (Selectable(item_text, item_selected))
+            {
+                *current_item = i;
+                value_changed = true;
+            }
+            if (item_selected)
+                SetItemDefaultFocus();
+            PopID();
+        }
+    EndListBox();
+
+    if (value_changed)
+        MarkItemEdited(g.LastItemData.ID);
+
+    return value_changed;
+
+}
+
 //-------------------------------------------------------------------------
 // [SECTION] Widgets: PlotLines, PlotHistogram
 //-------------------------------------------------------------------------

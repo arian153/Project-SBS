@@ -15,4 +15,8 @@
 #include "Shader/ShaderManager.hpp"
 #include "Shader/ShaderProgram.hpp"
 
+//Utility
+#include "Utility/MeshDataGenerator.hpp"
+#include "Utility/PrimitiveRenderer.hpp"
+
 #include "GraphicsDefine.hpp"

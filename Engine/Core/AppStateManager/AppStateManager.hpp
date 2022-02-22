@@ -4,6 +4,7 @@
 
 #include "DefaultAppState.hpp"
 #include "../../System.hpp"
+#include "../../GUI/InAppEditor.hpp"
 
 namespace Engine
 {
@@ -44,11 +45,11 @@ namespace Engine
         AppState* CreateState(const String& name);
 
         //loop state
-        void InitializeState(AppState* app_state) const;
-        void UpdateState(AppState* app_state, Real dt) const;
-        void FixedUpdateState(AppState* app_state, Real dt) const;
-        void RenderState(AppState* app_state, Real dt) const;
-        void ShutdownState(AppState* app_state) const;
+        static void InitializeState(AppState* app_state);
+        static void UpdateState(AppState* app_state, Real dt);
+        static void FixedUpdateState(AppState* app_state, Real dt);
+        static void RenderState(AppState* app_state, Real dt);
+        static void ShutdownState(AppState* app_state);
 
     private:
         struct PauseInfo
@@ -80,6 +81,7 @@ namespace Engine
 
         HashMap<String, AppStateFactory*> m_state_factory;
         DefaultAppStateFactory            m_default_factory;
-    private:
+
+        InAppEditor m_in_app_editor;
     };
 }

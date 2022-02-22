@@ -114,10 +114,6 @@ namespace Engine
                 mesh_data.vertices[i].tex.y = mesh->mTextureCoords[0][i].y;
                 if (mesh->HasTangentsAndBitangents())
                 {
-                    mesh_data.vertices[i].b.x = mesh->mBitangents[i].x;
-                    mesh_data.vertices[i].b.y = mesh->mBitangents[i].y;
-                    mesh_data.vertices[i].b.z = mesh->mBitangents[i].z;
-
                     mesh_data.vertices[i].t.x = mesh->mTangents[i].x;
                     mesh_data.vertices[i].t.y = mesh->mTangents[i].y;
                     mesh_data.vertices[i].t.z = mesh->mTangents[i].z;

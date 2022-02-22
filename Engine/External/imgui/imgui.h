@@ -631,6 +631,8 @@ namespace ImGui
     IMGUI_API void          EndListBox();                                                       // only call EndListBox() if BeginListBox() returned true!
     IMGUI_API bool          ListBox(const char* label, int* current_item, const char* const items[], int items_count, int height_in_items = -1);
     IMGUI_API bool          ListBox(const char* label, int* current_item, bool (*items_getter)(void* data, int idx, const char** out_text), void* data, int items_count, int height_in_items = -1);
+    IMGUI_API bool          ListBox(const char* label, int* current_item, bool (*items_getter)(void* data, int idx, const char** out_text), void* data, int items_count, ImVec2 listbox_size);
+
 
     // Widgets: Data Plotting
     // - Consider using ImPlot (https://github.com/epezent/implot) which is much better!

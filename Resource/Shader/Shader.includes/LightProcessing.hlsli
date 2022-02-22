@@ -1,5 +1,5 @@
-#ifndef UTILS_HLSLI_
-#define UTILS_HLSLI_
+#ifndef LIT_PROCESS_HLSLI_
+#define LIT_PROCESS_HLSLI_
 
 LightColor CalculateLightColor(int light_index, float3 view_normal, float3 view_pos)
 {

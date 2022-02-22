@@ -51,11 +51,11 @@ float g_float_3;
 float g_float_4;
 };
 
-Texture2D g_tex_0 : register(t0);
-Texture2D g_tex_1 : register(t1);
-Texture2D g_tex_2 : register(t2);
-Texture2D g_tex_3 : register(t3);
-Texture2D g_tex_4 : register(t4);
+Texture2D g_diff_tex_0 : register(t0);
+Texture2D g_diff_tex_1 : register(t1);
+Texture2D g_spec_tex_0 : register(t2);
+Texture2D g_norm_tex_0 : register(t3);
+Texture2D g_map_tex_0 : register(t4);
 
 SamplerState g_sam_0 : register(s0);
 

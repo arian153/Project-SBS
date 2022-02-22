@@ -1,5 +1,6 @@
 #include "TransformCompo.hpp"
 
+#include "../../../External/imgui/imgui.h"
 #include "../../AppStateManager/AppState.hpp"
 #include "../../ResourceManager/ResourceType/JsonData.hpp"
 
@@ -41,6 +42,7 @@ namespace Engine
 
     void TransformCompo::Edit(CommandRegistry* command_registry)
     {
+        ImGui::CollapsingHeader(MK_STRING(TransformCompo));
     }
 
     void TransformCompo::CloneTo(RPtr<Component> destination)

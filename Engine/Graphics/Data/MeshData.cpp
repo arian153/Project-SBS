@@ -101,7 +101,6 @@ namespace Engine
             new_vertices[i].tex = vertices[i].tex;
             new_vertices[i].n   = vertices[i].n;
             new_vertices[i].t   = vertices[i].t;
-            new_vertices[i].b   = vertices[i].b;
         }
     }
 }

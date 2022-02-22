@@ -39,8 +39,10 @@ namespace Engine
         void RenderEngineSys() const;
         void ShutdownEngineSys() const;
 
+
     protected:
         friend class AppStateManager;
+        friend class InAppEditor;
 
     protected:
         String m_state_name;

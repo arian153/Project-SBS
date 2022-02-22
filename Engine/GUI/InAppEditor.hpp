@@ -3,16 +3,19 @@
 
 namespace Engine
 {
+    class Object;
     class AppState;
 
     class InAppEditor
     {
     public:
-
         void Update(Real dt);
         void SetAppState(AppState* app_state);
-    
+
     private:
         AppState* m_app_state = nullptr;
+        Object*   m_object    = nullptr;
+
+        int m_object_index = 0;
     };
 }

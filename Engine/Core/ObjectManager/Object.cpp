@@ -24,6 +24,7 @@ namespace Engine
         return m_name;
     }
 
+
     void Object::SetName(const String& name)
     {
         if (m_name != name)
@@ -37,6 +38,11 @@ namespace Engine
                 m_name = name;
             }
         }
+    }
+
+    const char* Object::GetCStrName() const
+    {
+        return m_name.c_str();
     }
 
     SPtr<Object> Object::Clone()

@@ -1,5 +1,5 @@
 {
-  "Layout": "LightVertex",
+  "Layout": "GeneralVertex",
   "Shader Model": "5_0",
   "Is Integrated": true,
 

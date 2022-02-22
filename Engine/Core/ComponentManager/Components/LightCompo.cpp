@@ -1,6 +1,7 @@
 #include "LightCompo.hpp"
 
 #include "TransformCompo.hpp"
+#include "../../../External/imgui/imgui.h"
 #include "../../../External/JSONCPP/json/json.h"
 #include "../../AppStateManager/AppState.hpp"
 #include "../../ObjectManager/Object.hpp"
@@ -45,6 +46,7 @@ namespace Engine
 
     void LightCompo::Edit(CommandRegistry* command_registry)
     {
+        ImGui::CollapsingHeader(MK_STRING(LightCompo));
     }
 
     void LightCompo::CloneTo(RPtr<Component> destination)

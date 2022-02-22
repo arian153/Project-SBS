@@ -1,6 +1,7 @@
 #include "MeshCompo.hpp"
 
 #include "TransformCompo.hpp"
+#include "../../../External/imgui/imgui.h"
 #include "../../../Graphics/Element/Material.hpp"
 #include "../../../Graphics/Element/Model.hpp"
 #include "../../AppStateManager/AppState.hpp"
@@ -46,6 +47,7 @@ namespace Engine
 
     void MeshCompo::Edit(CommandRegistry* command_registry)
     {
+        ImGui::CollapsingHeader(MK_STRING(MeshCompo));
     }
 
     void MeshCompo::CloneTo(RPtr<Component> destination)
