@@ -32,9 +32,6 @@ namespace Engine
             orbit_cam->Update(dt);
         }
 
-        if (m_curr_camera != nullptr)
-            m_curr_camera->UpdateViewMatrix();
-
         for (auto& light_compo : m_light_compos)
         {
             light_compo->Update(dt);

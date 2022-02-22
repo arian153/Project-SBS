@@ -57,10 +57,12 @@ namespace Engine
     void Camera::SetPosition(const Vector3& position)
     {
         m_transform.position = position;
+        UpdateViewMatrix();
     }
 
     void Camera::AddPosition(const Vector3& delta_pos)
     {
         m_transform.position += delta_pos;
+        UpdateViewMatrix();
     }
 }
