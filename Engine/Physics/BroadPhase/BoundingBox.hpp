@@ -29,6 +29,7 @@ namespace Engine
         bool        Contains(const Vector3& point) const;
         bool        TestRayIntersection(const Ray& ray, Real& t, Real max_distance = -1.0f) const;
         bool        Contains(BoundingBox* aabb) const;
+        bool        Contains(const BoundingBox& aabb) const;
         Real        Volume() const;
         Real        SurfaceArea() const;
         Vector3     Center() const;
@@ -40,13 +41,17 @@ namespace Engine
 
         //getter
         void* GetObjectData() const;
-        void* GetNodeData() const;
+        Sint32 GetNodeIndex() const;
+
+        void UpdateVolume();
+    private:
+        friend class BroadPhaseNode;
 
     private:
         Vector3 m_lower_bound, m_upper_bound;
 
-        void* m_object_data = nullptr;
-        void* m_node_data   = nullptr;
+        void*  m_object_data = nullptr;
+        Sint32 m_node_index  = -1;
 
         eBoundingObjectType m_type = eBoundingObjectType::None;
     };

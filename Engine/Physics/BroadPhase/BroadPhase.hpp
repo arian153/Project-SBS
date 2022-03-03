@@ -10,6 +10,8 @@ namespace Engine
 {
     class PrimitiveRenderer;
 
+    static constexpr Real BROAD_PHASE_MARGIN = 0.2f;
+
     class PotentialPair
     {
     public:
@@ -30,18 +32,22 @@ namespace Engine
         ~BroadPhaseNode();
 
         bool IsLeaf() const;
-        void SetBranch(BroadPhaseNode* n0, BroadPhaseNode* n1);
-        void SetLeaf(BoundingBox* bounding_aabb);
-        void UpdateBox(Real margin);
+        void SetBranch(BroadPhaseNode& n0, BroadPhaseNode& n1);
+        void SetLeaf(std::vector<BoundingBox>& objects, Sint32 index);
+        void UpdateBox(Real margin, std::vector<BoundingBox>& objects, std::vector<BroadPhaseNode>& nodes);
 
-        BroadPhaseNode* GetSibling() const;
+        Sint32 GetSibling(std::vector<BroadPhaseNode>& nodes) const;
 
     public:
-        BroadPhaseNode* parent = nullptr;
-        BroadPhaseNode* children[2];
-        bool            children_crossed = false;
-        BoundingBox     aabb;
-        BoundingBox*    data = nullptr;
+        BoundingBox aabb;
+
+        //to array based tree.
+        Sint32 node_index       = -1;
+        Sint32 object_index     = -1;
+        Sint32 parent_index     = -1;
+        Sint32 child1           = -1;
+        Sint32 child2           = -1;
+        bool   children_crossed = false;
     };
 
     class BroadPhase
@@ -58,26 +64,31 @@ namespace Engine
         void Render(PrimitiveRenderer* primitive_renderer, const ColorFlag& broad_phase_color, const ColorFlag& primitive_color);
         void ComputePairs(std::vector<PotentialPair>& potential_pairs);
 
+        void MakeNode();
+
     private:
         void UpdateNodeRecursive(BroadPhaseNode* node, std::vector<BroadPhaseNode*>& invalid_nodes);
+
+        void InsertNode(Sint32 node_index, Sint32 parent_index);
+
         void InsertNodeRecursive(BroadPhaseNode* node, BroadPhaseNode** parent) const;
         void RemoveNodeRecursive(BroadPhaseNode* node);
         void ClearNodeRecursive(BroadPhaseNode* node);
         void ReleaseNodeRecursive(BroadPhaseNode* node);
         void ShutdownNodeRecursive(BroadPhaseNode* node);
-        void CopyNodeRecursive(BroadPhaseNode* node, BroadPhase* other);
         void RenderNodeRecursive(BroadPhaseNode* node, PrimitiveRenderer* primitive_renderer, const ColorFlag& broad_phase_color, const ColorFlag& primitive_color) const;
         void ComputePairsRecursive(BroadPhaseNode* n0, BroadPhaseNode* n1, std::vector<PotentialPair>& potential_pairs);
         void ClearChildrenCrossFlagRecursive(BroadPhaseNode* node);
         void CrossChildren(BroadPhaseNode* node, std::vector<PotentialPair>& potential_pairs);
 
     private:
-        BroadPhaseNode*              m_root = nullptr;
-        std::vector<BroadPhaseNode*> m_invalid_nodes;
+        std::vector<BroadPhaseNode&> m_invalid_nodes;
 
-        Box m_drawing_box;
+        Sint32 m_root_index = -1;
+        Box    m_drawing_box;
 
     protected:
-        std::vector<BoundingBox> m_bounding_boxes;
+        std::vector<BroadPhaseNode> m_nodes;
+        std::vector<BoundingBox>    m_objects;
     };
 }
