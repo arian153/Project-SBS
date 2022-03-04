@@ -307,7 +307,7 @@ namespace Engine
         return m_object_data;
     }
 
-    DynamicBVHNode* BoundingBox::GetNodeData() const
+    BroadPhaseNode* BoundingBox::GetNodeData() const
     {
         return m_node_data;
     }

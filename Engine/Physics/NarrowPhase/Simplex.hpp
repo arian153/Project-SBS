@@ -3,6 +3,8 @@
 
 namespace Engine
 {
+    class ColliderPrimitive;
+
     class Simplex
     {
     public:
@@ -34,7 +36,7 @@ namespace Engine
         Vector3 ClosestPointLocalB(const Vector3& point) const;
 
         int Count() const;
-
+ 
         static Vector3 ClosestPointLine(const Vector3& point, const Vector3& a, const Vector3& b);
         static Vector3 ClosestPointTriangle(const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c);
         static Vector3 ClosestPointTetrahedron(const Vector3& point, const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d);
@@ -42,19 +44,18 @@ namespace Engine
         static bool PointOutsidePlane(const Vector3& p, const Vector3& a, const Vector3& b, const Vector3& c);
         static bool PointOutsidePlane(const Vector3& p, const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d);
 
-
+   
     private:
         friend class NarrowPhase;
         friend class Polytope;
         friend class IntersectionUtility;
 
-    public:
+    private:
         SupportPoint simplex_vertex_a; //point
         SupportPoint simplex_vertex_b; //line_segment
         SupportPoint simplex_vertex_c; //triangle
         SupportPoint simplex_vertex_d; //tetrahedron
 
         int count = 0;
-
     };
 }

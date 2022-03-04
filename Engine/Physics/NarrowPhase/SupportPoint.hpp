@@ -12,7 +12,7 @@ namespace Engine
         ~SupportPoint();
 
         SupportPoint& operator=(const SupportPoint& rhs);
-        Vector3& operator[](size_t index);
+        Vector3&      operator[](size_t index);
         Vector3       operator[](size_t index) const;
         bool          operator==(const SupportPoint& rhs);
         bool          operator==(const SupportPoint& rhs) const;
@@ -23,6 +23,5 @@ namespace Engine
         Vector3 local_a;
         Vector3 local_b;
         size_t  index;
-        
     };
 }
