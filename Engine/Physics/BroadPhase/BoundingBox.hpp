@@ -4,6 +4,8 @@
 
 namespace Engine
 {
+    class BroadPhaseNode;
+
     enum class eBoundingObjectType
     {
         Transform,
@@ -40,18 +42,19 @@ namespace Engine
         BoundingBox Union(const BoundingBox& aabb) const;
 
         //getter
-        void* GetObjectData() const;
-        Sint32 GetNodeIndex() const;
+        void*           GetObjectData() const;
+        BroadPhaseNode* GetNodeData() const;
 
         void UpdateVolume();
     private:
         friend class BroadPhaseNode;
+        friend class BroadPhase;
 
     private:
         Vector3 m_lower_bound, m_upper_bound;
 
-        void*  m_object_data = nullptr;
-        Sint32 m_node_index  = -1;
+        void*           m_object_data = nullptr;
+        BroadPhaseNode* m_node_data   = nullptr;
 
         eBoundingObjectType m_type = eBoundingObjectType::None;
     };

@@ -51,12 +51,9 @@ namespace Engine
             return false;
         // if same object, skip intersection
 
-        if (m_type == aabb->m_type)
+        if (m_type == aabb->m_type && m_type != eBoundingObjectType::None && m_object_data == aabb->m_object_data)
         {
-            if (m_object_data == aabb->m_object_data)
-            {
-                return false;
-            }
+            return false;
         }
         // no separation, must be intersecting
         return true;
@@ -74,14 +71,6 @@ namespace Engine
         if (m_lower_bound.z > aabb.m_upper_bound.z || aabb.m_lower_bound.z > m_upper_bound.z)
             return false;
 
-        // if same object, skip intersection
-        if (m_type == aabb.m_type)
-        {
-            if (m_object_data == aabb.m_object_data)
-            {
-                return false;
-            }
-        }
         // no separation, must be intersecting
         return true;
     }
@@ -318,9 +307,9 @@ namespace Engine
         return m_object_data;
     }
 
-    Sint32 BoundingBox::GetNodeIndex() const
+    DynamicBVHNode* BoundingBox::GetNodeData() const
     {
-        return m_node_index;
+        return m_node_data;
     }
 
     void BoundingBox::UpdateVolume()
