@@ -62,7 +62,16 @@ namespace Engine
         {
             #ifdef _DEBUG
 
-            String msg = "Failed Shader Compilation : " + ToString(path);
+            String msg = "Failed Shader Compilation : " + ToString(path) + "\n";
+
+            // Get a pointer to the error message text buffer.
+            auto compile_errors = static_cast<char*>(m_err_blob->GetBufferPointer());
+            // Get the length of the message.
+            size_t buffer_size = m_err_blob->GetBufferSize();
+            // Write out the error message.
+            std::string error_message(compile_errors, buffer_size);
+
+            msg += error_message;
 
             ::MessageBoxA(nullptr, msg.c_str(), nullptr, MB_OK);
             #endif

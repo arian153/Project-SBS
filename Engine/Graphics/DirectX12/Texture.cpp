@@ -26,12 +26,16 @@ namespace Engine
 
     bool Texture::CreateTexture(const StringWide& path, const String& ext)
     {
+        TexMetadata meta_data;
+
         if (ext == ".dds" || ext == ".DDS")
-            ::LoadFromDDSFile(path.c_str(), DDS_FLAGS_NONE, nullptr, m_image);
+            ::LoadFromDDSFile(path.c_str(), DDS_FLAGS_NONE, &meta_data, m_image);
         else if (ext == ".tga" || ext == ".TGA")
-            ::LoadFromTGAFile(path.c_str(), nullptr, m_image);
+            ::LoadFromTGAFile(path.c_str(), &meta_data, m_image);
         else // png, jpg, jpeg, bmp
-            ::LoadFromWICFile(path.c_str(), WIC_FLAGS_NONE, nullptr, m_image);
+            ::LoadFromWICFile(path.c_str(), WIC_FLAGS_NONE, &meta_data, m_image);
+
+        m_b_cube_map = meta_data.IsCubemap();
 
         HRESULT hr = ::CreateTexture(DEVICE.Get(), m_image.GetMetadata(), &m_texture_2d);
         if (FAILED(hr))
@@ -108,9 +112,22 @@ namespace Engine
 
         D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
         srv_desc.Format                          = m_image.GetMetadata().format;
-        srv_desc.ViewDimension                   = D3D12_SRV_DIMENSION_TEXTURE2D;
         srv_desc.Shader4ComponentMapping         = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        srv_desc.Texture2D.MipLevels             = 1;
+        if (m_b_cube_map)
+        {
+            srv_desc.ViewDimension                   = D3D12_SRV_DIMENSION_TEXTURECUBE;
+            srv_desc.TextureCube.MostDetailedMip     = 0;
+            srv_desc.TextureCube.MipLevels           = 1;
+            srv_desc.TextureCube.ResourceMinLODClamp = 0.0f;
+        }
+        else
+        {
+            srv_desc.ViewDimension                 = D3D12_SRV_DIMENSION_TEXTURE2D;
+            srv_desc.Texture2D.MostDetailedMip     = 0;
+            srv_desc.Texture2D.MipLevels           = 1;
+            srv_desc.Texture2D.ResourceMinLODClamp = 0.0f;
+        }
+
         DEVICE->CreateShaderResourceView(m_texture_2d.Get(), &srv_desc, m_srv_handle);
 
         return true;

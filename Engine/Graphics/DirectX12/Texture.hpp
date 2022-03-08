@@ -18,6 +18,7 @@ namespace Engine
         bool CreateView();
 
     private:
+        bool                   m_b_cube_map = false;
         ScratchImage           m_image;
         ComPtr<ID3D12Resource> m_texture_2d;
 

@@ -1,5 +1,5 @@
 {
-  "Layout": "GeneralVertex",
+  "Layout": "TexVertex",
   "Shader Model": "5_0",
   "Is Integrated": true,
   "Rasterizer Type": 0,
