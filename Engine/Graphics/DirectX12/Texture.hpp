@@ -19,6 +19,7 @@ namespace Engine
 
     private:
         bool                   m_b_cube_map = false;
+        size_t                 m_mip_level  = 0;
         ScratchImage           m_image;
         ComPtr<ID3D12Resource> m_texture_2d;
 

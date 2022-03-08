@@ -36,6 +36,7 @@ namespace Engine
             ::LoadFromWICFile(path.c_str(), WIC_FLAGS_NONE, &meta_data, m_image);
 
         m_b_cube_map = meta_data.IsCubemap();
+        m_mip_level  = meta_data.mipLevels;
 
         HRESULT hr = ::CreateTexture(DEVICE.Get(), m_image.GetMetadata(), &m_texture_2d);
         if (FAILED(hr))
@@ -117,14 +118,14 @@ namespace Engine
         {
             srv_desc.ViewDimension                   = D3D12_SRV_DIMENSION_TEXTURECUBE;
             srv_desc.TextureCube.MostDetailedMip     = 0;
-            srv_desc.TextureCube.MipLevels           = 1;
+            srv_desc.TextureCube.MipLevels           = m_mip_level;
             srv_desc.TextureCube.ResourceMinLODClamp = 0.0f;
         }
         else
         {
             srv_desc.ViewDimension                 = D3D12_SRV_DIMENSION_TEXTURE2D;
             srv_desc.Texture2D.MostDetailedMip     = 0;
-            srv_desc.Texture2D.MipLevels           = 1;
+            srv_desc.Texture2D.MipLevels           = m_mip_level;
             srv_desc.Texture2D.ResourceMinLODClamp = 0.0f;
         }
 
