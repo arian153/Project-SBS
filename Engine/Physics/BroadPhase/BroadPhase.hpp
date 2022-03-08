@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "BoundingBox.hpp"
+#include "PotentialPair.hpp"
 #include "../../EngineDefine.hpp"
 #include "../../Graphics/Data/Color.hpp"
 #include "../../Math/Primitive/ConvexHull3D/Box.hpp"
@@ -12,19 +13,7 @@ namespace Engine
 
     static constexpr Real BROAD_PHASE_MARGIN = 0.2f;
 
-    class PotentialPair
-    {
-    public:
-        PotentialPair(BoundingBox* a, BoundingBox* b)
-            : bv_a(a), bv_b(b)
-        {
-        }
-
-    public:
-        BoundingBox* bv_a = nullptr;
-        BoundingBox* bv_b = nullptr;
-    };
-
+  
     class BroadPhaseNode
     {
     public:

@@ -149,6 +149,39 @@ namespace Engine
                 m_shader_info.shader_model = root_data["Shader Model"].asString();
             }
 
+            if (!root_data["Rasterizer Type"].isNull())
+            {
+                if (root_data["Rasterizer Type"].isInt())
+                {
+                    m_shader_info.rasterizer_type = static_cast<eRasterizerType>(root_data["Rasterizer Type"].asInt());
+                }
+            }
+
+           
+            if (!root_data["Depth Stencil Type"].isNull())
+            {
+                if (root_data["Depth Stencil Type"].isInt())
+                {
+                    m_shader_info.depth_stencil_type = static_cast<eDepthStencilType>(root_data["Depth Stencil Type"].asInt());
+                }
+            }
+
+            if (!root_data["Blend Type"].isNull())
+            {
+                if (root_data["Blend Type"].isInt())
+                {
+                    m_shader_info.blend_type = static_cast<eBlendType>(root_data["Blend Type"].asInt());
+                }
+            }
+
+            if (!root_data["Topology Type"].isNull())
+            {
+                if (root_data["Topology Type"].isInt())
+                {
+                    m_shader_info.topology = static_cast<eTopologyType>(root_data["Topology Type"].asInt());
+                }
+            }
+
             if (!root_data["Is Integrated"].isNull() && root_data["Is Integrated"].isBool())
             {
                 m_b_integrated = root_data["Is Integrated"].asBool();

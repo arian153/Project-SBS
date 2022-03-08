@@ -2,10 +2,8 @@
 #include "../Dynamics/RigidBody.hpp"
 #include "Polytope.hpp"
 #include "../../Graphics/Utility/PrimitiveRenderer.hpp"
-#include "../ColliderPrimitive/ColliderPrimitive.hpp"
 #include "ManifoldTable.hpp"
 #include "../../Math/Utility/Random.hpp"
-#include "../Dynamics/SoftBody.hpp"
 #include "../ResolutionPhase/Contact/SoftContactPoint.hpp"
 
 namespace
@@ -38,7 +36,7 @@ namespace Engine
         m_primitive_renderer = primitive_renderer;
     }
 
-    void NarrowPhase::GenerateContact(std::vector<ColliderPair>& potential_pairs, ManifoldTable* data_table)
+    void NarrowPhase::GenerateContact(std::vector<PotentialPair>& potential_pairs, ManifoldTable* data_table)
     {
         size_t count = potential_pairs.size();
         m_simplexes.clear();
@@ -89,37 +87,6 @@ namespace Engine
                     data_table->SendNotCollision(set_a, set_b, found->is_collide);
                     found->ClearContacts();
                     found->is_collide = false;
-                }
-            }
-        }
-    }
-
-    void NarrowPhase::GenerateContact(std::vector<SoftBodyPair>& potential_pairs)
-    {
-        for (auto& pair : potential_pairs)
-        {
-            //prepare softbody vs softbody
-        }
-    }
-
-    void NarrowPhase::GenerateContact(std::vector<CompoundPair>& potential_pairs)
-    {
-        for (auto& pair : potential_pairs)
-        {
-            //prepare softbody vs rigid body
-            Simplex      simplex;
-            ColliderSet* collider_set = pair.collider->m_collider_set;
-
-            for (auto& mass_point : pair.softbody->m_mass_points)
-            {
-                if (pair.collider->m_bounding_volume->Intersect(mass_point.world_position, mass_point.effective_radius))
-                {
-                    if (GJKCollisionDetection(pair.collider, pair.softbody, mass_point, simplex) == true)
-                    {
-                        //do EPA to generate soft body contact manifold.
-
-                        //EPAContactGeneration();
-                    }
                 }
             }
         }
@@ -244,7 +211,7 @@ namespace Engine
             {
                 return false;
             }
-          
+
             if (simplex.DoSimplex(direction) == true)
             {
                 return true;
@@ -466,7 +433,7 @@ namespace Engine
         // intentional omission of "break" statements for case fall-through
         // ReSharper disable CppDefaultCaseNotHandledInSwitchStatement
         switch (num_vertices)
-            // ReSharper restore CppDefaultCaseNotHandledInSwitchStatement
+        // ReSharper restore CppDefaultCaseNotHandledInSwitchStatement
         {
         case 1:
             // iterate until a good search direction is used
@@ -478,18 +445,19 @@ namespace Engine
                 {
                     break;
                 }
-            }[[fallthrough]];
+            }
+            [[fallthrough]];
         case 2:
             // line direction vector
             line_vec_case2 = simplex[1].global - simplex[0].global;
-            // find least significant axis of line direction
+        // find least significant axis of line direction
             least_significant_axis = FindLeastSignificantComponent(line_vec_case2);
-            // initial search direction
+        // initial search direction
             search_dir_case2 = line_vec_case2.CrossProduct(m_axes[least_significant_axis]);
-            // build a rotation matrix of 60 degrees about line vector
+        // build a rotation matrix of 60 degrees about line vector
             rot_case2.SetRotation(line_vec_case2, Math::PI_DIV_3);
-            // find up to 6 directions perpendicular to the line vector
-            // until a good search direction is used
+        // find up to 6 directions perpendicular to the line vector
+        // until a good search direction is used
             for (int i = 0; i < 6; ++i)
             {
                 simplex[2] = GenerateCSOSupport(collider_a, collider_b, search_dir_case2);
@@ -498,14 +466,15 @@ namespace Engine
                     break;
                 // rotate search direction by 60 degrees
                 search_dir_case2 = rot_case2 * search_dir_case2;
-            }[[fallthrough]];
+            }
+            [[fallthrough]];
         case 3:
             // use triangle normal as search direction
             const Vector3 v01 = simplex[1].global - simplex[0].global;
             const Vector3 v02 = simplex[2].global - simplex[0].global;
             search_dir_case3  = v01.CrossProduct(v02);
             simplex[3]        = GenerateCSOSupport(collider_a, collider_b, search_dir_case3);
-            // search direction not good, use its opposite direction
+        // search direction not good, use its opposite direction
             if (simplex[3].global.LengthSquared() < Math::EPSILON_SQUARED)
             {
                 search_dir_case3 = -search_dir_case3;

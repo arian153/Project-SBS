@@ -2,11 +2,13 @@
 #include "SupportPoint.hpp"
 #include "Simplex.hpp"
 #include "../ResolutionPhase/Contact/RigidContactPoint.hpp"
-#include <unordered_map>
+
+#include "../BroadPhase/PotentialPair.hpp"
 #include "../ResolutionPhase/Contact/RigidContactManifold.hpp"
 
 namespace Engine
 {
+    class PrimitiveRenderer;
     class SoftContactPoint;
     class MassPoint;
     class ColorFlag;
@@ -25,22 +27,14 @@ namespace Engine
 
         void SetPrimitiveRenderer(PrimitiveRenderer* primitive_renderer);
 
-        void GenerateContact(std::vector<ColliderPair>& potential_pairs, ManifoldTable* data_table);
-        void GenerateContact(std::vector<SoftBodyPair>& potential_pairs);
-        void GenerateContact(std::vector<CompoundPair>& potential_pairs);
-        void Render(const ColorFlag& draw_gjk_flag, const ColorFlag& draw_epa_flag);
+        void GenerateContact(std::vector<PotentialPair>& potential_pairs, ManifoldTable* data_table);
+           void Render(const ColorFlag& draw_gjk_flag, const ColorFlag& draw_epa_flag);
 
         SupportPoint GenerateCSOSupport(ColliderPrimitive* a, ColliderPrimitive* b, const Vector3& direction) const;
         SupportPoint GenerateCSOSupport(ColliderPrimitive* a, const Vector3& point, const Vector3& direction) const;
-        SupportPoint GenerateCSOSupport(ColliderPrimitive* a, SoftBody* b, const MassPoint& mass_point, const Vector3& direction) const;
 
         bool GJKCollisionDetection(ColliderPrimitive* a, ColliderPrimitive* b, Simplex& simplex) const;
-        bool GJKCollisionDetection(ColliderPrimitive* primitive, SoftBody* b, const MassPoint& mass_point, Simplex& simplex) const;
-        bool GJKDistanceAlgorithm(ColliderPrimitive* collider, const Vector3& point, Simplex& simplex) const;
         bool EPAContactGeneration(ColliderPrimitive* a, ColliderPrimitive* b, Polytope& polytope, RigidContactPoint& result) const;
-        bool EPAContactGeneration(ColliderPrimitive* a, SoftBody* b, const MassPoint& mass_point, Polytope& polytope, SoftContactPoint& result) const;
-
-        bool EPAContactGeneration2D(ColliderPrimitive* a, ColliderPrimitive* b, Polytope& polytope, RigidContactPoint& result);
 
     private:
         size_t FindLeastSignificantComponent(const Vector3& vector3);
