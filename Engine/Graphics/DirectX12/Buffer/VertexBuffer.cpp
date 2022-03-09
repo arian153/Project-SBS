@@ -12,6 +12,14 @@ namespace Engine
     {
     }
 
+    void VertexBuffer::Initialize(const std::vector<PosVertex>& vertices, bool b_dynamic)
+    {
+        m_b_dynamic = b_dynamic;
+        m_vertex_count = static_cast<Uint32>(vertices.size());
+        m_vertex_stride = sizeof(PosVertex);
+        CreateBuffer(&vertices[0]);
+    }
+
     void VertexBuffer::Initialize(const std::vector<ColorVertex>& vertices, bool b_dynamic)
     {
         m_b_dynamic     = b_dynamic;
@@ -58,6 +66,20 @@ namespace Engine
         m_vertex_count  = static_cast<Uint32>(vertices.size());
         m_vertex_stride = sizeof(SkinnedVertex);
         CreateBuffer(&vertices[0]);
+    }
+
+    void VertexBuffer::Update(const std::vector<PosVertex>& vertices) const
+    {
+        if (m_b_dynamic == false)
+            return;
+
+        if (m_vertex_stride != sizeof(PosVertex))
+            return;
+
+        if (m_vertex_count != vertices.size())
+            return;
+
+        UpdateBuffer(&vertices[0]);
     }
 
     void VertexBuffer::Update(const std::vector<ColorVertex>& vertices) const

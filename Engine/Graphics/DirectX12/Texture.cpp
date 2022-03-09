@@ -118,14 +118,14 @@ namespace Engine
         {
             srv_desc.ViewDimension                   = D3D12_SRV_DIMENSION_TEXTURECUBE;
             srv_desc.TextureCube.MostDetailedMip     = 0;
-            srv_desc.TextureCube.MipLevels           = m_mip_level;
+            srv_desc.TextureCube.MipLevels           = static_cast<UINT>(m_mip_level);
             srv_desc.TextureCube.ResourceMinLODClamp = 0.0f;
         }
         else
         {
             srv_desc.ViewDimension                 = D3D12_SRV_DIMENSION_TEXTURE2D;
             srv_desc.Texture2D.MostDetailedMip     = 0;
-            srv_desc.Texture2D.MipLevels           = m_mip_level;
+            srv_desc.Texture2D.MipLevels           = static_cast<UINT>(m_mip_level);
             srv_desc.Texture2D.ResourceMinLODClamp = 0.0f;
         }
 

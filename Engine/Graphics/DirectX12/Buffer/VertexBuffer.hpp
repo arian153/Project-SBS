@@ -12,6 +12,7 @@ namespace Engine
         VertexBuffer();
         ~VertexBuffer();
 
+        void Initialize(const std::vector<PosVertex>& vertices, bool b_dynamic = false);
         void Initialize(const std::vector<ColorVertex>& vertices, bool b_dynamic = false);
         void Initialize(const std::vector<TexVertex>& vertices, bool b_dynamic = false);
         void Initialize(const std::vector<NormalVertex>& vertices, bool b_dynamic = false);
@@ -19,6 +20,7 @@ namespace Engine
         void Initialize(const std::vector<GeneralVertex>& vertices, bool b_dynamic = false);
         void Initialize(const std::vector<SkinnedVertex>& vertices, bool b_dynamic = false);
 
+        void Update(const std::vector<PosVertex>& vertices) const;
         void Update(const std::vector<ColorVertex>& vertices) const;
         void Update(const std::vector<TexVertex>& vertices) const;
         void Update(const std::vector<NormalVertex>& vertices) const;

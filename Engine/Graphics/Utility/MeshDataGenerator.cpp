@@ -323,6 +323,64 @@ namespace Engine
         return mesh_data;
     }
 
+    MeshData MeshDataGenerator::CreateCapsule(Real radius, Real height, Uint32 slice_count, Uint32 stack_count)
+    {
+        MeshData mesh_data;
+        Real     stack_height = height / stack_count;
+        // Amount to increment radius as we move up each stack level from bottom to top.
+        Uint32 ring_count = stack_count + 1;
+        // Compute vertices for each stack ring starting at the bottom and moving up.
+        for (Uint32 i = 0; i < ring_count; ++i)
+        {
+            Real y = -0.5f * height + i * stack_height;
+            // vertices of ring
+            Real d_theta = Math::TWO_PI / slice_count;
+            for (Uint32 j = 0; j <= slice_count; ++j)
+            {
+                Real    c         = cosf(j * d_theta);
+                Real    s         = sinf(j * d_theta);
+                Vector3 bitangent = Vector3(0.0f, -height, 0.0f).Normalize();
+
+                SkinnedVertex vertex;
+                vertex.pos = Vector3(radius * c, y, radius * s);
+                vertex.tex = Vector2(static_cast<Real>(j) / slice_count, 1.0f - static_cast<Real>(i) / stack_count);
+                vertex.t   = Vector3(-s, 0.0f, c).Normalize();
+                vertex.n   = CrossProduct(vertex.t, bitangent).Normalize();
+
+                mesh_data.vertices.push_back(vertex);
+            }
+        }
+        // Add one because we duplicate the first and last vertex per ring
+        // since the texture coordinates are different.
+        Uint32 ring_vertex_count = slice_count + 1;
+        // Compute indices for each stack.
+        for (Uint32 i = 0; i < stack_count; ++i)
+        {
+            for (Uint32 j = 0; j < slice_count; ++j)
+            {
+                mesh_data.indices.push_back(i * ring_vertex_count + j);
+                mesh_data.indices.push_back((i + 1) * ring_vertex_count + j);
+                mesh_data.indices.push_back((i + 1) * ring_vertex_count + j + 1);
+                mesh_data.indices.push_back(i * ring_vertex_count + j);
+                mesh_data.indices.push_back((i + 1) * ring_vertex_count + j + 1);
+                mesh_data.indices.push_back(i * ring_vertex_count + j + 1);
+
+                mesh_data.faces.emplace_back(
+                                             i * ring_vertex_count + j,
+                                             (i + 1) * ring_vertex_count + j,
+                                             (i + 1) * ring_vertex_count + j + 1);
+                mesh_data.faces.emplace_back(
+                                             i * ring_vertex_count + j,
+                                             (i + 1) * ring_vertex_count + j + 1,
+                                             i * ring_vertex_count + j + 1);
+            }
+        }
+
+        BuildCapsuleSphere(radius, height, slice_count, mesh_data);
+
+        return mesh_data;
+    }
+
     MeshData MeshDataGenerator::CreateGrid(Real width, Real depth, Uint32 m, Uint32 n)
     {
         MeshData mesh_data;
@@ -541,4 +599,131 @@ namespace Engine
         }
     }
 
-   }
+    void MeshDataGenerator::BuildCapsuleSphere(Real radius, Real height, Uint32 slice_count, MeshData& mesh_data)
+    {
+        Uint32 base_index = static_cast<Uint32>(mesh_data.vertices.size());
+
+        Real half_height = height * 0.5f;
+
+        SkinnedVertex top_vertex(0.0f, half_height + radius, 0.0f, 0.0f, 0.0f, 0.0f, +1.0f, 0.0f, 1.0f, 0.0f, 0.0f);
+        SkinnedVertex bottom_vertex(0.0f, -half_height - radius, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f);
+
+        mesh_data.vertices.push_back(top_vertex);
+        Real phi_step   = Math::PI / 15;
+        Real theta_step = Math::TWO_PI / slice_count;
+        // Compute vertices for each stack ring (do not count the poles as rings).
+        for (Uint32 i = 1; i <= 8; ++i)
+        {
+            Real phi = i * phi_step;
+            // Vertices of ring.
+            for (Uint32 j = 0; j <= slice_count; ++j)
+            {
+                Real theta = j * theta_step;
+
+                SkinnedVertex vertex;
+                vertex.pos = Vector3(radius * sinf(phi) * cosf(theta), radius * cosf(phi), radius * sinf(phi) * sinf(theta));
+                vertex.tex = Vector2(theta / Math::TWO_PI, phi / Math::PI);
+                vertex.n   = vertex.pos.Normalize();
+                vertex.t   = Vector3(-radius * sinf(phi) * sinf(theta), 0.0f, radius * sinf(phi) * cosf(theta)).Normalize();
+
+                vertex.pos.y += half_height;
+
+                mesh_data.vertices.push_back(vertex);
+            }
+        }
+
+        for (Uint32 i = 7; i <= 14; ++i)
+        {
+            Real phi = i * phi_step;
+            // Vertices of ring.
+            for (Uint32 j = 0; j <= slice_count; ++j)
+            {
+                Real theta = j * theta_step;
+
+                SkinnedVertex vertex;
+                vertex.pos = Vector3(radius * sinf(phi) * cosf(theta), radius * cosf(phi), radius * sinf(phi) * sinf(theta));
+                vertex.tex = Vector2(theta / Math::TWO_PI, phi / Math::PI);
+                vertex.n   = vertex.pos.Normalize();
+                vertex.t   = Vector3(-radius * sinf(phi) * sinf(theta), 0.0f, radius * sinf(phi) * cosf(theta)).Normalize();
+
+                vertex.pos.y -= half_height;
+
+                mesh_data.vertices.push_back(vertex);
+            }
+        }
+
+        mesh_data.vertices.push_back(bottom_vertex);
+        // Compute indices for top stack.  The top stack was written first to the vertex buffer
+        // and connects the top pole to the first ring.
+        for (Uint32 i = 1; i <= slice_count; ++i)
+        {
+            mesh_data.indices.push_back(base_index);
+            mesh_data.indices.push_back(base_index + i + 1);
+            mesh_data.indices.push_back(base_index + i);
+
+            mesh_data.faces.emplace_back(base_index, base_index + i + 1, base_index + i);
+        }
+        // Compute indices for inner stacks (not connected to poles).
+        // Offset the indices to the index of the first vertex in the first ring.
+        // This is just skipping the top pole vertex.
+        base_index += 1;
+        Uint32 ring_vertex_count = slice_count + 1;
+        for (Uint32 i = 0; i < 7; ++i)
+        {
+            for (Uint32 j = 0; j < slice_count; ++j)
+            {
+                mesh_data.indices.push_back(base_index + i * ring_vertex_count + j);
+                mesh_data.indices.push_back(base_index + i * ring_vertex_count + j + 1);
+                mesh_data.indices.push_back(base_index + (i + 1) * ring_vertex_count + j);
+                mesh_data.indices.push_back(base_index + (i + 1) * ring_vertex_count + j);
+                mesh_data.indices.push_back(base_index + i * ring_vertex_count + j + 1);
+                mesh_data.indices.push_back(base_index + (i + 1) * ring_vertex_count + j + 1);
+
+                mesh_data.faces.emplace_back(
+                                             base_index + i * ring_vertex_count + j,
+                                             base_index + i * ring_vertex_count + j + 1,
+                                             base_index + (i + 1) * ring_vertex_count + j);
+                mesh_data.faces.emplace_back(
+                                             base_index + (i + 1) * ring_vertex_count + j,
+                                             base_index + i * ring_vertex_count + j + 1,
+                                             base_index + (i + 1) * ring_vertex_count + j + 1);
+            }
+        }
+
+        for (Uint32 i = 8; i < 15; ++i)
+        {
+            for (Uint32 j = 0; j < slice_count; ++j)
+            {
+                mesh_data.indices.push_back(base_index + i * ring_vertex_count + j);
+                mesh_data.indices.push_back(base_index + i * ring_vertex_count + j + 1);
+                mesh_data.indices.push_back(base_index + (i + 1) * ring_vertex_count + j);
+                mesh_data.indices.push_back(base_index + (i + 1) * ring_vertex_count + j);
+                mesh_data.indices.push_back(base_index + i * ring_vertex_count + j + 1);
+                mesh_data.indices.push_back(base_index + (i + 1) * ring_vertex_count + j + 1);
+
+                mesh_data.faces.emplace_back(
+                                             base_index + i * ring_vertex_count + j,
+                                             base_index + i * ring_vertex_count + j + 1,
+                                             base_index + (i + 1) * ring_vertex_count + j);
+                mesh_data.faces.emplace_back(
+                                             base_index + (i + 1) * ring_vertex_count + j,
+                                             base_index + i * ring_vertex_count + j + 1,
+                                             base_index + (i + 1) * ring_vertex_count + j + 1);
+            }
+        }
+
+        // Compute indices for bottom stack.  The bottom stack was written last to the vertex buffer
+        // and connects the bottom pole to the bottom ring.
+        // South pole vertex was added last.
+        Uint32 south_pole_index = static_cast<Uint32>(mesh_data.vertices.size()) - 1;
+        // Offset the indices to the index of the first vertex in the last ring.
+        base_index = south_pole_index - ring_vertex_count;
+        for (Uint32 i = 0; i < slice_count; ++i)
+        {
+            mesh_data.indices.push_back(south_pole_index);
+            mesh_data.indices.push_back(base_index + i);
+            mesh_data.indices.push_back(base_index + i + 1);
+            mesh_data.faces.emplace_back(south_pole_index, base_index + i, base_index + i + 1);
+        }
+    }
+}

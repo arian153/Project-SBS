@@ -34,9 +34,13 @@ namespace Client
             transform->SetTransform(tf);
 
             MeshData cube = MeshDataGenerator::CreateBox(0.1f, 0.1f, 0.1f, 3);
+           /* MeshData geo_sph = MeshDataGenerator::CreateGeodesicSphere(0.1f, 4);
+            MeshData sph = MeshDataGenerator::CreateSphere(0.1f, 17, 17);
+            MeshData cyl = MeshDataGenerator::CreateCylinder(0.1f, 0.1f, 0.2f, 14, 15);*/
+            MeshData cap = MeshDataGenerator::CreateCapsule(0.1f, 0.2f, 14, 15);
 
             //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
-            mesh->SetMeshData(cube);
+            mesh->SetMeshData(cap);
             mesh->SetShader(GET_SHADER_BY_NAME("Default.shader"));
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Leather.jpg")->GetTexture());
             mesh->SetMaterialTexture(3, RESOURCE_MANAGER->GetTextureResourceName("Leather_Normal.jpg")->GetTexture());
@@ -71,6 +75,19 @@ namespace Client
             mesh->SetShader(GET_SHADER_BY_NAME("Default.shader"));
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());*/
 
+        }
+
+        //Sky Box
+        {
+            auto obj = m_object_manager->AddObject("Bunny");
+            auto transform = obj->AddComponent<TransformCompo>();
+            auto mesh = obj->AddComponent<MeshCompo>();
+
+            MeshData sky_sphere = MeshDataGenerator::CreateSphere(1.0f, 13, 13);
+
+            mesh->SetMeshData(sky_sphere);
+            mesh->SetShader(GET_SHADER_BY_NAME("SkyBox.shader"));
+            mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Sky01.jpg")->GetTexture());
         }
 
         //Light 2 Red Point Light
