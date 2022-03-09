@@ -59,6 +59,16 @@ namespace Engine
             force.z -= dt * 1000.0f;
             at.z -= 10.0f;
         }
+        if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::B))
+        {
+            force.y += dt * 1000.0f;
+            at.y += 10.0f;
+        }
+        if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::V))
+        {
+            force.y -= dt * 1000.0f;
+            at.y -= 10.0f;
+        }
 
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::Space))
         {

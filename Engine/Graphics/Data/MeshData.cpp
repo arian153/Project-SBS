@@ -103,4 +103,27 @@ namespace Engine
             new_vertices[i].t   = vertices[i].t;
         }
     }
+
+    void MeshData::Set(const std::vector<PosVertex>& new_vertices)
+    {
+        vertex_type = eVertexType::PosVertex;
+        size_t size = new_vertices.size();
+        vertices.resize(size);
+        for (size_t i = 0; i < size; ++i)
+        {
+            vertices[i].pos = new_vertices[i].pos;
+        }
+    }
+
+    void MeshData::Set(const std::vector<NormalVertex>& new_vertices)
+    {
+        vertex_type = eVertexType::NormalVertex;
+        size_t size = new_vertices.size();
+        vertices.resize(size);
+        for (size_t i = 0; i < size; ++i)
+        {
+            vertices[i].pos = new_vertices[i].pos;
+            vertices[i].n = new_vertices[i].n;
+        }
+    }
 }

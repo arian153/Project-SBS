@@ -59,7 +59,7 @@ namespace Engine
         PrimitiveSubMesh GenSubMesh(const Tetrahedron& primitive, eRenderingMode mode);
         PrimitiveSubMesh GenSubMesh(const TruncatedCone& primitive, eRenderingMode mode);
 
-    private:
+    public:
         static FaceSubMesh GenFaceSubMesh(const Circle& primitive);
         static FaceSubMesh GenFaceSubMesh(const Ellipse& primitive);
         static FaceSubMesh GenFaceSubMesh(const Rectangle& primitive);

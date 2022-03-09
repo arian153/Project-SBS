@@ -209,48 +209,8 @@ namespace Engine
     {
         FaceSubMesh sub_mesh;
 
-        Uint32 slice_count = 20;
-        Uint32 stack_count = 1;
-
-        Real stack_height = primitive.height / stack_count;
-        // Amount to increment radius as we move up each stack level from bottom to top.
-        Uint32 ring_count = stack_count + 1;
-        // Compute vertices for each stack ring starting at the bottom and moving up.
-        for (Uint32 i = 0; i < ring_count; ++i)
-        {
-            Real y = -0.5f * primitive.height + i * stack_height;
-            // vertices of ring
-            Real d_theta = Math::TWO_PI / slice_count;
-            for (Uint32 j = 0; j <= slice_count; ++j)
-            {
-                Real    c         = cosf(j * d_theta);
-                Real    s         = sinf(j * d_theta);
-                Vector3 bitangent = Vector3(0.0f, -primitive.height, 0.0f).Normalize();
-                Vector3 tangent   = Vector3(primitive.radius.x * -s, 0.0f, primitive.radius.z * c).Normalize();
-
-                NormalVertex vertex;
-                vertex.pos = Vector3(primitive.radius.x * c, y, primitive.radius.z * s);
-                vertex.n   = CrossProduct(tangent, bitangent).Normalize();
-
-                sub_mesh.vertices.push_back(vertex);
-            }
-        }
-        // Add one because we duplicate the first and last vertex per ring
-        // since the texture coordinates are different.
-        Uint32 ring_vertex_count = slice_count + 1;
-        // Compute indices for each stack.
-        for (Uint32 i = 0; i < stack_count; ++i)
-        {
-            for (Uint32 j = 0; j < slice_count; ++j)
-            {
-                sub_mesh.indices.push_back(i * ring_vertex_count + j);
-                sub_mesh.indices.push_back((i + 1) * ring_vertex_count + j);
-                sub_mesh.indices.push_back((i + 1) * ring_vertex_count + j + 1);
-                sub_mesh.indices.push_back(i * ring_vertex_count + j);
-                sub_mesh.indices.push_back((i + 1) * ring_vertex_count + j + 1);
-                sub_mesh.indices.push_back(i * ring_vertex_count + j + 1);
-            }
-        }
+        Uint32 slice_count = 50;
+        Uint32 stack_count = 25;
 
         Uint32 base_index = static_cast<Uint32>(sub_mesh.vertices.size());
 
@@ -264,10 +224,11 @@ namespace Engine
         bottom_vertex.n   = Vector3(0, -1, 0);
 
         sub_mesh.vertices.push_back(top_vertex);
-        Real phi_step   = Math::PI / 15;
+        Real phi_step   = Math::PI / stack_count;
         Real theta_step = Math::TWO_PI / slice_count;
         // Compute vertices for each stack ring (do not count the poles as rings).
-        for (Uint32 i = 1; i <= 8; ++i)
+        Uint32 half_count = (stack_count - 1) / 2 + 1;
+        for (Uint32 i = 1; i <= stack_count - 1; ++i)
         {
             Real phi = i * phi_step;
             // Vertices of ring.
@@ -281,27 +242,7 @@ namespace Engine
                                      primitive.radius.y * cosf(phi),
                                      primitive.radius.z * sinf(phi) * sinf(theta));
                 vertex.n = vertex.pos.Normalize();
-                vertex.pos.y += half_height;
-                sub_mesh.vertices.push_back(vertex);
-            }
-        }
-
-        for (Uint32 i = 7; i <= 14; ++i)
-        {
-            Real phi = i * phi_step;
-            // Vertices of ring.
-            for (Uint32 j = 0; j <= slice_count; ++j)
-            {
-                Real theta = j * theta_step;
-
-                NormalVertex vertex;
-                vertex.pos = Vector3(
-                                     primitive.radius.x * sinf(phi) * cosf(theta),
-                                     primitive.radius.y * cosf(phi),
-                                     primitive.radius.z * sinf(phi) * sinf(theta));
-                vertex.n = vertex.pos.Normalize();
-
-                vertex.pos.y -= half_height;
+                vertex.pos.y += (i < half_count ? half_height : -half_height);
                 sub_mesh.vertices.push_back(vertex);
             }
         }
@@ -318,21 +259,10 @@ namespace Engine
         // Compute indices for inner stacks (not connected to poles).
         // Offset the indices to the index of the first vertex in the first ring.
         // This is just skipping the top pole vertex.
-        base_index += 1;
-        for (Uint32 i = 0; i < 7; ++i)
-        {
-            for (Uint32 j = 0; j < slice_count; ++j)
-            {
-                sub_mesh.indices.push_back(base_index + i * ring_vertex_count + j);
-                sub_mesh.indices.push_back(base_index + i * ring_vertex_count + j + 1);
-                sub_mesh.indices.push_back(base_index + (i + 1) * ring_vertex_count + j);
-                sub_mesh.indices.push_back(base_index + (i + 1) * ring_vertex_count + j);
-                sub_mesh.indices.push_back(base_index + i * ring_vertex_count + j + 1);
-                sub_mesh.indices.push_back(base_index + (i + 1) * ring_vertex_count + j + 1);
-            }
-        }
 
-        for (Uint32 i = 8; i < 15; ++i)
+        Uint32 ring_vertex_count = slice_count + 1;
+        base_index += 1;
+        for (Uint32 i = 0; i < stack_count - 2; ++i)
         {
             for (Uint32 j = 0; j < slice_count; ++j)
             {

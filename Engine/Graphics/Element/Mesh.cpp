@@ -45,6 +45,7 @@ namespace Engine
         m_index_buffer.Initialize(mesh_data.indices);
     }
 
+   
     void Mesh::Update(const MeshData& mesh_data) const
     {
         if (m_vertex_type != mesh_data.vertex_type)
