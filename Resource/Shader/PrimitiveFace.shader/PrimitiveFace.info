@@ -1,0 +1,24 @@
+{
+  "Layout": "NormalVertex",
+  "Shader Model": "5_0",
+  "Is Integrated": true,
+  "Rasterizer Type": 2,
+  "Depth Stencil Type": 0,
+  "Blend Type": 0,
+  "Topology Type": 2,
+
+  "Vertex Shader Entry": "VS_Main",
+  "Hull Shader Entry": "",
+  "Domain Shader Entry": "",
+  "Geometry Shader Entry": "",
+  "Pixel Shader Entry": "PS_Main",
+  "Compute Shader Entry": "",
+
+  "Vertex Shader Path": "",
+  "Hull Shader Path": "",
+  "Domain Shader Path": "",
+  "Geometry Shader Path": "",
+  "Pixel Shader Path": "",
+  "Compute Shader Path": ""
+
+}

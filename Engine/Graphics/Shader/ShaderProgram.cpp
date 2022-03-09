@@ -117,6 +117,20 @@ namespace Engine
         m_pipeline_desc.SampleDesc.Count      = 1;
         m_pipeline_desc.DSVFormat             = RENDER_SYS_DX12->GetDSVFormat();
 
+        switch (m_shader_info.topology)
+        {
+        case eTopologyType::DotList:
+            m_pipeline_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+            break;
+        case eTopologyType::LineList:
+            m_pipeline_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+            break;
+        case eTopologyType::TriangleList:
+            m_pipeline_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+            break;
+        default: ;
+        }
+
         switch (m_shader_info.rasterizer_type)
         {
         case eRasterizerType::CullNone:

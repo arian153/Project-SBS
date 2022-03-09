@@ -11,6 +11,18 @@ namespace Engine
         Face
     };
 
+    struct LineSubMesh
+    {
+        std::vector<PosVertex> vertices;
+        std::vector<Uint32>    indices;
+    };
+
+    struct FaceSubMesh
+    {
+        std::vector<NormalVertex> vertices;
+        std::vector<Uint32>       indices;
+    };
+
     struct PrimitiveSubMesh
     {
         VertexBuffer vertex_buffer;
@@ -48,5 +60,33 @@ namespace Engine
         PrimitiveSubMesh GenSubMesh(const TruncatedCone& primitive, eRenderingMode mode);
 
     private:
+        static FaceSubMesh GenFaceSubMesh(const Circle& primitive);
+        static FaceSubMesh GenFaceSubMesh(const Ellipse& primitive);
+        static FaceSubMesh GenFaceSubMesh(const Rectangle& primitive);
+        static FaceSubMesh GenFaceSubMesh(const Triangle& primitive);
+        static FaceSubMesh GenFaceSubMesh(const Box& primitive);
+        static FaceSubMesh GenFaceSubMesh(const Capsule& primitive);
+        static FaceSubMesh GenFaceSubMesh(const Cone& primitive);
+        static FaceSubMesh GenFaceSubMesh(const Cylinder& primitive);
+        static FaceSubMesh GenFaceSubMesh(const Dome& primitive);
+        static FaceSubMesh GenFaceSubMesh(const Ellipsoid& primitive);
+        static FaceSubMesh GenFaceSubMesh(const Sphere& primitive);
+        static FaceSubMesh GenFaceSubMesh(const Tetrahedron& primitive);
+        static FaceSubMesh GenFaceSubMesh(const TruncatedCone& primitive);
+
+        /* private:
+             LineSubMesh GenLineSubMesh(const Circle& primitive);
+             LineSubMesh GenLineSubMesh(const Ellipse& primitive);
+             LineSubMesh GenLineSubMesh(const Rectangle& primitive);
+             LineSubMesh GenLineSubMesh(const Triangle& primitive);
+             LineSubMesh GenLineSubMesh(const Box& primitive);
+             LineSubMesh GenLineSubMesh(const Capsule& primitive);
+             LineSubMesh GenLineSubMesh(const Cone& primitive);
+             LineSubMesh GenLineSubMesh(const Cylinder& primitive);
+             LineSubMesh GenLineSubMesh(const Dome& primitive);
+             LineSubMesh GenLineSubMesh(const Ellipsoid& primitive);
+             LineSubMesh GenLineSubMesh(const Sphere& primitive);
+             LineSubMesh GenLineSubMesh(const Tetrahedron& primitive);
+             LineSubMesh GenLineSubMesh(const TruncatedCone& primitive);*/
     };
 }
