@@ -81,7 +81,19 @@ namespace Client
             cylinder.height = 0.3f;
             cylinder.radius = Vector2(0.13f, 0.1f);
 
-            auto [vertices, indices] = PrimitiveRenderer::GenFaceSubMesh(cylinder);
+            Dome dome;
+            dome.radius = Vector3(0.1f, 0.1f, 0.1f);
+
+            Ellipsoid ellipsoid;
+            ellipsoid.radius = Vector3(0.1f, 0.12f, 0.11f);
+
+            Tetrahedron tetrahedron;
+            tetrahedron.SetUnit();
+
+            Box box;
+            box.SetBox(0.3f, 0.2f, 0.2f);
+
+            auto [vertices, indices] = PrimitiveRenderer::GenFaceSubMesh(box);
 
             MeshData mesh_data;
             mesh_data.Set(vertices);
