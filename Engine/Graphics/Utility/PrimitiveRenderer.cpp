@@ -174,12 +174,99 @@ namespace Engine
     {
         FaceSubMesh sub_mesh;
 
+        sub_mesh.vertices.resize(202);
+
+        Real radian_step = Math::TWO_PI / static_cast<Real>(100);
+        for (Uint32 i = 0; i < 100; ++i)
+        {
+            Real angle               = static_cast<Real>(i) * radian_step;
+            sub_mesh.vertices[i].pos = Vector3(cosf(angle) * primitive.radius, sinf(angle) * primitive.radius, 0.0f);
+            sub_mesh.vertices[i].n   = Vector3(0, 1, 0);
+        }
+
+        NormalVertex vertex;
+        sub_mesh.vertices[100].n = Vector3(0, 1, 0);
+
+        for (Uint32 i = 0; i < 99; ++i)
+        {
+            sub_mesh.indices.push_back(100);
+            sub_mesh.indices.push_back(i + 1);
+            sub_mesh.indices.push_back(i);
+        }
+
+        sub_mesh.indices.push_back(100);
+        sub_mesh.indices.push_back(0);
+        sub_mesh.indices.push_back(99);
+
+        for (Uint32 i = 101; i < 201; ++i)
+        {
+            Real angle               = static_cast<Real>(i) * radian_step;
+            sub_mesh.vertices[i].pos = Vector3(cosf(angle) * primitive.radius, sinf(angle) * primitive.radius, 0.0f);
+            sub_mesh.vertices[i].n   = Vector3(0, -1, 0);
+        }
+
+        sub_mesh.vertices[201].n = Vector3(0, -1, 0);
+
+        for (Uint32 i = 101; i < 200; ++i)
+        {
+            sub_mesh.indices.push_back(201);
+            sub_mesh.indices.push_back(i);
+            sub_mesh.indices.push_back(i + 1);
+        }
+
+        sub_mesh.indices.push_back(201);
+        sub_mesh.indices.push_back(200);
+        sub_mesh.indices.push_back(101);
         return sub_mesh;
     }
 
     FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Ellipse& primitive)
     {
         FaceSubMesh sub_mesh;
+
+        sub_mesh.vertices.resize(202);
+
+        Real radian_step = Math::TWO_PI / static_cast<Real>(100);
+        for (Uint32 i = 0; i < 100; ++i)
+        {
+            Real angle               = static_cast<Real>(i) * radian_step;
+            sub_mesh.vertices[i].pos = Vector3(cosf(angle) * primitive.radius.x, sinf(angle) * primitive.radius.y, 0.0f);
+            sub_mesh.vertices[i].n   = Vector3(0, 1, 0);
+        }
+
+        NormalVertex vertex;
+        sub_mesh.vertices[100].n = Vector3(0, 1, 0);
+
+        for (Uint32 i = 0; i < 99; ++i)
+        {
+            sub_mesh.indices.push_back(100);
+            sub_mesh.indices.push_back(i + 1);
+            sub_mesh.indices.push_back(i);
+        }
+
+        sub_mesh.indices.push_back(100);
+        sub_mesh.indices.push_back(0);
+        sub_mesh.indices.push_back(99);
+
+        for (Uint32 i = 101; i < 201; ++i)
+        {
+            Real angle               = static_cast<Real>(i) * radian_step;
+            sub_mesh.vertices[i].pos = Vector3(cosf(angle) * primitive.radius.x, sinf(angle) * primitive.radius.y, 0.0f);
+            sub_mesh.vertices[i].n   = Vector3(0, -1, 0);
+        }
+
+        sub_mesh.vertices[201].n = Vector3(0, -1, 0);
+
+        for (Uint32 i = 101; i < 200; ++i)
+        {
+            sub_mesh.indices.push_back(201);
+            sub_mesh.indices.push_back(i);
+            sub_mesh.indices.push_back(i + 1);
+        }
+
+        sub_mesh.indices.push_back(201);
+        sub_mesh.indices.push_back(200);
+        sub_mesh.indices.push_back(101);
 
         return sub_mesh;
     }
@@ -188,12 +275,76 @@ namespace Engine
     {
         FaceSubMesh sub_mesh;
 
+        sub_mesh.vertices.resize(8);
+
+        for (Uint32 i = 0; i < 4; ++i)
+        {
+            sub_mesh.vertices[i].pos = primitive.vertices[i];
+            sub_mesh.vertices[i].n   = Vector3(0, 1, 0);
+        }
+
+        for (Uint32 i = 4; i < 8; ++i)
+        {
+            sub_mesh.vertices[i].pos = primitive.vertices[i % 4];
+            sub_mesh.vertices[i].n   = Vector3(0, -1, 0);
+        }
+
+        sub_mesh.indices.resize(12);
+
+        sub_mesh.indices[0] = 0;
+        sub_mesh.indices[1] = 1;
+        sub_mesh.indices[2] = 2;
+
+        sub_mesh.indices[3] = 1;
+        sub_mesh.indices[4] = 3;
+        sub_mesh.indices[5] = 2;
+
+        sub_mesh.indices[6] = 4;
+        sub_mesh.indices[7] = 6;
+        sub_mesh.indices[8] = 5;
+
+        sub_mesh.indices[9] = 5;
+        sub_mesh.indices[10] = 6;
+        sub_mesh.indices[11] = 7;
+
         return sub_mesh;
     }
 
     FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Triangle& primitive)
     {
         FaceSubMesh sub_mesh;
+
+        sub_mesh.vertices.resize(6);
+
+        for (Uint32 i = 0; i < 3; ++i)
+        {
+            sub_mesh.vertices[i].pos = primitive.vertices[i];
+            sub_mesh.vertices[i].n = Vector3(0, 1, 0);
+        }
+
+        for (Uint32 i = 3; i < 6; ++i)
+        {
+            sub_mesh.vertices[i].pos = primitive.vertices[i % 3];
+            sub_mesh.vertices[i].n = Vector3(0, -1, 0);
+        }
+
+        sub_mesh.indices.resize(12);
+
+        sub_mesh.indices[0] = 0;
+        sub_mesh.indices[1] = 1;
+        sub_mesh.indices[2] = 2;
+
+        sub_mesh.indices[3] = 0;
+        sub_mesh.indices[4] = 2;
+        sub_mesh.indices[5] = 1;
+
+        sub_mesh.indices[6] = 3;
+        sub_mesh.indices[7] = 4;
+        sub_mesh.indices[8] = 5;
+
+        sub_mesh.indices[9] = 3;
+        sub_mesh.indices[10] = 5;
+        sub_mesh.indices[11] = 4;
 
         return sub_mesh;
     }

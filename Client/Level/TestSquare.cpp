@@ -93,7 +93,16 @@ namespace Client
             Box box;
             box.SetBox(0.3f, 0.2f, 0.2f);
 
-            auto [vertices, indices] = PrimitiveRenderer::GenFaceSubMesh(box);
+            Circle circle;
+            circle.radius = 0.2f;
+
+            Engine::Rectangle rect;
+            rect.SetUnit();
+
+            Triangle triangle;
+            triangle.SetUnit();
+
+            auto [vertices, indices] = PrimitiveRenderer::GenFaceSubMesh(triangle);
 
             MeshData mesh_data;
             mesh_data.Set(vertices);
@@ -147,43 +156,43 @@ namespace Client
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Sky01.jpg")->GetTexture());
         }
 
-        //Light 2 Red Point Light
-        {
-            auto obj       = m_object_manager->AddObject("Point");
-            auto transform = obj->AddComponent<TransformCompo>();
-            transform->SetPosition(Vector3(150.f, 150.f, 150.f));
-            auto light = obj->AddComponent<LightCompo>();
-            light->SetLightType(eLightType::PointLight);
-            light->SetDiffuse(Color(1.f, 0.1f, 0.1f, 1.0f));
-            light->SetAmbient(Color(0.1f, 0.f, 0.f, 1.0f));
-            light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
-            light->SetLightRange(10000.f);
+        ////Light 2 Red Point Light
+        //{
+        //    auto obj       = m_object_manager->AddObject("Point");
+        //    auto transform = obj->AddComponent<TransformCompo>();
+        //    transform->SetPosition(Vector3(150.f, 150.f, 150.f));
+        //    auto light = obj->AddComponent<LightCompo>();
+        //    light->SetLightType(eLightType::PointLight);
+        //    light->SetDiffuse(Color(1.f, 0.1f, 0.1f, 1.0f));
+        //    light->SetAmbient(Color(0.1f, 0.f, 0.f, 1.0f));
+        //    light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
+        //    light->SetLightRange(10000.f);
 
-            auto mesh = obj->AddComponent<MeshCompo>();
-            mesh->SetMeshData(sphere);
-            mesh->SetShader(GET_SHADER_BY_NAME("Default.shader"));
-            mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());
-        }
+        //    auto mesh = obj->AddComponent<MeshCompo>();
+        //    mesh->SetMeshData(sphere);
+        //    mesh->SetShader(GET_SHADER_BY_NAME("Default.shader"));
+        //    mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());
+        //}
 
-        //Light 3 Blue Spot Light
-        {
-            auto obj       = m_object_manager->AddObject("Spot");
-            auto transform = obj->AddComponent<TransformCompo>();
-            transform->SetPosition(Vector3(-150.f, 0.f, 150.f));
-            auto light = obj->AddComponent<LightCompo>();
-            light->SetLightDirection(Vector3(1.f, 0.f, 0.f));
-            light->SetLightType(eLightType::SpotLight);
-            light->SetAmbient(Color(0.0f, 0.f, 0.f, 1.0f));
-            light->SetDiffuse(Color(0.f, 0.1f, 1.f, 1.0f));
-            light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
-            light->SetLightRange(10000.f);
-            light->SetLightAngle(XM_PI / 4);
+        ////Light 3 Blue Spot Light
+        //{
+        //    auto obj       = m_object_manager->AddObject("Spot");
+        //    auto transform = obj->AddComponent<TransformCompo>();
+        //    transform->SetPosition(Vector3(-150.f, 0.f, 150.f));
+        //    auto light = obj->AddComponent<LightCompo>();
+        //    light->SetLightDirection(Vector3(1.f, 0.f, 0.f));
+        //    light->SetLightType(eLightType::SpotLight);
+        //    light->SetAmbient(Color(0.0f, 0.f, 0.f, 1.0f));
+        //    light->SetDiffuse(Color(0.f, 0.1f, 1.f, 1.0f));
+        //    light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
+        //    light->SetLightRange(10000.f);
+        //    light->SetLightAngle(XM_PI / 4);
 
-            auto mesh = obj->AddComponent<MeshCompo>();
-            mesh->SetMeshData(sphere);
-            mesh->SetShader(GET_SHADER_BY_NAME("Default.shader"));
-            mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());
-        }
+        //    auto mesh = obj->AddComponent<MeshCompo>();
+        //    mesh->SetMeshData(sphere);
+        //    mesh->SetShader(GET_SHADER_BY_NAME("Default.shader"));
+        //    mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());
+        //}
     }
 
     void TestSquare::Update(float dt)
