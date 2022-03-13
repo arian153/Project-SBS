@@ -38,9 +38,19 @@ namespace Engine
             light_compo->Update(dt);
         }
 
-        for (auto& mesh_compo : m_forward_mesh_compos)
+        m_forward_compos.clear();
+        m_deferred_compos.clear();
+
+        //Do frustum culling
+
+        for (auto& mesh_compo : m_mesh_compos)
         {
             mesh_compo->Update(dt);
+
+            if (mesh_compo->IsDeferred())
+                m_deferred_compos.push_back(mesh_compo);
+            else
+                m_forward_compos.push_back(mesh_compo);
         }
     }
 
@@ -77,7 +87,7 @@ namespace Engine
         {
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->OMSetRenderTargets();
 
-            for (auto& mesh_compo : m_deferred_mesh_compos)
+            for (auto& mesh_compo : m_deferred_compos)
             {
                 matrix_params.world = mesh_compo->GetWorldMatrix();
                 matrix_params.wv    = matrix_params.world * matrix_params.view;
@@ -95,7 +105,7 @@ namespace Engine
         {
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->OMSetRenderTargets(1, back_index);
 
-            for (auto& mesh_compo : m_forward_mesh_compos)
+            for (auto& mesh_compo : m_forward_compos)
             {
                 matrix_params.world = mesh_compo->GetWorldMatrix();
                 matrix_params.wv    = matrix_params.world * matrix_params.view;
@@ -114,33 +124,21 @@ namespace Engine
 
     void RenderSubsystem::Shutdown()
     {
-        m_forward_mesh_compos.clear();
+        m_mesh_compos.clear();
         m_models.clear();
     }
 
     void RenderSubsystem::AddMeshCompo(RPtr<MeshCompo> compo)
     {
-        if (compo->IsDeferred())
-            m_deferred_mesh_compos.push_back(compo);
-        m_forward_mesh_compos.push_back(compo);
+        m_mesh_compos.push_back(compo);
     }
 
     void RenderSubsystem::RemoveMeshCompo(RPtr<MeshCompo> compo)
     {
-        if (compo->IsDeferred())
+        auto found = std::find(m_mesh_compos.begin(), m_mesh_compos.end(), compo);
+        if (found != m_mesh_compos.end())
         {
-            auto found = std::find(m_deferred_mesh_compos.begin(), m_deferred_mesh_compos.end(), compo);
-            if (found != m_deferred_mesh_compos.end())
-            {
-                m_deferred_mesh_compos.erase(found);
-            }
-            return;
-        }
-
-        auto found = std::find(m_forward_mesh_compos.begin(), m_forward_mesh_compos.end(), compo);
-        if (found != m_forward_mesh_compos.end())
-        {
-            m_forward_mesh_compos.erase(found);
+            m_mesh_compos.erase(found);
         }
     }
 

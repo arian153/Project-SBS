@@ -39,7 +39,7 @@ namespace Client
 
             //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
             mesh->SetMeshData(cube);
-            mesh->SetShader(GET_SHADER_BY_NAME("Default.shader"));
+            mesh->SetShader(GET_SHADER_BY_NAME("GBuffer.shader"));
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Leather.jpg")->GetTexture());
             mesh->SetMaterialTexture(3, RESOURCE_MANAGER->GetTextureResourceName("Leather_Normal.jpg")->GetTexture());
 

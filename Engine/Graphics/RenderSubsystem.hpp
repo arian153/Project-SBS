@@ -56,8 +56,9 @@ namespace Engine
 
         std::vector<SPtr<Camera>>           m_cameras;
         std::vector<RPtr<LightCompo>>       m_light_compos;
-        std::vector<RPtr<MeshCompo>>        m_forward_mesh_compos;
-        std::vector<RPtr<MeshCompo>>        m_deferred_mesh_compos;
+        std::vector<RPtr<MeshCompo>>        m_mesh_compos;
+        std::vector<RPtr<MeshCompo>>        m_deferred_compos;
+        std::vector<RPtr<MeshCompo>>        m_forward_compos;
         std::vector<SPtr<Model>>            m_models;
         std::vector<RPtr<OrbitCameraCompo>> m_orbit_compos;
         std::vector<SPtr<ConstantBuffer>>   m_constant_buffers;
