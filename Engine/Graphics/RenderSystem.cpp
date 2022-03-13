@@ -3,14 +3,16 @@
 #include <memory>
 #include <memory>
 #include <memory>
+#include <memory>
 
 #include "RenderSubsystem.hpp"
+#include "../Core/CoreDefine.hpp"
+#include "../Core/ResourceManager/ResourceManager.hpp"
 #include "Data/Vertex.hpp"
 #include "DirectX12/DirectX12Layer.hpp"
 #include "DirectX12/InputLayout.hpp"
 #include "DirectX12/RootSignature.hpp"
 #include "DirectX12/TableDescriptorHeap.hpp"
-#include "DirectX12/Buffer/ConstantBuffer.hpp"
 #include "Element/Material.hpp"
 #include "Element/SimpleMesh.hpp"
 #include "Shader/ShaderManager.hpp"
@@ -35,10 +37,9 @@ namespace Engine
         m_dx12_layer->Initialize(m_window_info);
         m_root_signature->Initialize();
 
-   
-
         m_table_descriptor_heap->Init(256);
 
+        CreateRenderTargetGroups();
         m_dx12_layer->WaitSync();
     }
 
@@ -123,6 +124,59 @@ namespace Engine
         m_dx12_layer->WaitSync();
     }
 
+    void RenderSystem::CreateRenderTargetGroups()
+    {
+        // DepthStencil
+
+        SPtr<Texture> ds_texture = RESOURCE_MANAGER->CreateTexture("DepthStencil");
+        ds_texture->Create(
+                           DXGI_FORMAT_D32_FLOAT, m_window_info.width, m_window_info.height,
+                           CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+                           D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+        // SwapChain Group
+        {
+            std::vector<RenderTarget> rt_vec(SWAP_CHAIN_BUFFER_COUNT);
+
+            for (Uint32 i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
+            {
+                String name = "SwapChainTarget_" + std::to_string(i);
+
+                ComPtr<ID3D12Resource> resource;
+                m_dx12_layer->m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&resource));
+
+                rt_vec[i].target = RESOURCE_MANAGER->CreateTexture(name);
+                rt_vec[i].target->CreateFromResource(resource);
+            }
+
+            _rtGroups[static_cast<Uint32>(eRenderTargetGroupType::SwapChain)] = std::make_shared<RenderTargetGroup>();
+            _rtGroups[static_cast<Uint32>(eRenderTargetGroupType::SwapChain)]->Create(eRenderTargetGroupType::SwapChain, rt_vec, ds_texture);
+        }
+
+        // Deferred Group
+        {
+            std::vector<RenderTarget> rt_vec(RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT);
+            rt_vec[0].target = RESOURCE_MANAGER->CreateTexture("PositionTarget");
+            rt_vec[0].target->Create(
+                                     DXGI_FORMAT_R32G32B32A32_FLOAT, m_window_info.width, m_window_info.height,
+                                     CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+                                     D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+            rt_vec[1].target = RESOURCE_MANAGER->CreateTexture("NormalTarget");
+            rt_vec[1].target->Create(
+                                     DXGI_FORMAT_R32G32B32A32_FLOAT, m_window_info.width, m_window_info.height,
+                                     CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+                                     D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+            rt_vec[2].target = RESOURCE_MANAGER->CreateTexture("DiffuseTarget");
+            rt_vec[2].target->Create(
+                                     DXGI_FORMAT_R8G8B8A8_UNORM, m_window_info.width, m_window_info.height,
+                                     CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+                                     D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+
+            _rtGroups[static_cast<Uint32>(eRenderTargetGroupType::GBuffer)] = std::make_shared<RenderTargetGroup>();
+            _rtGroups[static_cast<Uint32>(eRenderTargetGroupType::GBuffer)]->Create(eRenderTargetGroupType::GBuffer, rt_vec, ds_texture);
+        }
+    }
+
     SPtr<DirectX12Layer> RenderSystem::GetDirectX12Layer()
     {
         return m_dx12_layer;
@@ -143,7 +197,6 @@ namespace Engine
         return m_shader_manager;
     }
 
-   
     ViewportManager& RenderSystem::GetViewportManager()
     {
         return m_viewport_manager;
@@ -152,5 +205,10 @@ namespace Engine
     const ViewportManager& RenderSystem::GetViewportManager() const
     {
         return m_viewport_manager;
+    }
+
+    SPtr<RenderTargetGroup> RenderSystem::GetRTGroup(eRenderTargetGroupType type)
+    {
+        return _rtGroups[static_cast<Uint32>(type)];
     }
 }

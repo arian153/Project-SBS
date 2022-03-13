@@ -29,6 +29,8 @@ namespace Engine
         ModelResource* GetModelResourcePath(const String& file_path);
         ModelResource* GetModelResourceName(const String& file_name);
 
+        SPtr<Texture> CreateTexture(const String& name);
+        SPtr<Texture> GetCreatedTexture(const String& name) const;
 
     private:
         void Initialize() override;
@@ -52,5 +54,7 @@ namespace Engine
         HashMap<String, ModelResource>   m_model_map;
         HashMap<String, ShaderResource>  m_shader_map;
         HashMap<String, TextureResource> m_texture_map;
+
+        HashMap<String, SPtr<Texture>> m_created_texture_map;
     };
 }

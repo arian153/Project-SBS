@@ -1,10 +1,12 @@
 #pragma once
+#include <array>
 #include <d3dx12.h>
 
 #include "../System.hpp"
 #include "../Core/ApplicationSetting.hpp"
 #include "../Math/Utility/MathDef.hpp"
 #include "DirectX12/DirectXIncludes.hpp"
+#include "DirectX12/RenderTarget.hpp"
 #include "Utility/ViewportManager.hpp"
 
 namespace Engine
@@ -39,7 +41,7 @@ namespace Engine
         void OnFullscreen(bool b_fullscreen);
 
         void PostInitialize();
-
+        void CreateRenderTargetGroups();
 
     private:
         friend class CoreSystem;
@@ -53,6 +55,8 @@ namespace Engine
         ViewportManager&          GetViewportManager();
         const ViewportManager&    GetViewportManager() const;
 
+        SPtr<RenderTargetGroup> GetRTGroup(eRenderTargetGroupType type);
+
     private:
         WindowInfo m_window_info;
 
@@ -64,6 +68,7 @@ namespace Engine
 
         bool m_b_init = false;
 
+        std::array<SPtr<RenderTargetGroup>, RENDER_TARGET_GROUP_COUNT> _rtGroups;
   
         std::vector<SPtr<RenderSubsystem>> m_subsystems;
     };

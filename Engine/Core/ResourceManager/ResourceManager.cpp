@@ -1,8 +1,10 @@
 #include "ResourceManager.hpp"
 
 #include <algorithm>
+#include <memory>
 
 #include "Resource.hpp"
+#include "../../Graphics/DirectX12/Texture.hpp"
 #include "../../Utility/FileUtility.hpp"
 
 namespace Engine
@@ -146,6 +148,32 @@ namespace Engine
                 return &resource;
             }
         }
+        return nullptr;
+    }
+
+    SPtr<Texture> ResourceManager::CreateTexture(const String& name)
+    {
+        auto found = m_created_texture_map.find(name);
+        if (found != m_created_texture_map.end())
+        {
+            //already created
+            return nullptr;
+        }
+
+        auto texture = std::make_shared<Texture>();
+        m_created_texture_map.emplace(name, texture);
+        return texture;
+    }
+
+    SPtr<Texture> ResourceManager::GetCreatedTexture(const String& name) const
+    {
+        auto found = m_created_texture_map.find(name);
+        if (found != m_created_texture_map.end())
+        {
+            //already created
+            return found->second;
+        }
+
         return nullptr;
     }
 

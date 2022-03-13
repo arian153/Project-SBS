@@ -60,6 +60,9 @@ namespace Engine
         D3D12_CPU_DESCRIPTOR_HANDLE GetBackRTVHandle() const;
 
     private:
+        friend class RenderSystem;
+
+    private:
         //device
         ComPtr<IDXGIFactory4> m_dxgi_factory;
         ComPtr<ID3D12Device>  m_device;
