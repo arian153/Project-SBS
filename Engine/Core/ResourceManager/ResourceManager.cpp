@@ -157,26 +157,14 @@ namespace Engine
         if (found != m_created_texture_map.end())
         {
             //already created
-            return nullptr;
+            return found->second;
         }
 
         auto texture = std::make_shared<Texture>();
         m_created_texture_map.emplace(name, texture);
         return texture;
     }
-
-    SPtr<Texture> ResourceManager::GetCreatedTexture(const String& name) const
-    {
-        auto found = m_created_texture_map.find(name);
-        if (found != m_created_texture_map.end())
-        {
-            //already created
-            return found->second;
-        }
-
-        return nullptr;
-    }
-
+  
     void ResourceManager::Initialize()
     {
         BuildResource();

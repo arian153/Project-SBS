@@ -157,6 +157,14 @@ namespace Engine
                 }
             }
 
+            if (!root_data["Render Target Type"].isNull())
+            {
+                if (root_data["Render Target Type"].isInt())
+                {
+                    m_shader_info.render_target_type = static_cast<eRenderTargetType>(root_data["Render Target Type"].asInt());
+                }
+            }
+
            
             if (!root_data["Depth Stencil Type"].isNull())
             {

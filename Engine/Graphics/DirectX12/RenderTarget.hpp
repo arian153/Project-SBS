@@ -34,15 +34,10 @@ namespace Engine
         void ClearRenderTargetView(Uint32 index) const;
         void ClearRenderTargetView() const;
 
-        SPtr<Texture> GetRTTexture(Uint32 index)
-        {
-            return m_rt_vec[index].target;
-        }
+        SPtr<Texture> GetRTTexture(Uint32 index);
+        SPtr<Texture> GetDSTexture();
 
-        SPtr<Texture> GetDSTexture()
-        {
-            return m_ds_texture;
-        }
+        void Reset() const;
 
     private:
         eRenderTargetGroupType       m_group_type = eRenderTargetGroupType::End;

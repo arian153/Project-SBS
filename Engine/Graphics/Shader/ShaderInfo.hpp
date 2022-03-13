@@ -48,8 +48,15 @@ namespace Engine
         TriangleList
     };
 
+    enum class eRenderTargetType : Uint8
+    {
+        Forward,
+        Deferred
+    };
+
     struct ShaderInfo
     {
+        eRenderTargetType render_target_type = eRenderTargetType::Forward;
         eRasterizerType   rasterizer_type    = eRasterizerType::CullBack;
         eDepthStencilType depth_stencil_type = eDepthStencilType::Less;
         eBlendType        blend_type         = eBlendType::Default;

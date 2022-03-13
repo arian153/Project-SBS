@@ -231,4 +231,9 @@ namespace Engine
             DEVICE->CreateShaderResourceView(m_texture_2d.Get(), &srv_desc, m_srv_heap_begin);
         }
     }
+
+    void Texture::Reset()
+    {
+        m_texture_2d.Reset();
+    }
 }

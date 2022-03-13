@@ -113,9 +113,24 @@ namespace Engine
         m_pipeline_desc.SampleMask            = UINT_MAX;
         m_pipeline_desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
         m_pipeline_desc.NumRenderTargets      = 1;
-        m_pipeline_desc.RTVFormats[0]         = RENDER_SYS_DX12->GetRTVFormat();
+        m_pipeline_desc.RTVFormats[0]         = DXGI_FORMAT_R8G8B8A8_UNORM;
         m_pipeline_desc.SampleDesc.Count      = 1;
-        m_pipeline_desc.DSVFormat             = RENDER_SYS_DX12->GetDSVFormat();
+        m_pipeline_desc.DSVFormat             = DXGI_FORMAT_D32_FLOAT;
+
+        switch (m_shader_info.render_target_type)
+        {
+        case eRenderTargetType::Forward:
+            m_pipeline_desc.NumRenderTargets = 1;
+            m_pipeline_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM; 
+            break;
+        case eRenderTargetType::Deferred:
+            m_pipeline_desc.NumRenderTargets = RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT;
+            m_pipeline_desc.RTVFormats[0] = DXGI_FORMAT_R32G32B32A32_FLOAT; // POSITION
+            m_pipeline_desc.RTVFormats[1] = DXGI_FORMAT_R32G32B32A32_FLOAT; // NORMAL
+            m_pipeline_desc.RTVFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM; // COLOR
+            break;
+        default: ;
+        }
 
         switch (m_shader_info.topology)
         {

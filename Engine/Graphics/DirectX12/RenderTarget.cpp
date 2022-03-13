@@ -70,4 +70,27 @@ namespace Engine
 
         CMD_LIST->ClearDepthStencilView(m_dsv_heap_begin, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
     }
+
+    SPtr<Texture> RenderTargetGroup::GetRTTexture(Uint32 index)
+    {
+        return m_rt_vec[index].target;
+    }
+
+    SPtr<Texture> RenderTargetGroup::GetDSTexture()
+    {
+        return m_ds_texture;
+    }
+
+    void RenderTargetGroup::Reset() const
+    {
+        if (m_ds_texture != nullptr)
+        {
+            m_ds_texture->Reset();
+        }
+
+        for (Uint32 i = 0; i < m_rt_count; ++i)
+        {
+            m_rt_vec[i].target->Reset();
+        }
+    }
 }

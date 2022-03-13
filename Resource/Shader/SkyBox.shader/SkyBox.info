@@ -2,6 +2,7 @@
   "Layout": "TexVertex",
   "Shader Model": "5_0",
   "Is Integrated": true,
+  "Render Target Type": 0,
   "Rasterizer Type": 0,
   "Depth Stencil Type": 1,
   "Blend Type": 0,

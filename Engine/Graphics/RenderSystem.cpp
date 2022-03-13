@@ -63,15 +63,6 @@ namespace Engine
     void RenderSystem::RenderBegin() const
     {
         m_dx12_layer->RenderBegin(COLOR[static_cast<Uint32>(eColorInfo::Black)]);
-
-        for (auto& subsystem : m_subsystems)
-        {
-            subsystem->ClearConstantBuffers();
-        }
-
-        m_table_descriptor_heap->Clear();
-        ID3D12DescriptorHeap* desc_heap = m_table_descriptor_heap->GetDescriptorHeap().Get();
-        m_dx12_layer->GetCmdList()->SetDescriptorHeaps(1, &desc_heap);
     }
 
     void RenderSystem::RenderEnd() const
@@ -85,6 +76,18 @@ namespace Engine
         subsystem->OnResize(m_viewport_manager.GetPerspectiveMatrix(), m_viewport_manager.GetOrthoGraphicMatrix());
         m_subsystems.push_back(subsystem);
         return subsystem;
+    }
+
+    void RenderSystem::ClearConstantBuffers() const
+    {
+        for (auto& subsystem : m_subsystems)
+        {
+            subsystem->ClearConstantBuffers();
+        }
+
+        m_table_descriptor_heap->Clear();
+        ID3D12DescriptorHeap* desc_heap = m_table_descriptor_heap->GetDescriptorHeap().Get();
+        m_dx12_layer->GetCmdList()->SetDescriptorHeaps(1, &desc_heap);
     }
 
     void RenderSystem::OnResize(Sint32 width, Sint32 height)
@@ -127,7 +130,6 @@ namespace Engine
     void RenderSystem::CreateRenderTargetGroups()
     {
         // DepthStencil
-
         SPtr<Texture> ds_texture = RESOURCE_MANAGER->CreateTexture("DepthStencil");
         ds_texture->Create(
                            DXGI_FORMAT_D32_FLOAT, m_window_info.width, m_window_info.height,
@@ -149,8 +151,8 @@ namespace Engine
                 rt_vec[i].target->CreateFromResource(resource);
             }
 
-            _rtGroups[static_cast<Uint32>(eRenderTargetGroupType::SwapChain)] = std::make_shared<RenderTargetGroup>();
-            _rtGroups[static_cast<Uint32>(eRenderTargetGroupType::SwapChain)]->Create(eRenderTargetGroupType::SwapChain, rt_vec, ds_texture);
+            m_rt_groups[static_cast<Uint32>(eRenderTargetGroupType::SwapChain)] = std::make_shared<RenderTargetGroup>();
+            m_rt_groups[static_cast<Uint32>(eRenderTargetGroupType::SwapChain)]->Create(eRenderTargetGroupType::SwapChain, rt_vec, ds_texture);
         }
 
         // Deferred Group
@@ -172,8 +174,21 @@ namespace Engine
                                      CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
                                      D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 
-            _rtGroups[static_cast<Uint32>(eRenderTargetGroupType::GBuffer)] = std::make_shared<RenderTargetGroup>();
-            _rtGroups[static_cast<Uint32>(eRenderTargetGroupType::GBuffer)]->Create(eRenderTargetGroupType::GBuffer, rt_vec, ds_texture);
+            m_rt_groups[static_cast<Uint32>(eRenderTargetGroupType::GBuffer)] = std::make_shared<RenderTargetGroup>();
+            m_rt_groups[static_cast<Uint32>(eRenderTargetGroupType::GBuffer)]->Create(eRenderTargetGroupType::GBuffer, rt_vec, ds_texture);
+        }
+
+        m_b_created_rtg = true;
+    }
+
+    void RenderSystem::ResetRenderTargetGroups() const
+    {
+        if (m_b_created_rtg == false)
+            return;
+
+        for (Uint32 i = 0; i < RENDER_TARGET_GROUP_COUNT; ++i)
+        {
+            m_rt_groups[i]->Reset();
         }
     }
 
@@ -209,6 +224,6 @@ namespace Engine
 
     SPtr<RenderTargetGroup> RenderSystem::GetRTGroup(eRenderTargetGroupType type)
     {
-        return _rtGroups[static_cast<Uint32>(type)];
+        return m_rt_groups[static_cast<Uint32>(type)];
     }
 }

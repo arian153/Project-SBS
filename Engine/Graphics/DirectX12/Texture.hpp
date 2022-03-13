@@ -29,6 +29,8 @@ namespace Engine
 
         void CreateFromResource(ComPtr<ID3D12Resource> tex_2d);
 
+        void Reset();
+
     private:
         bool                   m_b_cube_map = false;
         size_t                 m_mip_level  = 0;

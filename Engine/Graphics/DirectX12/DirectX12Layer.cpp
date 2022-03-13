@@ -8,7 +8,7 @@
 namespace Engine
 {
     DirectX12Layer::DirectX12Layer()
-        : m_rtv_handle {}, m_screen_viewport(), m_scissor_rect()
+        : m_screen_viewport(), m_scissor_rect()
     {
     }
 
@@ -22,7 +22,6 @@ namespace Engine
         CreateDevice();
         CreateCommandQueue();
         CreateSwapChain(window_info);
-        CreateRTVAndDSVHeaps();
 
         OnResize(window_info.width, window_info.height, window_info.b_windowed);
         SetVSyncFlag(window_info.b_vsync);
@@ -51,33 +50,19 @@ namespace Engine
         m_command_list->Reset(m_direct_cmd_list_alloc.Get(), nullptr);
 
         // Release the previous resources we will be recreating.
-        for (Uint32 i = 0; i < SWAP_CHAIN_BUFFER_COUNT; ++i)
-        {
-            m_rtv_buffer[i].Reset();
-        }
-        m_dsv_buffer.Reset();
+        RENDER_SYS->ResetRenderTargetGroups();
 
         // Resize the swap chain.
 
         m_swap_chain->ResizeBuffers(
                                     SWAP_CHAIN_BUFFER_COUNT,
                                     width, height,
-                                    m_rtv_format,
+                                    DXGI_FORMAT_R8G8B8A8_UNORM,
                                     DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 
         m_curr_back_buffer = 0;
 
-        // Create Render Target View
-        CreateRTV();
-
-        // Create the depth/stencil buffer and view.
-        CreateDSV(width, height);
-
-        // Transition the resource from its initial state to be used as a depth buffer.
-        auto resource_barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-                                                                     m_dsv_buffer.Get(),
-                                                                     D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-        m_command_list->ResourceBarrier(1, &resource_barrier);
+        RENDER_SYS->CreateRenderTargetGroups();
 
         // Execute the resize commands.
         m_command_list->Close();
@@ -95,7 +80,6 @@ namespace Engine
     void DirectX12Layer::OnFullscreen(bool b_fullscreen) const
     {
         m_swap_chain->SetFullscreenState(b_fullscreen, nullptr);
-        //OnResize(m_width, m_height, !b_fullscreen);
     }
 
     void DirectX12Layer::SetVSyncFlag(bool b_vsync_enabled)
@@ -127,35 +111,32 @@ namespace Engine
         //reset pso here
         m_command_list->Reset(m_direct_cmd_list_alloc.Get(), nullptr);
 
+        Uint32 back_buffer_index = GetBackBufferIndex();
+
         D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-                                                                              CurrentBackRTVBuffer(),
+
+                                                                              RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->GetRTTexture(back_buffer_index)->GetTex2D().Get(),
                                                                               D3D12_RESOURCE_STATE_PRESENT,
                                                                               D3D12_RESOURCE_STATE_RENDER_TARGET);
 
         m_command_list->SetGraphicsRootSignature(ROOT_SIGNATURE.Get());
+
+        RENDER_SYS->ClearConstantBuffers();
 
         m_command_list->ResourceBarrier(1, &barrier);
 
         // Set the viewport and scissor rect.  This needs to be reset whenever the command list is reset.
         m_command_list->RSSetViewports(1, &m_screen_viewport);
         m_command_list->RSSetScissorRects(1, &m_scissor_rect);
-
-        // Specify the buffers we are going to render to.
-        D3D12_CPU_DESCRIPTOR_HANDLE back_buffer_view = GetBackRTVHandle();
-        m_command_list->ClearRenderTargetView(back_buffer_view, clear_color.data, 0, nullptr);
-
-        D3D12_CPU_DESCRIPTOR_HANDLE depth_stencil_view = GetDSVHandle();
-        m_command_list->ClearDepthStencilView(depth_stencil_view, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
-        m_command_list->OMSetRenderTargets(1, &back_buffer_view, FALSE, &depth_stencil_view);
     }
 
     void DirectX12Layer::RenderEnd()
     {
-        D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-                                                                              CurrentBackRTVBuffer(),
-                                                                              D3D12_RESOURCE_STATE_RENDER_TARGET,
-                                                                              D3D12_RESOURCE_STATE_PRESENT);
+        Uint32                 back_buffer_index = GetBackBufferIndex();
+        D3D12_RESOURCE_BARRIER barrier           = CD3DX12_RESOURCE_BARRIER::Transition(
+                                                                                        RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->GetRTTexture(back_buffer_index)->GetTex2D().Get(),
+                                                                                        D3D12_RESOURCE_STATE_RENDER_TARGET,
+                                                                                        D3D12_RESOURCE_STATE_PRESENT);
 
         m_command_list->ResourceBarrier(1, &barrier);
         m_command_list->Close();
@@ -184,14 +165,9 @@ namespace Engine
         return m_resource_cmd_list;
     }
 
-    DXGI_FORMAT DirectX12Layer::GetDSVFormat() const
+    Uint32 DirectX12Layer::GetBackBufferIndex() const
     {
-        return m_dsv_format;
-    }
-
-    DXGI_FORMAT DirectX12Layer::GetRTVFormat() const
-    {
-        return m_rtv_format;
+        return m_curr_back_buffer;
     }
 
     void DirectX12Layer::CreateDevice()
@@ -260,7 +236,7 @@ namespace Engine
         swap_chain_desc.BufferDesc.Height                  = static_cast<Uint32>(window_info.height);
         swap_chain_desc.BufferDesc.RefreshRate.Numerator   = 60;
         swap_chain_desc.BufferDesc.RefreshRate.Denominator = 1;
-        swap_chain_desc.BufferDesc.Format                  = m_rtv_format;
+        swap_chain_desc.BufferDesc.Format                  = DXGI_FORMAT_R8G8B8A8_UNORM;
         swap_chain_desc.BufferDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
         swap_chain_desc.BufferDesc.Scaling                 = DXGI_MODE_SCALING_UNSPECIFIED;
         swap_chain_desc.SampleDesc.Count                   = 1;
@@ -274,63 +250,6 @@ namespace Engine
 
         // Note: Swap chain uses queue to perform flush.
         m_dxgi_factory->CreateSwapChain(m_command_queue.Get(), &swap_chain_desc, m_swap_chain.GetAddressOf());
-    }
-
-    void DirectX12Layer::CreateRTVAndDSVHeaps()
-    {
-        D3D12_DESCRIPTOR_HEAP_DESC rtv_heap_desc = {};
-        rtv_heap_desc.NumDescriptors             = SWAP_CHAIN_BUFFER_COUNT;
-        rtv_heap_desc.Type                       = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-        rtv_heap_desc.Flags                      = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        rtv_heap_desc.NodeMask                   = 0;
-
-        m_device->CreateDescriptorHeap(&rtv_heap_desc, IID_PPV_ARGS(m_rtv_heap.GetAddressOf()));
-
-        D3D12_DESCRIPTOR_HEAP_DESC dsv_heap_desc = {};
-        dsv_heap_desc.NumDescriptors             = 1;
-        dsv_heap_desc.Type                       = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-        dsv_heap_desc.Flags                      = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        dsv_heap_desc.NodeMask                   = 0;
-
-        m_device->CreateDescriptorHeap(&dsv_heap_desc, IID_PPV_ARGS(m_dsv_heap.GetAddressOf()));
-    }
-
-    void DirectX12Layer::CreateRTV()
-    {
-        D3D12_CPU_DESCRIPTOR_HANDLE rtv_heap_begin = m_rtv_heap->GetCPUDescriptorHandleForHeapStart();
-
-        for (int i = 0; i < SWAP_CHAIN_BUFFER_COUNT; i++)
-        {
-            m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&m_rtv_buffer[i]));
-            m_rtv_handle[i] = CD3DX12_CPU_DESCRIPTOR_HANDLE(rtv_heap_begin, i * m_rtv_descriptor_size);
-            m_device->CreateRenderTargetView(m_rtv_buffer[i].Get(), nullptr, m_rtv_handle[i]);
-        }
-    }
-
-    void DirectX12Layer::CreateDSV(Sint32 width, Sint32 height)
-    {
-        D3D12_HEAP_PROPERTIES heap_property      = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-        D3D12_RESOURCE_DESC   depth_stencil_desc = CD3DX12_RESOURCE_DESC::Tex2D(m_dsv_format, width, height, 1, 1);
-        depth_stencil_desc.Flags                 = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-        D3D12_CLEAR_VALUE opt_clear              = CD3DX12_CLEAR_VALUE(m_dsv_format, 1.0f, 0);
-
-        m_device->CreateCommittedResource(
-                                          &heap_property,
-                                          D3D12_HEAP_FLAG_NONE,
-                                          &depth_stencil_desc,
-                                          D3D12_RESOURCE_STATE_COMMON,
-                                          &opt_clear,
-                                          IID_PPV_ARGS(m_dsv_buffer.GetAddressOf()));
-
-        // Create descriptor to mip level 0 of entire resource using the format of the resource.
-        D3D12_DEPTH_STENCIL_VIEW_DESC dsv_desc = {};
-        dsv_desc.Flags                         = D3D12_DSV_FLAG_NONE;
-        dsv_desc.ViewDimension                 = D3D12_DSV_DIMENSION_TEXTURE2D;
-        dsv_desc.Format                        = m_dsv_format;
-        dsv_desc.Texture2D.MipSlice            = 0;
-
-        m_dsv_handle = m_dsv_heap->GetCPUDescriptorHandleForHeapStart();
-        m_device->CreateDepthStencilView(m_dsv_buffer.Get(), &dsv_desc, m_dsv_handle);
     }
 
     void DirectX12Layer::WaitSync()
@@ -375,33 +294,5 @@ namespace Engine
     void DirectX12Layer::SwapIndex()
     {
         m_curr_back_buffer = (m_curr_back_buffer + 1) % SWAP_CHAIN_BUFFER_COUNT;
-    }
-
-    ID3D12Resource* DirectX12Layer::CurrentBackRTVBuffer() const
-    {
-        return m_rtv_buffer[m_curr_back_buffer].Get();
-    }
-
-    D3D12_CPU_DESCRIPTOR_HANDLE DirectX12Layer::CurrentBackRTVHandle() const
-    {
-        return CD3DX12_CPU_DESCRIPTOR_HANDLE(
-                                             m_rtv_heap->GetCPUDescriptorHandleForHeapStart(),
-                                             m_curr_back_buffer,
-                                             m_rtv_descriptor_size);
-    }
-
-    D3D12_CPU_DESCRIPTOR_HANDLE DirectX12Layer::GetDSVHandle() const
-    {
-        return m_dsv_handle;
-    }
-
-    D3D12_CPU_DESCRIPTOR_HANDLE DirectX12Layer::GetRTVHandle(Sint32 idx) const
-    {
-        return m_rtv_handle[idx];
-    }
-
-    D3D12_CPU_DESCRIPTOR_HANDLE DirectX12Layer::GetBackRTVHandle() const
-    {
-        return m_rtv_handle[m_curr_back_buffer];
     }
 }

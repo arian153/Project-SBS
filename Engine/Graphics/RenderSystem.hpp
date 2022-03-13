@@ -30,6 +30,8 @@ namespace Engine
 
         SPtr<RenderSubsystem> CreateSubsystem();
 
+        void ClearConstantBuffers() const;
+
     private:
         void Initialize() override;
         void Update() override;
@@ -42,9 +44,11 @@ namespace Engine
 
         void PostInitialize();
         void CreateRenderTargetGroups();
+        void ResetRenderTargetGroups() const;
 
     private:
         friend class CoreSystem;
+        friend class DirectX12Layer;
 
     public:
         SPtr<DirectX12Layer>      GetDirectX12Layer();
@@ -67,9 +71,9 @@ namespace Engine
         ViewportManager           m_viewport_manager;
 
         bool m_b_init = false;
+        bool m_b_created_rtg = false;
 
-        std::array<SPtr<RenderTargetGroup>, RENDER_TARGET_GROUP_COUNT> _rtGroups;
-  
+        std::array<SPtr<RenderTargetGroup>, RENDER_TARGET_GROUP_COUNT> m_rt_groups;
         std::vector<SPtr<RenderSubsystem>> m_subsystems;
     };
 }

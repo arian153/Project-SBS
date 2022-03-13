@@ -1,5 +1,6 @@
 #include "RenderSubsystem.hpp"
 
+#include "GraphicsDefine.hpp"
 #include "../Core/ComponentManager/Components/LightCompo.hpp"
 #include "../Core/ComponentManager/Components/OrbitCameraCompo.hpp"
 #include "Element/Camera.hpp"
@@ -56,6 +57,21 @@ namespace Engine
 
             GetConstantBuffer(eConstantBufferType::GlobalPerFrame)->SetGlobalData(&light_params, sizeof(light_params));
         }
+
+        // Swap Chain
+        Uint32 back_index = RENDER_SYS_DX12->GetBackBufferIndex();
+        RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->ClearRenderTargetView(back_index);
+
+        // Deferred G-Buffer Group
+        //RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->ClearRenderTargetView();
+
+        // Deferred OMSet
+        //RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->OMSetRenderTargets();
+
+        // Light OMSet
+
+        // Swap Chain OMSet
+        RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->OMSetRenderTargets(1, back_index);
 
         MatrixParams matrix_params;
         matrix_params.view = m_curr_camera->GetViewMatrix();
