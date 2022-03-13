@@ -4,6 +4,7 @@
 #include "../../../External/imgui/imgui.h"
 #include "../../../Graphics/Element/Material.hpp"
 #include "../../../Graphics/Element/Model.hpp"
+#include "../../../Graphics/Shader/ShaderProgram.hpp"
 #include "../../AppStateManager/AppState.hpp"
 #include "../../ObjectManager/Object.hpp"
 #include "../../ResourceManager/ResourceType/JsonData.hpp"
@@ -105,8 +106,9 @@ namespace Engine
         m_model->SetMeshData(mesh_data);
     }
 
-    void MeshCompo::SetShader(SPtr<ShaderProgram> shader) const
+    void MeshCompo::SetShader(SPtr<ShaderProgram> shader)
     {
+        m_b_deferred = shader->IsDeferred();
         m_model->SetShader(shader);
     }
 
@@ -123,6 +125,11 @@ namespace Engine
             return m_owner->GetComponent<TransformCompo>()->GetLocalToWorldMatrix();
         }
         return Matrix44::Identity();
+    }
+
+    bool MeshCompo::IsDeferred() const
+    {
+        return m_b_deferred;
     }
 
     void MeshCompo::Subscribe()

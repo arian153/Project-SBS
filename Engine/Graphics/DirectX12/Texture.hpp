@@ -25,7 +25,7 @@ namespace Engine
                     const D3D12_HEAP_PROPERTIES& heap_property,
                     D3D12_HEAP_FLAGS             heap_flags,
                     D3D12_RESOURCE_FLAGS         res_flags,
-                    const Color&                 clear_color = Color());
+                    const Color&                 clear_color = Color(0, 0, 0, 0));
 
         void CreateFromResource(ComPtr<ID3D12Resource> tex_2d);
 

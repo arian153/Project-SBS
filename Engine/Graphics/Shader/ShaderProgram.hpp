@@ -17,6 +17,8 @@ namespace Engine
         void Bind() const;
 
         String GetName() const;
+        bool IsDeferred() const;
+
     private:
         bool CreateShader(const StringWide& path, const String& name, const String& version, ComPtr<ID3DBlob>& blob, D3D12_SHADER_BYTECODE& shader_byte_code);
         bool CreateVertexShader(const StringWide& path, const String& name, const String& version);

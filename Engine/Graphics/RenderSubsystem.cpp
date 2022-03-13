@@ -38,7 +38,7 @@ namespace Engine
             light_compo->Update(dt);
         }
 
-        for (auto& mesh_compo : m_mesh_compos)
+        for (auto& mesh_compo : m_forward_mesh_compos)
         {
             mesh_compo->Update(dt);
         }
@@ -58,32 +58,51 @@ namespace Engine
             GetConstantBuffer(eConstantBufferType::GlobalPerFrame)->SetGlobalData(&light_params, sizeof(light_params));
         }
 
-        // Swap Chain
         Uint32 back_index = RENDER_SYS_DX12->GetBackBufferIndex();
-        RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->ClearRenderTargetView(back_index);
 
-        // Deferred G-Buffer Group
-        //RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->ClearRenderTargetView();
+        // Clear Render targets
+        {
+            // Swap Chain
+            RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->ClearRenderTargetView(back_index);
 
-        // Deferred OMSet
-        //RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->OMSetRenderTargets();
-
-        // Light OMSet
-
-        // Swap Chain OMSet
-        RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->OMSetRenderTargets(1, back_index);
+            // Deferred G-Buffer Group
+            RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->ClearRenderTargetView();
+        }
 
         MatrixParams matrix_params;
         matrix_params.view = m_curr_camera->GetViewMatrix();
         matrix_params.proj = m_perspective;
 
-        for (auto& mesh_compo : m_mesh_compos)
+        // Deferred OMSet
         {
-            matrix_params.world = mesh_compo->GetWorldMatrix();
-            matrix_params.wv = matrix_params.world * matrix_params.view;
-            matrix_params.wvp = matrix_params.world * matrix_params.view * matrix_params.proj;
-            GetConstantBuffer(eConstantBufferType::Transform)->PushData(&matrix_params, sizeof(matrix_params));
-            mesh_compo->Render();
+            RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->OMSetRenderTargets();
+
+            for (auto& mesh_compo : m_deferred_mesh_compos)
+            {
+                matrix_params.world = mesh_compo->GetWorldMatrix();
+                matrix_params.wv    = matrix_params.world * matrix_params.view;
+                matrix_params.wvp   = matrix_params.world * matrix_params.view * matrix_params.proj;
+                GetConstantBuffer(eConstantBufferType::Transform)->PushData(&matrix_params, sizeof(matrix_params));
+                mesh_compo->Render();
+            }
+        }
+
+        // Light OMSet
+        {
+        }
+
+        // Swap Chain OMSet
+        {
+            RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->OMSetRenderTargets(1, back_index);
+
+            for (auto& mesh_compo : m_forward_mesh_compos)
+            {
+                matrix_params.world = mesh_compo->GetWorldMatrix();
+                matrix_params.wv    = matrix_params.world * matrix_params.view;
+                matrix_params.wvp   = matrix_params.world * matrix_params.view * matrix_params.proj;
+                GetConstantBuffer(eConstantBufferType::Transform)->PushData(&matrix_params, sizeof(matrix_params));
+                mesh_compo->Render();
+            }
         }
 
         /* for (auto& model : m_models)
@@ -95,21 +114,33 @@ namespace Engine
 
     void RenderSubsystem::Shutdown()
     {
-        m_mesh_compos.clear();
+        m_forward_mesh_compos.clear();
         m_models.clear();
     }
 
     void RenderSubsystem::AddMeshCompo(RPtr<MeshCompo> compo)
     {
-        m_mesh_compos.push_back(compo);
+        if (compo->IsDeferred())
+            m_deferred_mesh_compos.push_back(compo);
+        m_forward_mesh_compos.push_back(compo);
     }
 
     void RenderSubsystem::RemoveMeshCompo(RPtr<MeshCompo> compo)
     {
-        auto found = std::find(m_mesh_compos.begin(), m_mesh_compos.end(), compo);
-        if (found != m_mesh_compos.end())
+        if (compo->IsDeferred())
         {
-            m_mesh_compos.erase(found);
+            auto found = std::find(m_deferred_mesh_compos.begin(), m_deferred_mesh_compos.end(), compo);
+            if (found != m_deferred_mesh_compos.end())
+            {
+                m_deferred_mesh_compos.erase(found);
+            }
+            return;
+        }
+
+        auto found = std::find(m_forward_mesh_compos.begin(), m_forward_mesh_compos.end(), compo);
+        if (found != m_forward_mesh_compos.end())
+        {
+            m_forward_mesh_compos.erase(found);
         }
     }
 

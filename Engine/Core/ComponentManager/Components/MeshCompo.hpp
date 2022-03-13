@@ -31,10 +31,11 @@ namespace Engine
         void SetMaterialInfo(Uint32 index, Sint32 value) const;
         void SetMaterialTexture(Uint32 index, SPtr<Texture> texture) const;
         void SetMeshData(const MeshData& mesh_data);
-        void SetShader(SPtr<ShaderProgram> shader) const;
+        void SetShader(SPtr<ShaderProgram> shader);
 
         void     Render() const;
         Matrix44 GetWorldMatrix() const;
+        bool     IsDeferred() const;
 
     protected:
         void Subscribe() override;
@@ -44,6 +45,8 @@ namespace Engine
         friend class MeshFactory;
 
     private:
+        bool m_b_deferred = false;
+
         SPtr<Model> m_model = nullptr;
 
         RPtr<ModelResource> m_model_resource = nullptr;

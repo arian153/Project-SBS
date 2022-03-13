@@ -38,6 +38,11 @@ namespace Engine
         return m_shader_name;
     }
 
+    bool ShaderProgram::IsDeferred() const
+    {
+        return m_shader_info.render_target_type != eRenderTargetType::Forward;
+    }
+
     bool ShaderProgram::CreateShader(const StringWide& path, const String& name, const String& version, ComPtr<ID3DBlob>& blob, D3D12_SHADER_BYTECODE& shader_byte_code)
     {
         Uint32 compile_flag;
@@ -121,7 +126,7 @@ namespace Engine
         {
         case eRenderTargetType::Forward:
             m_pipeline_desc.NumRenderTargets = 1;
-            m_pipeline_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM; 
+            m_pipeline_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
             break;
         case eRenderTargetType::Deferred:
             m_pipeline_desc.NumRenderTargets = RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT;

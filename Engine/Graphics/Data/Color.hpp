@@ -15,7 +15,7 @@ namespace Engine
     public:
         union
         {
-            Real data[4] = { 1 };
+            Real data[4] = { 1, 1, 1, 1 };
 
             struct
             {
