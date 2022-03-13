@@ -52,7 +52,7 @@ namespace Engine
                 continue;
 
             auto reg = static_cast<eSRVRegister>(static_cast<Uint32>(eSRVRegister::t0) + i);
-            DESCRIPTOR_HEAP->SetSRV(m_textures[i]->GetCpuHandle(), reg);
+            DESCRIPTOR_HEAP->SetSRV(m_textures[i]->GetSRVHandle(), reg);
         }
 
         //Bind Pipeline State in Shader Program

@@ -31,6 +31,6 @@ namespace Engine
 
     void TextureResource::Load()
     {
-        m_b_loaded = m_texture->Initialize(m_wide_path, m_extension);
+        m_b_loaded = m_texture->Load(m_wide_path, m_extension);
     }
 }

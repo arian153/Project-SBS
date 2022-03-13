@@ -1,6 +1,7 @@
 #pragma once
 #include "DirectXIncludes.hpp"
 #include "../../EngineDefine.hpp"
+#include "../Data/Color.hpp"
 
 namespace Engine
 {
@@ -9,13 +10,24 @@ namespace Engine
     public:
         Texture();
         ~Texture();
-        bool Initialize(const StringWide& path, const String& ext);
-
-        D3D12_CPU_DESCRIPTOR_HANDLE GetCpuHandle() const;
 
     public:
-        bool CreateTexture(const StringWide& path, const String& ext);
-        bool CreateView();
+        ComPtr<ID3D12Resource>       GetTex2D();
+        ComPtr<ID3D12DescriptorHeap> GetSRV();
+        ComPtr<ID3D12DescriptorHeap> GetRTV();
+        ComPtr<ID3D12DescriptorHeap> GetDSV();
+        D3D12_CPU_DESCRIPTOR_HANDLE  GetSRVHandle() const;
+
+    public:
+        bool Load(const StringWide& path, const String& ext);
+
+        void Create(DXGI_FORMAT                  format, Uint32 width, Uint32 height,
+                    const D3D12_HEAP_PROPERTIES& heap_property,
+                    D3D12_HEAP_FLAGS             heap_flags,
+                    D3D12_RESOURCE_FLAGS         res_flags,
+                    const Color&                 clear_color = Color());
+
+        void CreateFromResource(ComPtr<ID3D12Resource> tex_2d);
 
     private:
         bool                   m_b_cube_map = false;
@@ -24,6 +36,9 @@ namespace Engine
         ComPtr<ID3D12Resource> m_texture_2d;
 
         ComPtr<ID3D12DescriptorHeap> m_srv_heap;
-        D3D12_CPU_DESCRIPTOR_HANDLE  m_srv_handle = {};
+        D3D12_CPU_DESCRIPTOR_HANDLE  m_srv_heap_begin = {};
+
+        ComPtr<ID3D12DescriptorHeap> m_rtv_heap;
+        ComPtr<ID3D12DescriptorHeap> m_dsv_heap;
     };
 }
