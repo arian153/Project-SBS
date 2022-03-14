@@ -24,6 +24,8 @@ namespace Engine
         void Render() override;
         void Shutdown() override;
 
+        void Edit();
+
         void AddMeshCompo(RPtr<MeshCompo> compo);
         void RemoveMeshCompo(RPtr<MeshCompo> compo);
 

@@ -15,6 +15,7 @@ namespace Engine
         void Render() override;
         void Shutdown() override;
 
+        void Edit();
     private:
     };
 }

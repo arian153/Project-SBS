@@ -3,6 +3,7 @@
 #include "GraphicsDefine.hpp"
 #include "../Core/ComponentManager/Components/LightCompo.hpp"
 #include "../Core/ComponentManager/Components/OrbitCameraCompo.hpp"
+#include "../External/imgui/imgui.h"
 #include "Element/Camera.hpp"
 #include "Element/Light.hpp"
 #include "Element/Material.hpp"
@@ -126,6 +127,20 @@ namespace Engine
     {
         m_mesh_compos.clear();
         m_models.clear();
+    }
+
+    void RenderSubsystem::Edit()
+    {
+        if (ImGui::CollapsingHeader("Render Subsystem"))
+        {
+            auto g_buffer = RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer);
+            Uint32 size = g_buffer->RTCount();
+
+            for (Uint32 i = 0; i < size; ++i)
+            {
+                //ImGui::Image((ImTextureID)g_buffer->GetRTTexture(i)->GetSRV()->GetCPUDescriptorHandleForHeapStart().ptr, ImVec2(100, 100));
+            }
+        }
     }
 
     void RenderSubsystem::AddMeshCompo(RPtr<MeshCompo> compo)

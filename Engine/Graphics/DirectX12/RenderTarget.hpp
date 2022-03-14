@@ -38,6 +38,7 @@ namespace Engine
         SPtr<Texture> GetDSTexture();
 
         void Reset() const;
+        Uint32 RTCount() const;
 
     private:
         eRenderTargetGroupType       m_group_type = eRenderTargetGroupType::End;

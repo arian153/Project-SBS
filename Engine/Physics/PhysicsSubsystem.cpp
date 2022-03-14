@@ -32,6 +32,10 @@ namespace Engine
     {
     }
 
+    void PhysicsSubsystem::Edit()
+    {
+    }
+
     void PhysicsSubsystem::AddCompo(RPtr<RigidBodyCompo> compo)
     {
         m_rigid_body_compos.push_back(compo);

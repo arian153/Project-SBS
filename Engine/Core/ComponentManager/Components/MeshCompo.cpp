@@ -2,6 +2,7 @@
 
 #include "TransformCompo.hpp"
 #include "../../../External/imgui/imgui.h"
+#include "../../../Graphics/DirectX12/Texture.hpp"
 #include "../../../Graphics/Element/Material.hpp"
 #include "../../../Graphics/Element/Model.hpp"
 #include "../../../Graphics/Shader/ShaderProgram.hpp"
@@ -94,6 +95,70 @@ namespace Engine
         {
             m_model->GetMaterial(i).SetTexture(index, texture);
         }
+    }
+
+    void MeshCompo::SetDiffuseTexture(Uint32 index, SPtr<Texture> texture) const
+    {
+        size_t size = m_model->Count();
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            m_model->GetMaterial(i).SetTexture(index, texture);
+        }
+    }
+
+    void MeshCompo::SetSpecularMapTexture(SPtr<Texture> texture) const
+    {
+        size_t size = m_model->Count();
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            m_model->GetMaterial(i).SetTexture(4, texture);
+        }
+    }
+
+    void MeshCompo::SetNormalMapTexture(SPtr<Texture> texture) const
+    {
+        size_t size = m_model->Count();
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            m_model->GetMaterial(i).SetTexture(5, texture);
+        }
+    }
+
+    void MeshCompo::SetMappingTexture(SPtr<Texture> texture) const
+    {
+        size_t size = m_model->Count();
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            m_model->GetMaterial(i).SetTexture(6, texture);
+        }
+    }
+
+    void MeshCompo::SetCubeMapTexture(SPtr<Texture> texture) const
+    {
+        size_t size = m_model->Count();
+
+        if (texture->IsCubeMap())
+        {
+            SetMaterialInfo(0, 1);
+            for (size_t i = 0; i < size; ++i)
+            {
+                m_model->GetMaterial(i).SetTexture(7, texture);
+            }
+        }
+        else
+        {
+            SetMaterialInfo(0, 0);
+            for (size_t i = 0; i < size; ++i)
+            {
+                m_model->GetMaterial(i).SetTexture(0, texture);
+            }
+        }
+
+       
     }
 
     void MeshCompo::SetMeshData(const MeshData& mesh_data)

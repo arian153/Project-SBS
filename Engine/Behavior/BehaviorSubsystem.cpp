@@ -29,6 +29,11 @@ namespace Engine
         m_transforms.clear();
     }
 
+    void BehaviorSubsystem::Edit()
+    {
+
+    }
+
     void BehaviorSubsystem::AddTransform(RPtr<TransformCompo> compo)
     {
         m_transforms.push_back(compo);

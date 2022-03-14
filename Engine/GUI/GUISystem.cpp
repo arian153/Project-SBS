@@ -19,6 +19,11 @@ namespace Engine
     {
     }
 
+    void GUISystem::AddImage()
+    {
+        m_srv_descriptor_heap->Increase();
+    }
+
     void GUISystem::Initialize()
     {
         SetUpImGUI();
@@ -97,6 +102,8 @@ namespace Engine
         ImGui_ImplDX12_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
+
+        ImGui::ShowDemoWindow();
     }
 
     void GUISystem::EndImGUI()

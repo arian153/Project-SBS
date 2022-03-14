@@ -42,6 +42,29 @@ namespace Engine
         return m_animation_subsystem.get();
     }
 
+    void AppState::Edit() const
+    {
+        if (HasFlag(m_creation_flag, eSubsystemFlag::BehaviorSubsystem))
+        {
+            m_behavior_subsystem->Edit();
+        }
+
+        if (HasFlag(m_creation_flag, eSubsystemFlag::AnimationSubsystem))
+        {
+            m_animation_subsystem->Edit();
+        }
+
+        if (HasFlag(m_creation_flag, eSubsystemFlag::PhysicsSubsystem))
+        {
+            m_physics_subsystem->Edit();
+        }
+
+        if (HasFlag(m_creation_flag, eSubsystemFlag::RenderSubsystem))
+        {
+            m_render_subsystem->Edit();
+        }
+    }
+
     void AppState::SetDefaultSubsystems()
     {
         m_creation_flag = eSubsystemFlag::ComponentManager | eSubsystemFlag::ObjectManager |
@@ -171,5 +194,4 @@ namespace Engine
             m_component_manager->Shutdown();
         }
     }
-
-   }
+}

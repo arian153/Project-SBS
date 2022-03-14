@@ -18,6 +18,8 @@ namespace Engine
         ComPtr<ID3D12DescriptorHeap> GetDSV();
         D3D12_CPU_DESCRIPTOR_HANDLE  GetSRVHandle() const;
 
+        bool IsCubeMap() const;
+
     public:
         bool Load(const StringWide& path, const String& ext);
 

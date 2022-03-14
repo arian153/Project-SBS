@@ -42,6 +42,26 @@ namespace Engine
         m_textures[index] = texture;
     }
 
+    void Material::SetSpecularMap(SPtr<Texture> texture)
+    {
+        m_textures[4] = texture;
+    }
+
+    void Material::SetNormalMap(SPtr<Texture> texture)
+    {
+        m_textures[5] = texture;
+    }
+
+    void Material::SetOtherMap(SPtr<Texture> texture)
+    {
+        m_textures[6] = texture;
+    }
+
+    void Material::SetCubeMap(SPtr<Texture> texture)
+    {
+        m_textures[7] = texture;
+    }
+
     void Material::Bind(SPtr<ConstantBuffer> material_buffer) const
     {
         material_buffer->PushData(&m_material_params, sizeof(m_material_params));

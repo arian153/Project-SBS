@@ -15,6 +15,8 @@ namespace Engine
         GUISystem();
         ~GUISystem() override;
 
+        void AddImage();
+
     private:
         void Initialize() override;
         void Update() override;

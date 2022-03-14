@@ -32,7 +32,6 @@ namespace Engine
         b1,
         b2,
         b3,
-        b4,
         End
     };
 
@@ -43,6 +42,9 @@ namespace Engine
         t2,
         t3,
         t4,
+        t5,
+        t6,
+        t7,
         End
     };
 

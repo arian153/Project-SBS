@@ -43,19 +43,20 @@ int   g_int_0;
 int   g_int_1;
 int   g_int_2;
 int   g_int_3;
-int   g_int_4;
 float g_float_0;
 float g_float_1;
 float g_float_2;
 float g_float_3;
-float g_float_4;
 };
 
-Texture2D g_diff_tex_0 : register(t0);
-Texture2D g_diff_tex_1 : register(t1);
-Texture2D g_spec_tex_0 : register(t2);
-Texture2D g_norm_tex_0 : register(t3);
-Texture2D g_map_tex_0 : register(t4);
+Texture2D   g_diff_tex_0 : register(t0);
+Texture2D   g_diff_tex_1 : register(t1);
+Texture2D   g_diff_tex_2 : register(t2);
+Texture2D   g_diff_tex_3 : register(t3);
+Texture2D   g_spec_tex_0 : register(t4);
+Texture2D   g_norm_tex_0 : register(t5);
+Texture2D   g_map_tex_0  : register(t6);
+TextureCube g_cube_tex_0 : register(t7);
 
 SamplerState g_sam_0 : register(s0);
 

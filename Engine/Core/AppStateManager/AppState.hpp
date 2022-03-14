@@ -30,6 +30,8 @@ namespace Engine
         RPtr<BehaviorSubsystem>  GetBehaviorSubsystem() const;
         RPtr<AnimationSubsystem> GetAnimationSubsystem() const;
 
+        void Edit() const;
+
     protected:
         void SetDefaultSubsystems();
 

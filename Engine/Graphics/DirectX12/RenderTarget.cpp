@@ -93,4 +93,9 @@ namespace Engine
             m_rt_vec[i].target->Reset();
         }
     }
+
+    Uint32 RenderTargetGroup::RTCount() const
+    {
+        return m_rt_count;
+    }
 }

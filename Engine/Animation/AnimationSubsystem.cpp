@@ -25,4 +25,8 @@ namespace Engine
     void AnimationSubsystem::Shutdown()
     {
     }
+
+    void AnimationSubsystem::Edit()
+    {
+    }
 }

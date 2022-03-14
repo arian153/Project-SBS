@@ -17,6 +17,8 @@ namespace Engine
         void Render() override;
         void Shutdown() override;
 
+        void Edit();
+
         void AddTransform(RPtr<TransformCompo> compo);
         void RemoveTransform(RPtr<TransformCompo> compo);
 

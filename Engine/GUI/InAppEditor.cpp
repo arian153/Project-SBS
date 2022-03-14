@@ -29,6 +29,7 @@ namespace Engine
 
         ImGui::Begin("AppState", nullptr, flag);
         ImGui::Text("Delta Time: %f", dt);
+        m_app_state->Edit();
         ImGui::End();
 
         {

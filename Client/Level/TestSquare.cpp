@@ -41,7 +41,7 @@ namespace Client
             mesh->SetMeshData(cube);
             mesh->SetShader(GET_SHADER_BY_NAME("GBuffer.shader"));
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Leather.jpg")->GetTexture());
-            mesh->SetMaterialTexture(3, RESOURCE_MANAGER->GetTextureResourceName("Leather_Normal.jpg")->GetTexture());
+            mesh->SetNormalMapTexture(RESOURCE_MANAGER->GetTextureResourceName("Leather_Normal.jpg")->GetTexture());
 
             /* mesh->SetMaterialInfoReal(0, 0.3f);
              mesh->SetMaterialInfoReal(1, -0.4f);
@@ -145,15 +145,14 @@ namespace Client
 
         //Sky Box
         {
-            auto obj       = m_object_manager->AddObject("Bunny");
-            auto transform = obj->AddComponent<TransformCompo>();
-            auto mesh      = obj->AddComponent<MeshCompo>();
-
-            MeshData sky_sphere = MeshDataGenerator::CreateSphere(1.0f, 13, 13);
+            auto obj = m_object_manager->AddObject("SkyBox");
+            obj->AddComponent<TransformCompo>();
+            auto mesh = obj->AddComponent<MeshCompo>();
+            MeshData sky_sphere = MeshDataGenerator::CreateSphere(1.0f, 30, 30);
 
             mesh->SetMeshData(sky_sphere);
             mesh->SetShader(GET_SHADER_BY_NAME("SkyBox.shader"));
-            mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Sky01.jpg")->GetTexture());
+            mesh->SetCubeMapTexture(RESOURCE_MANAGER->GetTextureResourceName("SeaCube.dds")->GetTexture());
         }
 
         ////Light 2 Red Point Light

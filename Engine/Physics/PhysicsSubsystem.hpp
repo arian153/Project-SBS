@@ -17,6 +17,8 @@ namespace Engine
         void Render() override;
         void Shutdown() override;
 
+        void Edit();
+
         void AddCompo(RPtr<RigidBodyCompo> compo);
         void RemoveCompo(RPtr<RigidBodyCompo> compo);
 

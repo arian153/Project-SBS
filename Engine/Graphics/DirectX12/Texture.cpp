@@ -37,6 +37,11 @@ namespace Engine
         return m_srv_heap_begin;
     }
 
+    bool Texture::IsCubeMap() const
+    {
+        return m_b_cube_map;
+    }
+
     bool Texture::Load(const StringWide& path, const String& ext)
     {
         TexMetadata meta_data;

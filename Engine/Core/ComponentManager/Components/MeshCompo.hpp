@@ -30,6 +30,11 @@ namespace Engine
         void SetMaterialInfoReal(Uint32 index, Real value) const;
         void SetMaterialInfo(Uint32 index, Sint32 value) const;
         void SetMaterialTexture(Uint32 index, SPtr<Texture> texture) const;
+        void SetDiffuseTexture(Uint32 index, SPtr<Texture> texture) const;
+        void SetSpecularMapTexture(SPtr<Texture> texture) const;
+        void SetNormalMapTexture(SPtr<Texture> texture) const;
+        void SetMappingTexture(SPtr<Texture> texture) const;
+        void SetCubeMapTexture(SPtr<Texture> texture) const;
         void SetMeshData(const MeshData& mesh_data);
         void SetShader(SPtr<ShaderProgram> shader);
 

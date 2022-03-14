@@ -70,4 +70,9 @@ float3 ProcessNormal(float2 tex, int type, float3 t, float3 b, float3 n)
     return normal;
 }
 
+float4 ProcessCubeMap(float3 local_pos)
+{
+    return g_cube_tex_0.Sample(g_sam_0, local_pos);
+}
+
 #endif
