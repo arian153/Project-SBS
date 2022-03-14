@@ -1,7 +1,7 @@
 {
+  "Name": "PrimitiveFace.shader",
   "Layout": "NormalVertex",
   "Shader Model": "5_0",
-  "Is Integrated": true,
   "Render Target Type": 0,
   "Rasterizer Type": 2,
   "Depth Stencil Type": 0,
@@ -13,13 +13,5 @@
   "Domain Shader Entry": "",
   "Geometry Shader Entry": "",
   "Pixel Shader Entry": "PS_Main",
-  "Compute Shader Entry": "",
-
-  "Vertex Shader Path": "",
-  "Hull Shader Path": "",
-  "Domain Shader Path": "",
-  "Geometry Shader Path": "",
-  "Pixel Shader Path": "",
-  "Compute Shader Path": ""
-
+  "Compute Shader Entry": ""
 }

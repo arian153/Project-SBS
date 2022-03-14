@@ -76,7 +76,7 @@ namespace Engine
             // Swap Chain
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->ClearRenderTargetView(back_index);
 
-            // Deferred G-Buffer Group
+            // DeferredGeo G-Buffer Group
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->ClearRenderTargetView();
         }
 
@@ -84,7 +84,7 @@ namespace Engine
         matrix_params.view = m_curr_camera->GetViewMatrix();
         matrix_params.proj = m_perspective;
 
-        // Deferred OMSet
+        // DeferredGeo OMSet
         {
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->OMSetRenderTargets();
 

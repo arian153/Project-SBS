@@ -128,7 +128,7 @@ namespace Engine
             m_pipeline_desc.NumRenderTargets = 1;
             m_pipeline_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
             break;
-        case eRenderTargetType::Deferred:
+        case eRenderTargetType::DeferredGeo:
             m_pipeline_desc.NumRenderTargets = RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT;
             m_pipeline_desc.RTVFormats[0] = DXGI_FORMAT_R32G32B32A32_FLOAT; // POSITION
             m_pipeline_desc.RTVFormats[1] = DXGI_FORMAT_R32G32B32A32_FLOAT; // NORMAL

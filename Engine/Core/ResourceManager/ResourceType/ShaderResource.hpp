@@ -15,17 +15,20 @@ namespace Engine
         bool       IsHeader() const;
         StringWide GetShaderPath() const;
         StringWide GetShaderPath(eShaderStage stage) const;
-
-        ShaderInfo GetShaderInfo() const;
-        ShaderArg  GetShaderEntry() const;
         ShaderArg  GetShaderPaths() const;
+
+        ShaderInfo GetSubShaderInfo(Uint32 index) const;
+        ShaderArg  GetSubShaderEntry(Uint32 index) const;
+        String     GetSubShaderName(Uint32 index) const;
+
+        Uint32 GetSubShaderCount() const;
 
     private:
         void Initialize() override;
         void Shutdown() override;
 
         void Load();
-        void LoadInfo();
+        void LoadInfo(const String& info_path);
 
     private:
         friend class ResourceManager;
@@ -35,13 +38,16 @@ namespace Engine
         bool m_b_integrated     = true;
         bool m_b_header         = false;
 
-        String m_integrated_shader = "";
-        String m_info_path         = "";
+        String    m_integrated_shader = "";
+        ShaderArg m_shader_path;
 
-        ShaderInfo m_shader_info;
-        ShaderArg  m_shader_entry;
-        ShaderArg  m_shader_path;
+        struct SubShaderFile
+        {
+            String     name;
+            ShaderInfo info;
+            ShaderArg  entry;
+        };
 
-        std::vector<String> m_sub_resources;
+        std::vector<SubShaderFile> m_shader_files;
     };
 }

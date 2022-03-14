@@ -19,11 +19,9 @@ namespace Engine
         InputLayout&       GetInputLayout(const String& name);
         const InputLayout& GetInputLayout(const String& name) const;
 
-        SPtr<ShaderProgram> GetShaderProgramPath(const String& file_path);
-        SPtr<ShaderProgram> GetShaderProgramName(const String& file_name);
+        SPtr<ShaderProgram> GetShaderProgram(const String& name);
 
-        bool RecompileShaderPath(const String& file_path);
-        bool RecompileShaderName(const String& file_name);
+        bool RecompileShader(const String& name);
 
         template <typename T>
         void AddInputLayout(const InputLayout& input_layout, bool b_instanced = false);
@@ -45,7 +43,6 @@ namespace Engine
     private:
         HashMap<String, InputLayout>         m_input_layouts;
         HashMap<String, SPtr<ShaderProgram>> m_shader_map_name;
-        HashMap<String, SPtr<ShaderProgram>> m_shader_map_path;
         std::vector<ShaderResource*>         m_shader_resources;
         std::vector<SPtr<ShaderProgram>>     m_shader_programs;
     };

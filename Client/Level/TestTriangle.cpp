@@ -30,7 +30,7 @@ namespace Client
 
         //m_mesh->Init(vertices, indices);
 
-        //m_shader = GET_SHADER_BY_NAME("Default.shader");
+        //m_shader = GET_SHADER("Default.shader");
     }
 
     void TestTriangle::Update(float dt)

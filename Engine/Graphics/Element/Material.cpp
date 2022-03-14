@@ -17,6 +17,11 @@ namespace Engine
         real_params[index] = value;
     }
 
+    void MaterialParams::SetVec2(Uint32 index, const Vector2& value)
+    {
+        vec2_params[index] = value;
+    }
+
     SPtr<ShaderProgram> Material::GetShader()
     {
         return m_shader;
@@ -35,6 +40,11 @@ namespace Engine
     void Material::SetReal(Uint32 index, Real value)
     {
         m_material_params.SetReal(index, value);
+    }
+
+    void Material::SetVector2(Uint32 index, const Vector2& value)
+    {
+        m_material_params.SetVec2(index, value);
     }
 
     void Material::SetTexture(Uint32 index, SPtr<Texture> texture)

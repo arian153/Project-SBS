@@ -47,6 +47,10 @@ float g_float_0;
 float g_float_1;
 float g_float_2;
 float g_float_3;
+float2 g_vec2_0;
+float2 g_vec2_1;
+float2 g_vec2_2;
+float2 g_vec2_3;
 };
 
 Texture2D   g_diff_tex_0 : register(t0);

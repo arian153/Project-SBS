@@ -155,7 +155,7 @@ namespace Engine
             m_rt_groups[static_cast<Uint32>(eRenderTargetGroupType::SwapChain)]->Create(eRenderTargetGroupType::SwapChain, rt_vec, ds_texture);
         }
 
-        // Deferred Group
+        // DeferredGeo Group
         {
             std::vector<RenderTarget> rt_vec(RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT);
             rt_vec[0].target = RESOURCE_MANAGER->CreateTexture("PositionTarget");

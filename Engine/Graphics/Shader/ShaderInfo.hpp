@@ -51,7 +51,8 @@ namespace Engine
     enum class eRenderTargetType : Uint8
     {
         Forward,
-        Deferred
+        DeferredGeo,
+        DeferredLit
     };
 
     struct ShaderInfo

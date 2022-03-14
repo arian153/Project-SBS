@@ -32,40 +32,54 @@ namespace Engine
 
     bool ShaderManager::AddShaderProgram(ShaderResource* shader_resource)
     {
-        auto shader_program = std::make_shared<ShaderProgram>();
-
         if (shader_resource->HasSubResource())
         {
-            if (shader_resource->IsIntegrated())
-            {
-                shader_program->Initialize(
-                                           shader_resource->GetShaderPath(),
-                                           shader_resource->GetShaderEntry(),
-                                           shader_resource->GetShaderInfo());
-            }
-            else
-            {
-                shader_program->Initialize(
-                                           shader_resource->GetShaderPaths(),
-                                           shader_resource->GetShaderEntry(),
-                                           shader_resource->GetShaderInfo());
-            }
-        }
-        else
-        {
-            ShaderArg default_entry;
-            default_entry.vertex_shader = "VS_Main";
-            default_entry.pixel_shader  = "PS_Main";
-            ShaderInfo default_info;
-            default_info.shader_model = "5_0";
-            default_info.input_layout = "DefaultLayout";
+            Uint32 count  = shader_resource->GetSubShaderCount();
+            bool   result = true;
 
-            shader_program->Initialize(shader_resource->GetShaderPath(), default_entry, default_info);
+            for (Uint32 i = 0; i < count; ++i)
+            {
+                auto shader_program = std::make_shared<ShaderProgram>();
+
+                if (shader_resource->IsIntegrated())
+                {
+                    shader_program->Initialize(
+                                               shader_resource->GetShaderPath(),
+                                               shader_resource->GetSubShaderEntry(i),
+                                               shader_resource->GetSubShaderInfo(i));
+                }
+                else
+                {
+                    shader_program->Initialize(
+                                               shader_resource->GetShaderPaths(),
+                                               shader_resource->GetSubShaderEntry(i),
+                                               shader_resource->GetSubShaderInfo(i));
+                }
+
+                shader_program->m_shader_name = shader_resource->GetSubShaderName(i);
+                m_shader_map_name.emplace(shader_program->m_shader_name, shader_program);
+                m_shader_programs.push_back(shader_program);
+
+                if (shader_program->Compile() == false)
+                    result = false;
+            }
+
+            return result;
         }
+
+        auto shader_program = std::make_shared<ShaderProgram>();
+
+        ShaderArg default_entry;
+        default_entry.vertex_shader = "VS_Main";
+        default_entry.pixel_shader  = "PS_Main";
+        ShaderInfo default_info;
+        default_info.shader_model = "5_0";
+        default_info.input_layout = "DefaultLayout";
+
+        shader_program->Initialize(shader_resource->GetShaderPath(), default_entry, default_info);
 
         shader_program->m_shader_name = shader_resource->FileName();
         m_shader_map_name.emplace(shader_resource->FileName(), shader_program);
-        m_shader_map_path.emplace(shader_resource->FilePath(), shader_program);
         m_shader_programs.push_back(shader_program);
 
         return shader_program->Compile();
@@ -89,33 +103,17 @@ namespace Engine
         return m_input_layouts.find("DefaultLayout")->second;
     }
 
-    SPtr<ShaderProgram> ShaderManager::GetShaderProgramPath(const String& file_path)
+    SPtr<ShaderProgram> ShaderManager::GetShaderProgram(const String& name)
     {
-        auto found = m_shader_map_path.find(file_path);
-        if (found != m_shader_map_path.end())
-            return found->second;
-        return nullptr;
-    }
-
-    SPtr<ShaderProgram> ShaderManager::GetShaderProgramName(const String& file_name)
-    {
-        auto found = m_shader_map_name.find(file_name);
+        auto found = m_shader_map_name.find(name);
         if (found != m_shader_map_name.end())
             return found->second;
         return nullptr;
     }
 
-    bool ShaderManager::RecompileShaderPath(const String& file_path)
+    bool ShaderManager::RecompileShader(const String& name)
     {
-        auto found = m_shader_map_path.find(file_path);
-        if (found != m_shader_map_path.end())
-            return found->second->Compile();
-        return false;
-    }
-
-    bool ShaderManager::RecompileShaderName(const String& file_name)
-    {
-        auto found = m_shader_map_name.find(file_name);
+        auto found = m_shader_map_name.find(name);
         if (found != m_shader_map_name.end())
             return found->second->Compile();
         return false;

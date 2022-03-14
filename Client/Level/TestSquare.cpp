@@ -39,7 +39,7 @@ namespace Client
 
             //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
             mesh->SetMeshData(cube);
-            mesh->SetShader(GET_SHADER_BY_NAME("GBuffer.shader"));
+            mesh->SetShader(GET_SHADER("Deferred-Geometry.shader"));
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Leather.jpg")->GetTexture());
             mesh->SetNormalMapTexture(RESOURCE_MANAGER->GetTextureResourceName("Leather_Normal.jpg")->GetTexture());
 
@@ -110,7 +110,7 @@ namespace Client
 
             //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
             mesh->SetMeshData(mesh_data);
-            mesh->SetShader(GET_SHADER_BY_NAME("PrimitiveFace.shader"));
+            mesh->SetShader(GET_SHADER("PrimitiveFace.shader"));
 
             /* mesh->SetMaterialInfoReal(0, 0.3f);
              mesh->SetMaterialInfoReal(1, -0.4f);
@@ -139,7 +139,7 @@ namespace Client
             light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
             /* auto mesh = obj->AddComponent<MeshCompo>();
              mesh->SetMeshData(sphere);
-             mesh->SetShader(GET_SHADER_BY_NAME("Default.shader"));
+             mesh->SetShader(GET_SHADER("Default.shader"));
              mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());*/
         }
 
@@ -151,7 +151,7 @@ namespace Client
             MeshData sky_sphere = MeshDataGenerator::CreateSphere(1.0f, 30, 30);
 
             mesh->SetMeshData(sky_sphere);
-            mesh->SetShader(GET_SHADER_BY_NAME("SkyBox.shader"));
+            mesh->SetShader(GET_SHADER("SkyBox.shader"));
             mesh->SetCubeMapTexture(RESOURCE_MANAGER->GetTextureResourceName("SeaCube.dds")->GetTexture());
         }
 
@@ -169,7 +169,7 @@ namespace Client
 
         //    auto mesh = obj->AddComponent<MeshCompo>();
         //    mesh->SetMeshData(sphere);
-        //    mesh->SetShader(GET_SHADER_BY_NAME("Default.shader"));
+        //    mesh->SetShader(GET_SHADER("Default.shader"));
         //    mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());
         //}
 
@@ -189,7 +189,7 @@ namespace Client
 
         //    auto mesh = obj->AddComponent<MeshCompo>();
         //    mesh->SetMeshData(sphere);
-        //    mesh->SetShader(GET_SHADER_BY_NAME("Default.shader"));
+        //    mesh->SetShader(GET_SHADER("Default.shader"));
         //    mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());
         //}
     }
