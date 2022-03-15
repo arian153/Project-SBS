@@ -162,7 +162,7 @@ namespace Engine
         }
         else if (res_flags & D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET)
         {
-            resource_states       = D3D12_RESOURCE_STATE_RENDER_TARGET;
+            resource_states       = D3D12_RESOURCE_STATE_COMMON;
             float arr_float[4]    = { clear_color.r, clear_color.g, clear_color.b, clear_color.a };
             optimized_clear_value = CD3DX12_CLEAR_VALUE(format, arr_float);
         }
