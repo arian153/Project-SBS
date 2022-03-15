@@ -3,6 +3,7 @@
 #include "TransformCompo.hpp"
 #include "../../../External/imgui/imgui.h"
 #include "../../../Graphics/DirectX12/Texture.hpp"
+#include "../../../Graphics/DirectX12/Buffer/InstancingBuffer.hpp"
 #include "../../../Graphics/Element/Material.hpp"
 #include "../../../Graphics/Element/Model.hpp"
 #include "../../../Graphics/Shader/ShaderProgram.hpp"
@@ -61,6 +62,7 @@ namespace Engine
         if (m_model == nullptr)
         {
             m_model = m_space->GetRenderSubsystem()->AddModel(name);
+            m_b_deferred = m_model->IsDeferred();
         }
     }
 
@@ -183,6 +185,11 @@ namespace Engine
         m_model->SetShader(shader);
     }
 
+    void MeshCompo::SetColor(const Color& color)
+    {
+        m_diffuse_color = color;
+    }
+
     void MeshCompo::Render() const
     {
         m_model->Render(m_space->GetRenderSubsystem()->GetConstantBuffer(eConstantBufferType::Material));
@@ -200,6 +207,16 @@ namespace Engine
     bool MeshCompo::IsDeferred() const
     {
         return m_b_deferred;
+    }
+
+    void MeshCompo::UpdateInstanceData(const Matrix44& view, const Matrix44& proj) const
+    {
+        InstancingParams params;
+        params.mat_world = GetWorldMatrix();
+        params.mat_wv    = params.mat_world * view;
+        params.mat_wvp   = params.mat_world * view * proj;
+        params.diffuse   = m_diffuse_color;
+        m_model->AddInstance(params);
     }
 
     void MeshCompo::Subscribe()

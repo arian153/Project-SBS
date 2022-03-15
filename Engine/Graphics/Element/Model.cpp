@@ -4,6 +4,7 @@
 #include "../../Core/ResourceManager/ResourceManager.hpp"
 #include "../../Core/ResourceManager/ResourceType/ModelResource.hpp"
 #include "../DirectX12/Buffer/InstancingBuffer.hpp"
+#include "../Shader/ShaderProgram.hpp"
 
 namespace Engine
 {
@@ -68,11 +69,15 @@ namespace Engine
         {
             m_materials[i].SetShader(shader);
         }
+
+        m_is_deferred = shader->IsDeferred();
     }
 
     void Model::SetShader(size_t i, SPtr<ShaderProgram> shader)
     {
         m_materials[i].SetShader(shader);
+
+        m_is_deferred = shader->IsDeferred();
     }
 
     void Model::SetMaterial(SPtr<Material> material)
@@ -81,11 +86,14 @@ namespace Engine
         {
             m_materials[i].Set(material);
         }
+
+        m_is_deferred = material->GetShader()->IsDeferred();
     }
 
     void Model::SetMaterial(size_t i, SPtr<Material> material)
     {
         m_materials[i].Set(material);
+        m_is_deferred = material->GetShader()->IsDeferred();
     }
 
     void Model::Render(SPtr<ConstantBuffer> material_buffer) const
@@ -141,6 +149,15 @@ namespace Engine
         }
 
         m_instancing_buffer->AddData(param);
+        m_is_instanced = true;
+    }
+
+    void Model::ClearInstance() 
+    {
+        if (m_instancing_buffer != nullptr)
+            m_instancing_buffer->Clear();
+
+        m_is_instanced = false;
     }
 
     Material& Model::GetMaterial(size_t i)
@@ -176,5 +193,15 @@ namespace Engine
     void Model::SetName(const String& name)
     {
         m_name = name;
+    }
+
+    bool Model::IsInstanced() const
+    {
+        return m_is_instanced;
+    }
+
+    bool Model::IsDeferred() const
+    {
+        return m_is_deferred;
     }
 }

@@ -39,6 +39,7 @@ namespace Client
             mesh->SetShader(GET_SHADER("Deferred-Geometry.shader"));
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Leather.jpg")->GetTexture());
             mesh->SetNormalMapTexture(RESOURCE_MANAGER->GetTextureResourceName("Leather_Normal.jpg")->GetTexture());
+            mesh->SetMaterialInfo(0, 1);
         }
 
         {
@@ -102,10 +103,23 @@ namespace Client
             //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
             mesh->SetMeshData(mesh_data);
             mesh->SetShader(GET_SHADER("PrimitiveFace.shader"));
+            mesh->SetMaterialInfo(0, 1);
 
             /* mesh->SetMaterialInfoReal(0, 0.3f);
              mesh->SetMaterialInfoReal(1, -0.4f);
              mesh->SetMaterialInfoReal(2, 0.3f);*/
+        }
+
+        {
+            auto obj = m_object_manager->AddObject("Capsule2");
+            auto transform = obj->AddComponent<TransformCompo>();
+            auto mesh = obj->AddComponent<MeshCompo>();
+            mesh->CreateModel("Test-Primitive");
+            Transform tf;
+            tf.position = Vector3(20, 0, 0);
+            tf.scale = Vector3(50, 50, 50);
+
+            transform->SetTransform(tf);
         }
 
         //Camera Object

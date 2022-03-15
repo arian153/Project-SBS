@@ -2,6 +2,7 @@
 
 #include "../Component.hpp"
 #include "../ComponentFactory.hpp"
+#include "../../../Graphics/Data/Color.hpp"
 #include "../../../Math/Algebra/Matrix44.hpp"
 
 namespace Engine
@@ -41,10 +42,13 @@ namespace Engine
         void SetCubeMapTexture(SPtr<Texture> texture) const;
         void SetMeshData(const MeshData& mesh_data) const;
         void SetShader(SPtr<ShaderProgram> shader);
+        void SetColor(const Color& color);
 
         void     Render() const;
         Matrix44 GetWorldMatrix() const;
         bool     IsDeferred() const;
+
+        void UpdateInstanceData(const Matrix44& view, const Matrix44& proj) const;
 
     protected:
         void Subscribe() override;
@@ -55,6 +59,7 @@ namespace Engine
 
     private:
         bool m_b_deferred = false;
+        Color m_diffuse_color;
 
         SPtr<Model> m_model = nullptr;
 

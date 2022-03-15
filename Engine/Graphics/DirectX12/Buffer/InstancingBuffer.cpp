@@ -42,7 +42,7 @@ namespace Engine
 
     void InstancingBuffer::Bind()
     {
-        Uint32 data_count = GetCount();
+        Uint32 data_count = GetInstanceCount();
         if (data_count > m_max_count)
         {
             Init((m_max_count + 1) * 2);
@@ -61,7 +61,7 @@ namespace Engine
         m_buffer_view.SizeInBytes    = buffer_size;
     }
 
-    Uint32 InstancingBuffer::GetCount() const
+    Uint32 InstancingBuffer::GetInstanceCount() const
     {
         return static_cast<Uint32>(m_data.size());
     }

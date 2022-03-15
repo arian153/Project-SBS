@@ -66,5 +66,6 @@ namespace Engine
         std::vector<RPtr<OrbitCameraCompo>> m_orbit_compos;
         std::vector<SPtr<ConstantBuffer>>   m_constant_buffers;
         HashMap<String, SPtr<Model>>        m_model_map;
+        std::vector<SPtr<Model>>            m_deferred_models;
     };
 }

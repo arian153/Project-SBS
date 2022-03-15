@@ -1,6 +1,6 @@
 {
   "Name": "Deferred-Geometry.shader",
-  "Layout": "GeneralVertex",
+  "Layout": "InstanceGeneralVertex",
   "Shader Model": "5_0",
   "Render Target Type": 1,
   "Rasterizer Type": 2,

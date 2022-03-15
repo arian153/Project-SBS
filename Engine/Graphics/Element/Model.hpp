@@ -32,6 +32,7 @@ namespace Engine
         void Shutdown();
 
         void AddInstance(const InstancingParams& param);
+        void ClearInstance();
 
         Material&       GetMaterial(size_t i);
         const Material& GetMaterial(size_t i) const;
@@ -43,9 +44,14 @@ namespace Engine
         String GetName() const;
         void   SetName(const String& name);
 
+        bool IsInstanced() const;
+        bool IsDeferred() const;
+
     private:
-        size_t m_count = 0;
-        String m_name  = "";
+        size_t m_count        = 0;
+        String m_name         = "";
+        bool   m_is_instanced = false;
+        bool   m_is_deferred  = false;
 
         std::vector<Mesh>      m_meshes;
         std::vector<Material>  m_materials;

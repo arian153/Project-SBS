@@ -122,15 +122,27 @@ namespace Engine
     void ShaderManager::Initialize()
     {
         InputLayout instance_layout;
-        instance_layout.PushAttribute(eAttributeType::R32, 4, "WORLD", 0, eInputSlotType::InstanceData, 1, 1);
-        instance_layout.PushAttribute(eAttributeType::R32, 4, "WORLD", 1, eInputSlotType::InstanceData, 1, 1);
-        instance_layout.PushAttribute(eAttributeType::R32, 4, "WORLD", 2, eInputSlotType::InstanceData, 1, 1);
-        instance_layout.PushAttribute(eAttributeType::R32, 4, "WORLD", 3, eInputSlotType::InstanceData, 1, 1);
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "W", 0, eInputSlotType::InstanceData, 1, 1);
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "W", 1, eInputSlotType::InstanceData, 1, 1);
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "W", 2, eInputSlotType::InstanceData, 1, 1);
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "W", 3, eInputSlotType::InstanceData, 1, 1);
 
-        instance_layout.PushAttribute(eAttributeType::R32, 4, "MAT_AM", 0, eInputSlotType::InstanceData, 1, 1);
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "WV", 0, eInputSlotType::InstanceData, 1, 1);
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "WV", 1, eInputSlotType::InstanceData, 1, 1);
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "WV", 2, eInputSlotType::InstanceData, 1, 1);
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "WV", 3, eInputSlotType::InstanceData, 1, 1);
+
+
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "WVP", 0, eInputSlotType::InstanceData, 1, 1);
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "WVP", 1, eInputSlotType::InstanceData, 1, 1);
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "WVP", 2, eInputSlotType::InstanceData, 1, 1);
+        instance_layout.PushAttribute(eAttributeType::R32, 4, "WVP", 3, eInputSlotType::InstanceData, 1, 1);
+
+
+        //instance_layout.PushAttribute(eAttributeType::R32, 4, "MAT_AM", 0, eInputSlotType::InstanceData, 1, 1);
         instance_layout.PushAttribute(eAttributeType::R32, 4, "MAT_DI", 0, eInputSlotType::InstanceData, 1, 1);
-        instance_layout.PushAttribute(eAttributeType::R32, 4, "MAT_SP", 0, eInputSlotType::InstanceData, 1, 1);
-        instance_layout.PushAttribute(eAttributeType::R32, 4, "MAT_RE", 0, eInputSlotType::InstanceData, 1, 1);
+        //instance_layout.PushAttribute(eAttributeType::R32, 4, "MAT_SP", 0, eInputSlotType::InstanceData, 1, 1);
+        //instance_layout.PushAttribute(eAttributeType::R32, 4, "MAT_RE", 0, eInputSlotType::InstanceData, 1, 1);
 
         AddInputLayout("InstanceLayout", instance_layout);
 

@@ -48,13 +48,21 @@ namespace Engine
         m_deferred_compos.clear();
 
         //Do frustum culling
+        for (auto& model : m_models)
+        {
+            model->ClearInstance();
+        }
+
+        MatrixParams matrix_params;
+        matrix_params.view = m_curr_camera->GetViewMatrix();
+        matrix_params.proj = m_perspective;
 
         for (auto& mesh_compo : m_mesh_compos)
         {
             mesh_compo->Update(dt);
 
             if (mesh_compo->IsDeferred())
-                m_deferred_compos.push_back(mesh_compo);
+                mesh_compo->UpdateInstanceData(matrix_params.view, matrix_params.proj);
             else
                 m_forward_compos.push_back(mesh_compo);
         }
@@ -96,13 +104,21 @@ namespace Engine
         {
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->OMSetRenderTargets();
 
-            for (auto& mesh_compo : m_deferred_compos)
+           /* for (auto& mesh_compo : m_deferred_compos)
             {
                 matrix_params.world = mesh_compo->GetWorldMatrix();
                 matrix_params.wv    = matrix_params.world * matrix_params.view;
                 matrix_params.wvp   = matrix_params.world * matrix_params.view * matrix_params.proj;
                 GetConstantBuffer(eConstantBufferType::Transform)->PushData(&matrix_params, sizeof(matrix_params));
                 mesh_compo->Render();
+            }*/
+
+            for (auto& model : m_models)
+            {
+                if (model->IsInstanced())
+                {
+                    model->Render(GetConstantBuffer(eConstantBufferType::Material));
+                }
             }
 
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->WaitTargetToResource();

@@ -26,7 +26,7 @@ namespace Engine
         void Bind();
 
     public:
-        Uint32                   GetCount() const;
+        Uint32                   GetInstanceCount() const;
         ComPtr<ID3D12Resource>   GetBuffer();
         D3D12_VERTEX_BUFFER_VIEW GetBufferView() const;
 
@@ -34,7 +34,7 @@ namespace Engine
         ComPtr<ID3D12Resource>   m_buffer;
         D3D12_VERTEX_BUFFER_VIEW m_buffer_view;
 
-        Uint32                        m_max_count = 0;
+        Uint32 m_max_count      = 0;
         std::vector<InstancingParams> m_data;
     };
 }

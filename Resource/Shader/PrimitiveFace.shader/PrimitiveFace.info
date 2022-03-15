@@ -1,6 +1,6 @@
 {
   "Name": "PrimitiveFace.shader",
-  "Layout": "NormalVertex",
+  "Layout": "InstanceNormalVertex",
   "Shader Model": "5_0",
   "Render Target Type": 1,
   "Rasterizer Type": 2,

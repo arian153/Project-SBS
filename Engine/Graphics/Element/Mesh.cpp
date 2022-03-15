@@ -128,6 +128,6 @@ namespace Engine
         m_vertex_buffer.Bind(instancing_buffer);
         m_index_buffer.Bind();
         DESCRIPTOR_HEAP->CommitTable();
-        m_index_buffer.Draw(instancing_buffer->GetCount());
+        m_index_buffer.Draw(instancing_buffer->GetInstanceCount());
     }
 }
