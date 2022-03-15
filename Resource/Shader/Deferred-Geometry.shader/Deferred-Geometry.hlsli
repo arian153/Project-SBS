@@ -1,7 +1,6 @@
 #ifndef G_BUFFER_HLSLI_
 #define G_BUFFER_HLSLI_
 #include "../Shader.includes/Params.hlsli"
-#include "../Shader.includes/LightProcessing.hlsli"
 #include "../Shader.includes/TextureProcessing.hlsli"
 
 struct VS_IN

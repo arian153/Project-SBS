@@ -1,5 +1,6 @@
 #include "VertexBuffer.hpp"
 
+#include "InstancingBuffer.hpp"
 #include "../../GraphicsDefine.hpp"
 
 namespace Engine
@@ -174,6 +175,12 @@ namespace Engine
     void VertexBuffer::Bind() const
     {
         CMD_LIST->IASetVertexBuffers(0, 1, &m_vertex_buffer_view);
+    }
+
+    void VertexBuffer::Bind(const SPtr<InstancingBuffer>& instancing_buffer) const
+    {
+        D3D12_VERTEX_BUFFER_VIEW buffer_views[] = { m_vertex_buffer_view, instancing_buffer->GetBufferView() };
+        CMD_LIST->IASetVertexBuffers(0, 2, buffer_views);
     }
 
     void VertexBuffer::CreateBuffer(const void* data)

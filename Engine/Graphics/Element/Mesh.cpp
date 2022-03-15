@@ -1,6 +1,7 @@
 #include "Mesh.hpp"
 
 #include "../GraphicsDefine.hpp"
+#include "../DirectX12/Buffer/InstancingBuffer.hpp"
 
 namespace Engine
 {
@@ -45,7 +46,26 @@ namespace Engine
         m_index_buffer.Initialize(mesh_data.indices);
     }
 
-   
+    void Mesh::Init(const MeshData& mesh_data, eTopologyType type)
+    {
+        Init(mesh_data);
+
+        switch (type)
+        {
+        case eTopologyType::DotList:
+            m_topology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+            break;
+        case eTopologyType::LineList:
+            m_topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+            break;
+        case eTopologyType::TriangleList:
+            m_topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+            break;
+        default: ;
+        }
+
+    }
+
     void Mesh::Update(const MeshData& mesh_data) const
     {
         if (m_vertex_type != mesh_data.vertex_type)
@@ -93,16 +113,21 @@ namespace Engine
         m_index_buffer.Shutdown();
     }
 
-    void Mesh::Bind() const
-    {
-        CMD_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        m_vertex_buffer.Bind();
-        m_index_buffer.Bind();
-    }
-
     void Mesh::Render() const
     {
+        CMD_LIST->IASetPrimitiveTopology(m_topology);
+        m_vertex_buffer.Bind();
+        m_index_buffer.Bind();
         DESCRIPTOR_HEAP->CommitTable();
         m_index_buffer.Draw();
+    }
+
+    void Mesh::Render(const SPtr<InstancingBuffer>& instancing_buffer) const
+    {
+        CMD_LIST->IASetPrimitiveTopology(m_topology);
+        m_vertex_buffer.Bind(instancing_buffer);
+        m_index_buffer.Bind();
+        DESCRIPTOR_HEAP->CommitTable();
+        m_index_buffer.Draw(instancing_buffer->GetCount());
     }
 }

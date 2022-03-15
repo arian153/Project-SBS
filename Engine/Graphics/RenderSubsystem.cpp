@@ -130,8 +130,7 @@ namespace Engine
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->OMSetRenderTargets(1, back_index);
 
             // Render Deferred Final Rect
-            m_deferred_rect->Bind(GetConstantBuffer(eConstantBufferType::Material));
-            m_deferred_rect->Render();
+            m_deferred_rect->Render(GetConstantBuffer(eConstantBufferType::Material));
 
             // Render Forward Meshes
 
@@ -214,11 +213,20 @@ namespace Engine
         m_orthographic = orthographic;
     }
 
-    SPtr<Model> RenderSubsystem::CreateModel()
+    SPtr<Model> RenderSubsystem::AddModel(const String& name)
     {
-        auto model = std::make_shared<Model>();
-        m_models.push_back(model);
-        return model;
+        auto found = m_model_map.find(name);
+        if (found == m_model_map.end())
+        {
+            auto model = std::make_shared<Model>();
+            model->SetName(name);
+
+            m_models.push_back(model);
+            m_model_map.emplace(name, model);
+            return model;
+        }
+
+        return found->second;
     }
 
     SPtr<Camera> RenderSubsystem::CreateCamera()

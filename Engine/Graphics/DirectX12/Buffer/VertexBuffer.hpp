@@ -6,6 +6,8 @@
 
 namespace Engine
 {
+    class InstancingBuffer;
+
     class VertexBuffer
     {
     public:
@@ -36,6 +38,7 @@ namespace Engine
 
         void Shutdown();
         void Bind() const;
+        void Bind(const SPtr<InstancingBuffer>& instancing_buffer) const;
 
         void CreateBuffer(const void* data);
         void UpdateBuffer(const void* data) const;

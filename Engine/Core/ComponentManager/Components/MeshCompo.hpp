@@ -27,6 +27,8 @@ namespace Engine
         void Edit(CommandRegistry* command_registry) override;
         void CloneTo(RPtr<Component> destination) override;
 
+        void CreateModel(const String& name);
+
         void SetModelResource(RPtr<ModelResource> resource);
         void SetMaterial(SPtr<Material> material) const;
         void SetMaterialInfoReal(Uint32 index, Real value) const;
@@ -37,7 +39,7 @@ namespace Engine
         void SetNormalMapTexture(SPtr<Texture> texture) const;
         void SetMappingTexture(SPtr<Texture> texture) const;
         void SetCubeMapTexture(SPtr<Texture> texture) const;
-        void SetMeshData(const MeshData& mesh_data);
+        void SetMeshData(const MeshData& mesh_data) const;
         void SetShader(SPtr<ShaderProgram> shader);
 
         void     Render() const;

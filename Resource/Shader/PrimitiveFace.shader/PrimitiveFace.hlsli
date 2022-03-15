@@ -1,7 +1,6 @@
 #ifndef P_FACE_HLSLI_
 #define P_FACE_HLSLI_
 #include "../Shader.includes/Params.hlsli"
-#include "../Shader.includes/LightProcessing.hlsli"
 
 struct VS_IN
 {
@@ -27,26 +26,25 @@ VS_OUT VS_Main(VS_IN input)
     return output;
 }
 
-float4 PS_Main(VS_OUT input) : SV_Target
+struct PS_OUT
 {
+    float4 position : SV_Target0;
+    float4 normal : SV_Target1;
+    float4 color : SV_Target2;
+};
+
+PS_OUT PS_Main(VS_OUT input)
+{
+    PS_OUT output;
+
     float4 color = float4(1.f, 1.f, 1.f, 1.f);
     float3 normal = input.view_n;
 
-    LightColor total_color = (LightColor)0.f;
-
-    for (int i = 0; i < g_light_count; ++i)
-    {
-        LightColor l_color = CalculateLightColor(i, normal, input.view_p);
-        total_color.diffuse += l_color.diffuse;
-        total_color.ambient += l_color.ambient;
-        total_color.specular += l_color.specular;
-    }
-
-    color.xyz = (total_color.diffuse.xyz * color.xyz)
-        + total_color.ambient.xyz * color.xyz
-        + total_color.specular.xyz;
-
-    return color;
+    output.position = float4(input.view_p.xyz, 0.f);
+    output.normal = float4(normal.xyz, 0.f);
+    output.color = color;
+   
+    return output;
 }
 #endif
 

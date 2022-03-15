@@ -37,7 +37,7 @@ namespace Engine
 
         void OnResize(const Matrix44& perspective, const Matrix44& orthographic);
 
-        SPtr<Model>  CreateModel();
+        SPtr<Model>  AddModel(const String& name);
         SPtr<Camera> CreateCamera();
 
         void SetCurrentCamera(SPtr<Camera> camera);
@@ -65,5 +65,6 @@ namespace Engine
         std::vector<SPtr<Model>>            m_models;
         std::vector<RPtr<OrbitCameraCompo>> m_orbit_compos;
         std::vector<SPtr<ConstantBuffer>>   m_constant_buffers;
+        HashMap<String, SPtr<Model>>        m_model_map;
     };
 }

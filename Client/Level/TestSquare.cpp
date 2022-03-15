@@ -32,26 +32,20 @@ namespace Client
             transform->SetTransform(tf);
 
             MeshData cube = MeshDataGenerator::CreateBox(0.1f, 0.1f, 0.1f, 3);
-            /* MeshData geo_sph = MeshDataGenerator::CreateGeodesicSphere(0.1f, 4);
-             MeshData sph = MeshDataGenerator::CreateSphere(0.1f, 17, 17);
-             MeshData cyl = MeshDataGenerator::CreateCylinder(0.1f, 0.1f, 0.2f, 14, 15);*/
-            //MeshData cap = MeshDataGenerator::CreateCapsule(0.1f, 0.2f, 14, 15);
-
-            //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
+                    
+            mesh->CreateModel("Cube-Custom");
             mesh->SetMeshData(cube);
+            //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
             mesh->SetShader(GET_SHADER("Deferred-Geometry.shader"));
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Leather.jpg")->GetTexture());
             mesh->SetNormalMapTexture(RESOURCE_MANAGER->GetTextureResourceName("Leather_Normal.jpg")->GetTexture());
-
-            /* mesh->SetMaterialInfoReal(0, 0.3f);
-             mesh->SetMaterialInfoReal(1, -0.4f);
-             mesh->SetMaterialInfoReal(2, 0.3f);*/
         }
 
         {
             auto obj       = m_object_manager->AddObject("Capsule");
             auto transform = obj->AddComponent<TransformCompo>();
             auto mesh      = obj->AddComponent<MeshCompo>();
+            mesh->CreateModel("Test-Primitive");
             obj->AddComponent<RigidBodyCompo>();
 
             Transform tf;
@@ -60,9 +54,6 @@ namespace Client
 
             transform->SetTransform(tf);
 
-            /* MeshData geo_sph = MeshDataGenerator::CreateGeodesicSphere(0.1f, 4);
-             MeshData sph = MeshDataGenerator::CreateSphere(0.1f, 17, 17);
-             MeshData cyl = MeshDataGenerator::CreateCylinder(0.1f, 0.1f, 0.2f, 14, 15);*/
 
             Capsule capsule;
             capsule.height = 0.3f;
@@ -102,7 +93,7 @@ namespace Client
             Triangle triangle;
             triangle.SetUnit();
 
-            auto [vertices, indices] = PrimitiveRenderer::GenFaceSubMesh(triangle);
+            auto [vertices, indices] = PrimitiveRenderer::GenFaceSubMesh(capsule);
 
             MeshData mesh_data;
             mesh_data.Set(vertices);
@@ -137,10 +128,6 @@ namespace Client
             light->SetDiffuse(Color(1.f, 1.f, 1.f, 1.0f));
             light->SetAmbient(Color(0.1f, 0.1f, 0.1f, 1.0f));
             light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
-            /* auto mesh = obj->AddComponent<MeshCompo>();
-             mesh->SetMeshData(sphere);
-             mesh->SetShader(GET_SHADER("Default.shader"));
-             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());*/
         }
 
         //Sky Box
@@ -150,48 +137,41 @@ namespace Client
             auto mesh = obj->AddComponent<MeshCompo>();
             MeshData sky_sphere = MeshDataGenerator::CreateSphere(1.0f, 30, 30);
 
+            mesh->CreateModel("SkyBox");
             mesh->SetMeshData(sky_sphere);
             mesh->SetShader(GET_SHADER("SkyBox.shader"));
             mesh->SetCubeMapTexture(RESOURCE_MANAGER->GetTextureResourceName("SeaCube.dds")->GetTexture());
         }
 
-        ////Light 2 Red Point Light
-        //{
-        //    auto obj       = m_object_manager->AddObject("Point");
-        //    auto transform = obj->AddComponent<TransformCompo>();
-        //    transform->SetPosition(Vector3(150.f, 150.f, 150.f));
-        //    auto light = obj->AddComponent<LightCompo>();
-        //    light->SetLightType(eLightType::PointLight);
-        //    light->SetDiffuse(Color(1.f, 0.1f, 0.1f, 1.0f));
-        //    light->SetAmbient(Color(0.1f, 0.f, 0.f, 1.0f));
-        //    light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
-        //    light->SetLightRange(10000.f);
+        //Light 2 Red Point Light
+        {
+            auto obj       = m_object_manager->AddObject("Point");
+            auto transform = obj->AddComponent<TransformCompo>();
+            transform->SetPosition(Vector3(0.f, 100.f, 150.f));
+            auto light = obj->AddComponent<LightCompo>();
+            light->SetLightType(eLightType::PointLight);
+            light->SetDiffuse(Color(1.f, 0.1f, 0.1f, 1.0f));
+            light->SetAmbient(Color(0.1f, 0.f, 0.f, 1.0f));
+            light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
+            light->SetLightRange(200.f);
 
-        //    auto mesh = obj->AddComponent<MeshCompo>();
-        //    mesh->SetMeshData(sphere);
-        //    mesh->SetShader(GET_SHADER("Default.shader"));
-        //    mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());
-        //}
+        }
 
-        ////Light 3 Blue Spot Light
-        //{
-        //    auto obj       = m_object_manager->AddObject("Spot");
-        //    auto transform = obj->AddComponent<TransformCompo>();
-        //    transform->SetPosition(Vector3(-150.f, 0.f, 150.f));
-        //    auto light = obj->AddComponent<LightCompo>();
-        //    light->SetLightDirection(Vector3(1.f, 0.f, 0.f));
-        //    light->SetLightType(eLightType::SpotLight);
-        //    light->SetAmbient(Color(0.0f, 0.f, 0.f, 1.0f));
-        //    light->SetDiffuse(Color(0.f, 0.1f, 1.f, 1.0f));
-        //    light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
-        //    light->SetLightRange(10000.f);
-        //    light->SetLightAngle(XM_PI / 4);
+        //Light 3 Blue Spot Light
+        {
+            auto obj       = m_object_manager->AddObject("Spot");
+            auto transform = obj->AddComponent<TransformCompo>();
+            transform->SetPosition(Vector3(75.f, 0.f, 150.f));
+            auto light = obj->AddComponent<LightCompo>();
+            light->SetLightDirection(Vector3(1.f, 0.f, 0.f));
+            light->SetLightType(eLightType::SpotLight);
+            light->SetAmbient(Color(0.0f, 0.f, 0.f, 1.0f));
+            light->SetDiffuse(Color(0.f, 0.1f, 1.f, 1.0f));
+            light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
+            light->SetLightRange(200.f);
+            light->SetLightAngle(Math::PI_DIV_4);
 
-        //    auto mesh = obj->AddComponent<MeshCompo>();
-        //    mesh->SetMeshData(sphere);
-        //    mesh->SetShader(GET_SHADER("Default.shader"));
-        //    mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("test.png")->GetTexture());
-        //}
+        }
     }
 
     void TestSquare::Update(float dt)

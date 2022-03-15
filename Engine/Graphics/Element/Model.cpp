@@ -3,6 +3,7 @@
 #include "../../Core/CoreDefine.hpp"
 #include "../../Core/ResourceManager/ResourceManager.hpp"
 #include "../../Core/ResourceManager/ResourceType/ModelResource.hpp"
+#include "../DirectX12/Buffer/InstancingBuffer.hpp"
 
 namespace Engine
 {
@@ -19,6 +20,8 @@ namespace Engine
         m_count = model_resource->Count();
         m_meshes.resize(m_count);
         m_materials.resize(m_count);
+
+        //TODO Change this loading match to material setting
 
         for (size_t i = 0; i < m_count; ++i)
         {
@@ -85,32 +88,40 @@ namespace Engine
         m_materials[i].Set(material);
     }
 
-    void Model::Bind(SPtr<ConstantBuffer> material_buffer) const
+    void Model::Render(SPtr<ConstantBuffer> material_buffer) const
     {
-        for (size_t i = 0; i < m_count; ++i)
+        if (m_instancing_buffer == nullptr)
         {
-            m_meshes[i].Bind();
-            m_materials[i].Bind(material_buffer);
+            for (size_t i = 0; i < m_count; ++i)
+            {
+                m_materials[i].Bind(material_buffer);
+                m_meshes[i].Render();
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < m_count; ++i)
+            {
+                m_materials[i].Bind(material_buffer);
+                m_instancing_buffer->Bind();
+                m_meshes[i].Render(m_instancing_buffer);
+            }
         }
     }
 
-    void Model::Render() const
+    void Model::Render(size_t i, SPtr<ConstantBuffer> material_buffer) const
     {
-        for (size_t i = 0; i < m_count; ++i)
+        if (m_instancing_buffer == nullptr)
         {
+            m_materials[i].Bind(material_buffer);
             m_meshes[i].Render();
         }
-    }
-
-    void Model::Bind(size_t i, SPtr<ConstantBuffer> material_buffer) const
-    {
-        m_meshes[i].Bind();
-        m_materials[i].Bind(material_buffer);
-    }
-
-    void Model::Render(size_t i) const
-    {
-        m_meshes[i].Render();
+        else
+        {
+            m_materials[i].Bind(material_buffer);
+            m_instancing_buffer->Bind();
+            m_meshes[i].Render(m_instancing_buffer);
+        }
     }
 
     void Model::Shutdown()
@@ -119,6 +130,17 @@ namespace Engine
         {
             m_meshes[i].Shutdown();
         }
+    }
+
+    void Model::AddInstance(const InstancingParams& param)
+    {
+        if (m_instancing_buffer == nullptr)
+        {
+            m_instancing_buffer = std::make_shared<InstancingBuffer>();
+            m_instancing_buffer->Init();
+        }
+
+        m_instancing_buffer->AddData(param);
     }
 
     Material& Model::GetMaterial(size_t i)
@@ -144,5 +166,15 @@ namespace Engine
     size_t Model::Count() const
     {
         return m_count;
+    }
+
+    String Model::GetName() const
+    {
+        return m_name;
+    }
+
+    void Model::SetName(const String& name)
+    {
+        m_name = name;
     }
 }

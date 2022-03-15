@@ -56,13 +56,16 @@ namespace Engine
     {
     }
 
-    void MeshCompo::SetModelResource(RPtr<ModelResource> resource)
+    void MeshCompo::CreateModel(const String& name)
     {
         if (m_model == nullptr)
         {
-            m_model = m_space->GetRenderSubsystem()->CreateModel();
+            m_model = m_space->GetRenderSubsystem()->AddModel(name);
         }
+    }
 
+    void MeshCompo::SetModelResource(RPtr<ModelResource> resource)
+    {
         m_model_resource = resource;
         m_model->SetUp(resource);
     }
@@ -169,13 +172,8 @@ namespace Engine
         }
     }
 
-    void MeshCompo::SetMeshData(const MeshData& mesh_data)
+    void MeshCompo::SetMeshData(const MeshData& mesh_data) const
     {
-        if (m_model == nullptr)
-        {
-            m_model = m_space->GetRenderSubsystem()->CreateModel();
-        }
-
         m_model->SetMeshData(mesh_data);
     }
 
@@ -187,8 +185,7 @@ namespace Engine
 
     void MeshCompo::Render() const
     {
-        m_model->Bind(m_space->GetRenderSubsystem()->GetConstantBuffer(eConstantBufferType::Material));
-        m_model->Render();
+        m_model->Render(m_space->GetRenderSubsystem()->GetConstantBuffer(eConstantBufferType::Material));
     }
 
     Matrix44 MeshCompo::GetWorldMatrix() const

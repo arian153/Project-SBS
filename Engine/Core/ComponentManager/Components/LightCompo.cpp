@@ -140,8 +140,7 @@ namespace Engine
             m_model->GetMaterial(i).SetSint(0, light_index);
         }
 
-        m_model->Bind(m_space->GetRenderSubsystem()->GetConstantBuffer(eConstantBufferType::Material));
-        m_model->Render();
+        m_model->Render(m_space->GetRenderSubsystem()->GetConstantBuffer(eConstantBufferType::Material));
     }
 
     Matrix44 LightCompo::GetWorldMatrix() const
