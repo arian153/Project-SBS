@@ -10,6 +10,8 @@ namespace Engine
         MaterialManager();
         ~MaterialManager();
 
+        void Initialize();
+
         SPtr<Material> GetMaterial(const String& name);
 
     private:

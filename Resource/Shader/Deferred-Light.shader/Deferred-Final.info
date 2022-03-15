@@ -4,7 +4,7 @@
   "Shader Model": "5_0",
   "Render Target Type": 0,
   "Rasterizer Type": 2,
-  "Depth Stencil Type": 0,
+  "Depth Stencil Type": 5,
   "Blend Type": 0,
   "Topology Type": 2,
 

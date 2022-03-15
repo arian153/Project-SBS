@@ -37,6 +37,7 @@ namespace Engine
     public:
         SPtr<ShaderProgram> GetShader();
 
+        void Set(SPtr<Material> material);
         void SetShader(SPtr<ShaderProgram> shader);
         void SetSint(Uint32 index, Sint32 value);
         void SetReal(Uint32 index, Real value);

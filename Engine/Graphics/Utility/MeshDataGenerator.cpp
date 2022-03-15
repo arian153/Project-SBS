@@ -482,6 +482,30 @@ namespace Engine
         return mesh_data;
     }
 
+    MeshData MeshDataGenerator::CreateRectangle(Real w, Real h)
+    {
+        MeshData mesh_data;
+        mesh_data.vertices.resize(4);
+        mesh_data.indices.resize(6);
+        mesh_data.faces.resize(2);
+
+        Real w2 = 0.5f * w;
+        Real h2 = 0.5f * h;
+
+        mesh_data.vertices[0] = SkinnedVertex(-w2, -h2, 0, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f);
+        mesh_data.vertices[1] = SkinnedVertex(-w2, +h2, 0, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f);
+        mesh_data.vertices[2] = SkinnedVertex(+w2, +h2, 0, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f);
+        mesh_data.vertices[3] = SkinnedVertex(+w2, -h2, 0, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f);
+
+        mesh_data.indices[0] = 0; mesh_data.indices[1] = 1; mesh_data.indices[2] = 2;
+        mesh_data.indices[3] = 0; mesh_data.indices[4] = 2; mesh_data.indices[5] = 3;
+
+        mesh_data.faces[0] = Face(0, 1, 2);
+        mesh_data.faces[1] = Face(0, 2, 3);
+
+        return mesh_data;
+    }
+
     SkinnedVertex MeshDataGenerator::MidPoint(const SkinnedVertex& v0, const SkinnedVertex& v1)
     {
         SkinnedVertex mid_vertex;

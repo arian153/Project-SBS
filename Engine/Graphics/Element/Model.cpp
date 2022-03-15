@@ -72,6 +72,19 @@ namespace Engine
         m_materials[i].SetShader(shader);
     }
 
+    void Model::SetMaterial(SPtr<Material> material)
+    {
+        for (size_t i = 0; i < m_count; ++i)
+        {
+            m_materials[i].Set(material);
+        }
+    }
+
+    void Model::SetMaterial(size_t i, SPtr<Material> material)
+    {
+        m_materials[i].Set(material);
+    }
+
     void Model::Bind(SPtr<ConstantBuffer> material_buffer) const
     {
         for (size_t i = 0; i < m_count; ++i)

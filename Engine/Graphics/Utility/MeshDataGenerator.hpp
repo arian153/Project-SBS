@@ -14,6 +14,7 @@ namespace Engine
         static MeshData CreateCapsule(Real radius,  Real height, Uint32 slice_count, Uint32 stack_count);
         static MeshData CreateGrid(Real width, Real depth, Uint32 m, Uint32 n);
         static MeshData CreateQuad(Real x, Real y, Real w, Real h, Real depth);
+        static MeshData CreateRectangle(Real w, Real h);
 
     private:
         static SkinnedVertex MidPoint(const SkinnedVertex& v0, const SkinnedVertex& v1);

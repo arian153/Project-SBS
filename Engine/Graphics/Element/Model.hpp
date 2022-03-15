@@ -21,6 +21,9 @@ namespace Engine
         void SetShader(SPtr<ShaderProgram> shader);
         void SetShader(size_t i, SPtr<ShaderProgram> shader);
 
+        void SetMaterial(SPtr<Material> material);
+        void SetMaterial(size_t i, SPtr<Material> material);
+
         void Bind(SPtr<ConstantBuffer> material_buffer) const;
         void Render() const;
 

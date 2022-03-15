@@ -9,10 +9,12 @@ namespace Engine
     {
         SwapChain, // BACK_BUFFER, FRONT_BUFFER
         GBuffer, // POSITION, NORMAL, COLOR
+        Lighting, // DIFFUSE, SPECULAR
         End,
     };
 
     constexpr Uint32 RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT = 3;
+    constexpr Uint32 RENDER_TARGET_LIGHTING_GROUP_MEMBER_COUNT = 2;
     constexpr Uint32 RENDER_TARGET_GROUP_COUNT                 = static_cast<Uint32>(eRenderTargetGroupType::End);
 
     struct RenderTarget

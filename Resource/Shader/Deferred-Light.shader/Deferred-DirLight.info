@@ -3,9 +3,9 @@
   "Layout": "TexVertex",
   "Shader Model": "5_0",
   "Render Target Type": 2,
-  "Rasterizer Type": 2,
-  "Depth Stencil Type": 0,
-  "Blend Type": 0,
+  "Rasterizer Type": 0,
+  "Depth Stencil Type": 5,
+  "Blend Type": 2,
   "Topology Type": 2,
 
   "Vertex Shader Entry": "VS_DirLight",

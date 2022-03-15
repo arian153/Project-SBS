@@ -67,6 +67,16 @@ namespace Engine
         m_model->SetUp(resource);
     }
 
+    void MeshCompo::SetMaterial(SPtr<Material> material) const
+    {
+        size_t size = m_model->Count();
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            m_model->SetMaterial(material);
+        }
+    }
+
     void MeshCompo::SetMaterialInfoReal(Uint32 index, Real value) const
     {
         size_t size = m_model->Count();
@@ -157,8 +167,6 @@ namespace Engine
                 m_model->GetMaterial(i).SetTexture(0, texture);
             }
         }
-
-       
     }
 
     void MeshCompo::SetMeshData(const MeshData& mesh_data)

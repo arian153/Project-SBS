@@ -27,6 +27,31 @@ namespace Engine
         return m_shader;
     }
 
+    void Material::Set(SPtr<Material> material)
+    {
+        m_shader = material->m_shader;
+
+        for (Uint32 i = 0; i < MATERIAL_SINT_COUNT; ++i)
+        {
+            m_material_params.sint_params[i] = material->m_material_params.sint_params[i];
+        }
+
+        for (Uint32 i = 0; i < MATERIAL_REAL_COUNT; ++i)
+        {
+            m_material_params.real_params[i] = material->m_material_params.real_params[i];
+        }
+
+        for (Uint32 i = 0; i < MATERIAL_VEC2_COUNT; ++i)
+        {
+            m_material_params.vec2_params[i] = material->m_material_params.vec2_params[i];
+        }
+
+        for (Uint32 i = 0; i < MATERIAL_TEXTURE_COUNT; ++i)
+        {
+            m_textures[i] = material->m_textures[i];
+        }
+    }
+
     void Material::SetShader(SPtr<ShaderProgram> shader)
     {
         m_shader = shader;

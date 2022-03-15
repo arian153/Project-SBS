@@ -8,6 +8,8 @@
 #include "DirectX12/TableDescriptorHeap.hpp"
 #include "Shader/ShaderManager.hpp"
 #include "Shader/ShaderProgram.hpp"
+#include "Utility/MaterialManager.hpp"
+#include "Utility/ViewportManager.hpp"
 
 namespace Engine
 {
@@ -22,6 +24,8 @@ namespace Engine
     #define RENDER_SYS_DX12 g_core->GetRenderSystem()->GetDirectX12Layer()
 
     #define SHADER_MANAGER g_core->GetRenderSystem()->GetShaderManager()
+    #define VIEWPORT_MANAGER g_core->GetRenderSystem()->GetViewportManager()
+    #define MATERIAL_MANAGER g_core->GetRenderSystem()->GetMaterialManager()
 
     #define GET_SHADER(s) g_core->GetRenderSystem()->GetShaderManager()->GetShaderProgram(s)
 }

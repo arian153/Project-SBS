@@ -6,6 +6,7 @@
 
 namespace Engine
 {
+    class Material;
     class Texture;
     class ShaderProgram;
     class MeshData;
@@ -27,6 +28,7 @@ namespace Engine
         void CloneTo(RPtr<Component> destination) override;
 
         void SetModelResource(RPtr<ModelResource> resource);
+        void SetMaterial(SPtr<Material> material) const;
         void SetMaterialInfoReal(Uint32 index, Real value) const;
         void SetMaterialInfo(Uint32 index, Sint32 value) const;
         void SetMaterialTexture(Uint32 index, SPtr<Texture> texture) const;

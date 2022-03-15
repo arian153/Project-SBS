@@ -11,6 +11,7 @@
 
 namespace Engine
 {
+    class MaterialManager;
     enum class eConstantBufferType : Uint32;
     class ShaderManager;
     class TableDescriptorHeap;
@@ -55,9 +56,10 @@ namespace Engine
         SPtr<RootSignature>       GetRootSignature();
         SPtr<TableDescriptorHeap> GetTableDescriptorHeap();
         SPtr<ShaderManager>       GetShaderManager();
-       
-        ViewportManager&          GetViewportManager();
-        const ViewportManager&    GetViewportManager() const;
+        SPtr<MaterialManager>     GetMaterialManager();
+
+        ViewportManager&       GetViewportManager();
+        const ViewportManager& GetViewportManager() const;
 
         SPtr<RenderTargetGroup> GetRTGroup(eRenderTargetGroupType type);
 
@@ -68,12 +70,13 @@ namespace Engine
         SPtr<RootSignature>       m_root_signature;
         SPtr<TableDescriptorHeap> m_table_descriptor_heap;
         SPtr<ShaderManager>       m_shader_manager;
+        SPtr<MaterialManager>     m_material_manager;
         ViewportManager           m_viewport_manager;
 
-        bool m_b_init = false;
+        bool m_b_init        = false;
         bool m_b_created_rtg = false;
 
         std::array<SPtr<RenderTargetGroup>, RENDER_TARGET_GROUP_COUNT> m_rt_groups;
-        std::vector<SPtr<RenderSubsystem>> m_subsystems;
+        std::vector<SPtr<RenderSubsystem>>                             m_subsystems;
     };
 }

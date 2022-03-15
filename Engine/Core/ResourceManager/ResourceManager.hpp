@@ -29,7 +29,7 @@ namespace Engine
         ModelResource* GetModelResourcePath(const String& file_path);
         ModelResource* GetModelResourceName(const String& file_name);
 
-        SPtr<Texture> CreateTexture(const String& name);
+        SPtr<Texture> GetCreatedTexture(const String& name);
 
     private:
         void Initialize() override;

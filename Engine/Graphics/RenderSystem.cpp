@@ -16,6 +16,7 @@
 #include "Element/Material.hpp"
 #include "Element/SimpleMesh.hpp"
 #include "Shader/ShaderManager.hpp"
+#include "Utility/MaterialManager.hpp"
 
 namespace Engine
 {
@@ -33,6 +34,7 @@ namespace Engine
         m_root_signature        = std::make_shared<RootSignature>();
         m_table_descriptor_heap = std::make_shared<TableDescriptorHeap>();
         m_shader_manager        = std::make_shared<ShaderManager>();
+        m_material_manager      = std::make_shared<MaterialManager>();
 
         m_dx12_layer->Initialize(m_window_info);
         m_root_signature->Initialize();
@@ -122,6 +124,7 @@ namespace Engine
     void RenderSystem::PostInitialize()
     {
         m_shader_manager->Initialize();
+        m_material_manager->Initialize();
 
         m_b_init = true;
         m_dx12_layer->WaitSync();
@@ -130,7 +133,7 @@ namespace Engine
     void RenderSystem::CreateRenderTargetGroups()
     {
         // DepthStencil
-        SPtr<Texture> ds_texture = RESOURCE_MANAGER->CreateTexture("DepthStencil");
+        SPtr<Texture> ds_texture = RESOURCE_MANAGER->GetCreatedTexture("DepthStencil");
         ds_texture->Create(
                            DXGI_FORMAT_D32_FLOAT, m_window_info.width, m_window_info.height,
                            CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
@@ -147,7 +150,7 @@ namespace Engine
                 ComPtr<ID3D12Resource> resource;
                 m_dx12_layer->m_swap_chain->GetBuffer(i, IID_PPV_ARGS(&resource));
 
-                rt_vec[i].target = RESOURCE_MANAGER->CreateTexture(name);
+                rt_vec[i].target = RESOURCE_MANAGER->GetCreatedTexture(name);
                 rt_vec[i].target->CreateFromResource(resource);
             }
 
@@ -158,17 +161,17 @@ namespace Engine
         // DeferredGeo Group
         {
             std::vector<RenderTarget> rt_vec(RENDER_TARGET_G_BUFFER_GROUP_MEMBER_COUNT);
-            rt_vec[0].target = RESOURCE_MANAGER->CreateTexture("PositionTarget");
+            rt_vec[0].target = RESOURCE_MANAGER->GetCreatedTexture("PositionTarget");
             rt_vec[0].target->Create(
                                      DXGI_FORMAT_R32G32B32A32_FLOAT, m_window_info.width, m_window_info.height,
                                      CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
                                      D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-            rt_vec[1].target = RESOURCE_MANAGER->CreateTexture("NormalTarget");
+            rt_vec[1].target = RESOURCE_MANAGER->GetCreatedTexture("NormalTarget");
             rt_vec[1].target->Create(
                                      DXGI_FORMAT_R32G32B32A32_FLOAT, m_window_info.width, m_window_info.height,
                                      CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
                                      D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
-            rt_vec[2].target = RESOURCE_MANAGER->CreateTexture("DiffuseTarget");
+            rt_vec[2].target = RESOURCE_MANAGER->GetCreatedTexture("DiffuseTarget");
             rt_vec[2].target->Create(
                                      DXGI_FORMAT_R8G8B8A8_UNORM, m_window_info.width, m_window_info.height,
                                      CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
@@ -176,6 +179,28 @@ namespace Engine
 
             m_rt_groups[static_cast<Uint32>(eRenderTargetGroupType::GBuffer)] = std::make_shared<RenderTargetGroup>();
             m_rt_groups[static_cast<Uint32>(eRenderTargetGroupType::GBuffer)]->Create(eRenderTargetGroupType::GBuffer, rt_vec, ds_texture);
+        }
+
+        // Lighting Group
+        {
+            std::vector<RenderTarget> rt_vec(RENDER_TARGET_LIGHTING_GROUP_MEMBER_COUNT);
+
+            rt_vec[0].target = RESOURCE_MANAGER->GetCreatedTexture("DiffuseLightTarget");
+
+            rt_vec[0].target->Create(
+                                     DXGI_FORMAT_R8G8B8A8_UNORM, m_window_info.width, m_window_info.height,
+                                     CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+                                     D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+
+            rt_vec[1].target = RESOURCE_MANAGER->GetCreatedTexture("SpecularLightTarget");
+
+            rt_vec[1].target->Create(
+                                     DXGI_FORMAT_R8G8B8A8_UNORM, m_window_info.width, m_window_info.height,
+                                     CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+                                     D3D12_HEAP_FLAG_NONE, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+
+            m_rt_groups[static_cast<Uint32>(eRenderTargetGroupType::Lighting)] = std::make_shared<RenderTargetGroup>();
+            m_rt_groups[static_cast<Uint32>(eRenderTargetGroupType::Lighting)]->Create(eRenderTargetGroupType::Lighting, rt_vec, ds_texture);
         }
 
         m_b_created_rtg = true;
@@ -210,6 +235,11 @@ namespace Engine
     SPtr<ShaderManager> RenderSystem::GetShaderManager()
     {
         return m_shader_manager;
+    }
+
+    SPtr<MaterialManager> RenderSystem::GetMaterialManager()
+    {
+        return m_material_manager;
     }
 
     ViewportManager& RenderSystem::GetViewportManager()

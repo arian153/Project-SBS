@@ -67,6 +67,11 @@ namespace Engine
         return m_top - m_bottom;
     }
 
+    Vector2 ViewportManager::GetScreenResolution() const
+    {
+        return Vector2(m_right - m_left, m_top - m_bottom);
+    }
+
     void ViewportManager::SetScreenAspect(Real screen_aspect)
     {
         m_screen_aspect      = screen_aspect;

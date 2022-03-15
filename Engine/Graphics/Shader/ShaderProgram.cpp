@@ -134,6 +134,12 @@ namespace Engine
             m_pipeline_desc.RTVFormats[1] = DXGI_FORMAT_R32G32B32A32_FLOAT; // NORMAL
             m_pipeline_desc.RTVFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM; // COLOR
             break;
+
+        case eRenderTargetType::DeferredLit:
+            m_pipeline_desc.NumRenderTargets = RENDER_TARGET_LIGHTING_GROUP_MEMBER_COUNT;
+            m_pipeline_desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+            m_pipeline_desc.RTVFormats[1] = DXGI_FORMAT_R8G8B8A8_UNORM;
+            break;
         default: ;
         }
 
@@ -192,13 +198,47 @@ namespace Engine
             m_pipeline_desc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER_EQUAL;
             break;
         case eDepthStencilType::NoDepthTest:
+            m_pipeline_desc.DepthStencilState.DepthEnable = FALSE;
+            m_pipeline_desc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
             break;
         case eDepthStencilType::NoDepthTestNoWrite:
+            m_pipeline_desc.DepthStencilState.DepthEnable = FALSE;
+            m_pipeline_desc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
             break;
         case eDepthStencilType::LessNoWrite:
+            m_pipeline_desc.DepthStencilState.DepthEnable = TRUE;
+            m_pipeline_desc.DepthStencilState.DepthFunc      = D3D12_COMPARISON_FUNC_LESS;
+            m_pipeline_desc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
             break;
         default:
             break;
+        }
+
+        D3D12_RENDER_TARGET_BLEND_DESC& rt = m_pipeline_desc.BlendState.RenderTarget[0];
+
+        switch (m_shader_info.blend_type)
+        {
+        case eBlendType::Default:
+            rt.BlendEnable = FALSE;
+            rt.LogicOpEnable = FALSE;
+            rt.SrcBlend      = D3D12_BLEND_ONE;
+            rt.DestBlend     = D3D12_BLEND_ZERO;
+            break;
+        case eBlendType::AlphaBlend:
+            rt.BlendEnable = TRUE;
+            rt.LogicOpEnable = FALSE;
+            rt.SrcBlend      = D3D12_BLEND_SRC_ALPHA;
+            rt.DestBlend     = D3D12_BLEND_INV_SRC_ALPHA;
+            break;
+        case eBlendType::OneToOneBlend:
+            rt.BlendEnable = TRUE;
+            rt.LogicOpEnable = FALSE;
+            rt.SrcBlend      = D3D12_BLEND_ONE;
+            rt.DestBlend     = D3D12_BLEND_ONE;
+            break;
+        case eBlendType::End:
+            break;
+        default: ;
         }
 
         HRESULT result = DEVICE->CreateGraphicsPipelineState(&m_pipeline_desc, IID_PPV_ARGS(&m_pipeline_state));

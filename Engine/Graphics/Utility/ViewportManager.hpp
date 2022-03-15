@@ -1,5 +1,6 @@
 #pragma once
 #include "../../Math/Algebra/Matrix44.hpp"
+#include "../../Math/Algebra/Vector2.hpp"
 
 namespace Engine
 {
@@ -32,6 +33,9 @@ namespace Engine
 
         Real GetScreenWidth() const;
         Real GetScreenHeight() const;
+
+        Vector2 GetScreenResolution() const;
+
     private:
         void SetScreenAspect(Real screen_aspect);
         void SetFieldOfView(Real field_of_view);

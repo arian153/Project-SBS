@@ -151,7 +151,7 @@ namespace Engine
         return nullptr;
     }
 
-    SPtr<Texture> ResourceManager::CreateTexture(const String& name)
+    SPtr<Texture> ResourceManager::GetCreatedTexture(const String& name)
     {
         auto found = m_created_texture_map.find(name);
         if (found != m_created_texture_map.end())
