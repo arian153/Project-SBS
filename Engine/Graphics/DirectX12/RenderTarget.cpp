@@ -5,7 +5,7 @@
 namespace Engine
 {
     RenderTargetGroup::RenderTargetGroup()
-        : m_rtv_heap_begin(), m_dsv_heap_begin()
+        : m_rtv_heap_begin(), m_dsv_heap_begin(), m_target_to_resource {}, m_resource_to_target {}
     {
     }
 
@@ -39,6 +39,15 @@ namespace Engine
 
             DEVICE->CopyDescriptors(1, &dest_handle, &dest_size, 1, &src_handle, &src_size, D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
         }
+
+        for (Uint32 i = 0; i < m_rt_count; ++i)
+        {
+            m_target_to_resource[i] = CD3DX12_RESOURCE_BARRIER::Transition(m_rt_vec[i].target->GetTex2D().Get(),
+                D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COMMON);
+
+            m_resource_to_target[i] = CD3DX12_RESOURCE_BARRIER::Transition(m_rt_vec[i].target->GetTex2D().Get(),
+                D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
+        }
     }
 
     void RenderTargetGroup::OMSetRenderTargets(Uint32 count, Uint32 offset) const
@@ -62,6 +71,8 @@ namespace Engine
 
     void RenderTargetGroup::ClearRenderTargetView() const
     {
+        WaitResourceToTarget();
+
         for (Uint32 i = 0; i < m_rt_count; i++)
         {
             D3D12_CPU_DESCRIPTOR_HANDLE rtv_handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(m_rtv_heap_begin, i * m_rtv_heap_size);
@@ -97,5 +108,15 @@ namespace Engine
     Uint32 RenderTargetGroup::RTCount() const
     {
         return m_rt_count;
+    }
+
+    void RenderTargetGroup::WaitTargetToResource() const
+    {
+        CMD_LIST->ResourceBarrier(m_rt_count, m_target_to_resource);
+    }
+
+    void RenderTargetGroup::WaitResourceToTarget() const
+    {
+        CMD_LIST->ResourceBarrier(m_rt_count, m_resource_to_target);
     }
 }

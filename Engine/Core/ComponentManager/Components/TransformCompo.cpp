@@ -59,6 +59,11 @@ namespace Engine
         return m_transform.LocalToWorldMatrix().Inverse();
     }
 
+    Transform TransformCompo::GetTransform() const
+    {
+        return m_transform;
+    }
+
     void TransformCompo::SetTransform(const Transform& transform)
     {
         m_transform = transform;

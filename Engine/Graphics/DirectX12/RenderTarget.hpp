@@ -42,6 +42,9 @@ namespace Engine
         void Reset() const;
         Uint32 RTCount() const;
 
+        void WaitTargetToResource() const;
+        void WaitResourceToTarget() const;
+
     private:
         eRenderTargetGroupType       m_group_type = eRenderTargetGroupType::End;
         std::vector<RenderTarget>    m_rt_vec;
@@ -53,5 +56,9 @@ namespace Engine
         Uint32                      m_rtv_heap_size = 0;
         D3D12_CPU_DESCRIPTOR_HANDLE m_rtv_heap_begin;
         D3D12_CPU_DESCRIPTOR_HANDLE m_dsv_heap_begin;
+
+    private:
+        D3D12_RESOURCE_BARRIER			m_target_to_resource[8];
+        D3D12_RESOURCE_BARRIER			m_resource_to_target[8];
     };
 }

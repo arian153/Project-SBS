@@ -2,9 +2,12 @@
 #include "../Component.hpp"
 #include "../ComponentFactory.hpp"
 #include "../../../Graphics/Element/Light.hpp"
+#include "../../../Math/Structure/Transform.hpp"
 
 namespace Engine
 {
+    class Model;
+
     class LightCompo final : public Component
     {
     public:
@@ -20,7 +23,7 @@ namespace Engine
         void CloneTo(RPtr<Component> destination) override;
 
         const LightInfo& GetLightInfo() const;
-        LightInfo& GetLightInfo();
+        LightInfo&       GetLightInfo();
 
         void SetLightDirection(const Vector3& direction);
         void SetDiffuse(const Color& diffuse);
@@ -30,6 +33,10 @@ namespace Engine
         void SetLightRange(float range);
         void SetLightAngle(float angle);
 
+        void DeferredBind(Sint32 light_index) const;
+
+        Matrix44 GetWorldMatrix() const;
+
     protected:
         void Subscribe() override;
         void Unsubscribe() override;
@@ -38,7 +45,9 @@ namespace Engine
         friend class LightFactory;
 
     private:
-        LightInfo m_light_info;
+        LightInfo   m_light_info;
+        SPtr<Model> m_model = nullptr;
+        Transform   m_transform;
     };
 
     class LightFactory final : public ComponentFactory

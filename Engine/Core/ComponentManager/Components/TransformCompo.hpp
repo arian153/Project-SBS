@@ -22,6 +22,8 @@ namespace Engine
         Matrix44 GetLocalToWorldMatrix() const;
         Matrix44 GetWorldToLocalMatrix() const;
 
+        Transform GetTransform() const;
+
         void SetTransform(const Transform& transform);
 
         void SetScale(const Vector3& scale);

@@ -8,6 +8,7 @@
 #include "Element/Light.hpp"
 #include "Element/Material.hpp"
 #include "Element/Model.hpp"
+#include "Utility/MeshDataGenerator.hpp"
 #include "Utility/ViewportManager.hpp"
 
 namespace Engine
@@ -25,6 +26,10 @@ namespace Engine
         CreateConstantBuffer(eCBVRegister::b0, sizeof(LightParams), 1);
         CreateConstantBuffer(eCBVRegister::b1, sizeof(MatrixParams), 256);
         CreateConstantBuffer(eCBVRegister::b2, sizeof(MaterialParams), 256);
+
+        m_deferred_rect = std::make_shared<Model>();
+        m_deferred_rect->SetMeshData(MeshDataGenerator::CreateRectangle(1.0f, 1.0f));
+        m_deferred_rect->SetMaterial(MATERIAL_MANAGER->GetMaterial("Final"));
     }
 
     void RenderSubsystem::Update(Real dt)
@@ -76,8 +81,11 @@ namespace Engine
             // Swap Chain
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->ClearRenderTargetView(back_index);
 
-            // DeferredGeo G-Buffer Group
+            // Deferred G-Buffer Group
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->ClearRenderTargetView();
+
+            // Deferred Lighting Group
+            RENDER_SYS->GetRTGroup(eRenderTargetGroupType::Lighting)->ClearRenderTargetView();
         }
 
         MatrixParams matrix_params;
@@ -96,15 +104,36 @@ namespace Engine
                 GetConstantBuffer(eConstantBufferType::Transform)->PushData(&matrix_params, sizeof(matrix_params));
                 mesh_compo->Render();
             }
+
+            RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->WaitTargetToResource();
         }
 
         // Light OMSet
         {
+            RENDER_SYS->GetRTGroup(eRenderTargetGroupType::Lighting)->OMSetRenderTargets();
+            Sint32 index = 0;
+            for (auto& light_compo : m_light_compos)
+            {
+                matrix_params.world = light_compo->GetWorldMatrix();
+                matrix_params.wv    = matrix_params.world * matrix_params.view;
+                matrix_params.wvp   = matrix_params.world * matrix_params.view * matrix_params.proj;
+                GetConstantBuffer(eConstantBufferType::Transform)->PushData(&matrix_params, sizeof(matrix_params));
+                light_compo->DeferredBind(index);
+                index++;
+            }
+            RENDER_SYS->GetRTGroup(eRenderTargetGroupType::Lighting)->WaitTargetToResource();
         }
 
         // Swap Chain OMSet
         {
+            back_index = RENDER_SYS_DX12->GetBackBufferIndex();
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::SwapChain)->OMSetRenderTargets(1, back_index);
+
+            // Render Deferred Final Rect
+            m_deferred_rect->Bind(GetConstantBuffer(eConstantBufferType::Material));
+            m_deferred_rect->Render();
+
+            // Render Forward Meshes
 
             for (auto& mesh_compo : m_forward_compos)
             {
@@ -115,12 +144,6 @@ namespace Engine
                 mesh_compo->Render();
             }
         }
-
-        /* for (auto& model : m_models)
-         {
-             model->Bind(GetConstantBuffer(eConstantBufferType::Material));
-             model->Render();
-         }*/
     }
 
     void RenderSubsystem::Shutdown()
@@ -133,8 +156,8 @@ namespace Engine
     {
         if (ImGui::CollapsingHeader("Render Subsystem"))
         {
-            auto g_buffer = RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer);
-            Uint32 size = g_buffer->RTCount();
+            auto   g_buffer = RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer);
+            Uint32 size     = g_buffer->RTCount();
 
             for (Uint32 i = 0; i < size; ++i)
             {

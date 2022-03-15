@@ -3,6 +3,9 @@
 #include "TransformCompo.hpp"
 #include "../../../External/imgui/imgui.h"
 #include "../../../External/JSONCPP/json/json.h"
+#include "../../../Graphics/GraphicsDefine.hpp"
+#include "../../../Graphics/Element/Model.hpp"
+#include "../../../Graphics/Utility/MeshDataGenerator.hpp"
 #include "../../AppStateManager/AppState.hpp"
 #include "../../ObjectManager/Object.hpp"
 
@@ -19,12 +22,26 @@ namespace Engine
     void LightCompo::Initialize()
     {
         Subscribe();
+        m_model = std::make_shared<Model>();
     }
 
     void LightCompo::Update(Real dt)
     {
         if (m_owner->HasComponent<TransformCompo>())
+        {
             m_light_info.position = m_owner->GetComponent<TransformCompo>()->GetPosition();
+            m_transform           = m_owner->GetComponent<TransformCompo>()->GetTransform();
+            float scale           = 2.0f * m_light_info.range;
+
+            switch (static_cast<eLightType>(m_light_info.light_type))
+            {
+            case eLightType::PointLight:
+            case eLightType::SpotLight:
+                m_transform.scale = Vector3(scale, scale, scale);
+                break;
+            default: ;
+            }
+        }
     }
 
     void LightCompo::Shutdown()
@@ -86,6 +103,23 @@ namespace Engine
     void LightCompo::SetLightType(eLightType type)
     {
         m_light_info.light_type = static_cast<Uint32>(type);
+
+        switch (type)
+        {
+        case eLightType::DirectionalLight:
+            m_model->SetMeshData(MeshDataGenerator::CreateRectangle(1.0f, 1.0f));
+            m_model->SetMaterial(MATERIAL_MANAGER->GetMaterial("DirLight"));
+            break;
+        case eLightType::PointLight:
+            m_model->SetMeshData(MeshDataGenerator::CreateSphere(0.5f, 20, 20));
+            m_model->SetMaterial(MATERIAL_MANAGER->GetMaterial("PointLight"));
+            break;
+        case eLightType::SpotLight:
+            m_model->SetMeshData(MeshDataGenerator::CreateSphere(0.5f, 20, 20));
+            m_model->SetMaterial(MATERIAL_MANAGER->GetMaterial("PointLight"));
+            break;
+        default: ;
+        }
     }
 
     void LightCompo::SetLightRange(float range)
@@ -96,6 +130,23 @@ namespace Engine
     void LightCompo::SetLightAngle(float angle)
     {
         m_light_info.angle = angle;
+    }
+
+    void LightCompo::DeferredBind(Sint32 light_index) const
+    {
+        size_t size = m_model->Count();
+        for (size_t i = 0; i < size; ++i)
+        {
+            m_model->GetMaterial(i).SetSint(0, light_index);
+        }
+
+        m_model->Bind(m_space->GetRenderSubsystem()->GetConstantBuffer(eConstantBufferType::Material));
+        m_model->Render();
+    }
+
+    Matrix44 LightCompo::GetWorldMatrix() const
+    {
+        return m_transform.LocalToWorldMatrix();
     }
 
     void LightCompo::Subscribe()
@@ -111,7 +162,7 @@ namespace Engine
     LightFactory::LightFactory()
     {
         m_type_name = typeid(LightCompo).name();
-        m_type_id = typeid(LightCompo).hash_code();
+        m_type_id   = typeid(LightCompo).hash_code();
     }
 
     LightFactory::~LightFactory()

@@ -54,7 +54,8 @@ namespace Engine
         Matrix44 m_perspective;
         Matrix44 m_orthographic;
 
-        SPtr<Camera> m_curr_camera = nullptr;
+        SPtr<Camera> m_curr_camera   = nullptr;
+        SPtr<Model>  m_deferred_rect = nullptr;
 
         std::vector<SPtr<Camera>>           m_cameras;
         std::vector<RPtr<LightCompo>>       m_light_compos;
