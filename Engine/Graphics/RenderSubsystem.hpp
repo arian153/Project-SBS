@@ -7,6 +7,7 @@
 
 namespace Engine
 {
+    class PrimitiveRenderer;
     class LightCompo;
     class OrbitCameraCompo;
     class Camera;
@@ -43,6 +44,7 @@ namespace Engine
         void SetCurrentCamera(SPtr<Camera> camera);
 
         SPtr<ConstantBuffer> GetConstantBuffer(eConstantBufferType type);
+        SPtr<PrimitiveRenderer> GetPrimitiveRenderer() const;
 
     private:
         friend class RenderSystem;
@@ -67,5 +69,7 @@ namespace Engine
         std::vector<SPtr<ConstantBuffer>>   m_constant_buffers;
         HashMap<String, SPtr<Model>>        m_model_map;
         std::vector<SPtr<Model>>            m_deferred_models;
+
+        SPtr<PrimitiveRenderer> m_primitive_renderer = nullptr;
     };
 }

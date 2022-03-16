@@ -16,6 +16,8 @@ namespace Client
         void Shutdown() override;
 
     private:
+        Engine::TruncatedCone m_tr_cone;
+        Engine::Sphere m_sphere;
 
     };
 

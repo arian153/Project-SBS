@@ -9,6 +9,7 @@
 #include "Element/Material.hpp"
 #include "Element/Model.hpp"
 #include "Utility/MeshDataGenerator.hpp"
+#include "Utility/PrimitiveRenderer.hpp"
 #include "Utility/ViewportManager.hpp"
 
 namespace Engine
@@ -30,6 +31,8 @@ namespace Engine
         m_deferred_rect = std::make_shared<Model>();
         m_deferred_rect->SetMeshData(MeshDataGenerator::CreateRectangle(1.0f, 1.0f));
         m_deferred_rect->SetMaterial(MATERIAL_MANAGER->GetMaterial("Final"));
+
+        m_primitive_renderer = std::make_shared<PrimitiveRenderer>();
     }
 
     void RenderSubsystem::Update(Real dt)
@@ -56,6 +59,8 @@ namespace Engine
         MatrixParams matrix_params;
         matrix_params.view = m_curr_camera->GetViewMatrix();
         matrix_params.proj = m_perspective;
+
+        m_primitive_renderer->Update(matrix_params.view, matrix_params.proj);
 
         for (auto& mesh_compo : m_mesh_compos)
         {
@@ -104,14 +109,16 @@ namespace Engine
         {
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->OMSetRenderTargets();
 
-           /* for (auto& mesh_compo : m_deferred_compos)
-            {
-                matrix_params.world = mesh_compo->GetWorldMatrix();
-                matrix_params.wv    = matrix_params.world * matrix_params.view;
-                matrix_params.wvp   = matrix_params.world * matrix_params.view * matrix_params.proj;
-                GetConstantBuffer(eConstantBufferType::Transform)->PushData(&matrix_params, sizeof(matrix_params));
-                mesh_compo->Render();
-            }*/
+            /* for (auto& mesh_compo : m_deferred_compos)
+             {
+                 matrix_params.world = mesh_compo->GetWorldMatrix();
+                 matrix_params.wv    = matrix_params.world * matrix_params.view;
+                 matrix_params.wvp   = matrix_params.world * matrix_params.view * matrix_params.proj;
+                 GetConstantBuffer(eConstantBufferType::Transform)->PushData(&matrix_params, sizeof(matrix_params));
+                 mesh_compo->Render();
+             }*/
+
+            m_primitive_renderer->RenderDeferred(GetConstantBuffer(eConstantBufferType::Material));
 
             for (auto& model : m_models)
             {
@@ -149,6 +156,10 @@ namespace Engine
             m_deferred_rect->Render(GetConstantBuffer(eConstantBufferType::Material));
 
             // Render Forward Meshes
+            m_primitive_renderer->RenderForward(GetConstantBuffer(eConstantBufferType::Material));
+            m_primitive_renderer->RenderLines(
+                                              GetConstantBuffer(eConstantBufferType::Transform),
+                                              GetConstantBuffer(eConstantBufferType::Material));
 
             for (auto& mesh_compo : m_forward_compos)
             {
@@ -260,6 +271,11 @@ namespace Engine
     SPtr<ConstantBuffer> RenderSubsystem::GetConstantBuffer(eConstantBufferType type)
     {
         return m_constant_buffers[static_cast<Uint32>(type)];
+    }
+
+    SPtr<PrimitiveRenderer> RenderSubsystem::GetPrimitiveRenderer() const
+    {
+        return m_primitive_renderer;
     }
 
     void RenderSubsystem::CreateConstantBuffer(eCBVRegister reg, Uint32 buffer_size, Uint32 count)

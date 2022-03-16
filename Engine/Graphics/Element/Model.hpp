@@ -4,6 +4,8 @@
 
 namespace Engine
 {
+    struct DeferredSubMesh;
+    struct ForwardSubMesh;
     struct InstancingParams;
     class InstancingBuffer;
     class ConstantBuffer;
@@ -17,8 +19,12 @@ namespace Engine
         Model();
         ~Model();
 
+        void SetSize(size_t count);
+
         void SetUp(RPtr<ModelResource> model_resource);
         void SetMeshData(const MeshData& mesh_data);
+        void SetMeshData(const ForwardSubMesh& mesh_data, eTopologyType type);
+        void SetMeshData(const DeferredSubMesh& mesh_data);
 
         void SetShader(SPtr<ShaderProgram> shader);
         void SetShader(size_t i, SPtr<ShaderProgram> shader);

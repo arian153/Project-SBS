@@ -45,6 +45,7 @@ namespace Engine
         Matrix44 LocalToWorldMatrix() const;
 
         ePrimitiveType Type() const;
+        size_t         UUID() const;
 
     public:
         virtual void Initialize() = 0;
@@ -65,5 +66,6 @@ namespace Engine
 
     protected:
         ePrimitiveType m_type = ePrimitiveType::Last;
+        size_t         m_uuid = 0;
     };
 }

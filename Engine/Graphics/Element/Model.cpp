@@ -16,6 +16,13 @@ namespace Engine
     {
     }
 
+    void Model::SetSize(size_t count)
+    {
+        m_count = count;
+        m_meshes.resize(count);
+        m_materials.resize(count);
+    }
+
     void Model::SetUp(RPtr<ModelResource> model_resource)
     {
         m_count = model_resource->Count();
@@ -55,6 +62,24 @@ namespace Engine
     }
 
     void Model::SetMeshData(const MeshData& mesh_data)
+    {
+        m_meshes.resize(1);
+        m_materials.resize(1);
+        m_count = 1;
+
+        m_meshes[0].Init(mesh_data);
+    }
+
+    void Model::SetMeshData(const ForwardSubMesh& mesh_data, eTopologyType type)
+    {
+        m_meshes.resize(1);
+        m_materials.resize(1);
+        m_count = 1;
+
+        m_meshes[0].Init(mesh_data, type);
+    }
+
+    void Model::SetMeshData(const DeferredSubMesh& mesh_data)
     {
         m_meshes.resize(1);
         m_materials.resize(1);

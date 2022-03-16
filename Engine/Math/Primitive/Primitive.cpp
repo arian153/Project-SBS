@@ -1,5 +1,6 @@
 #include "Primitive.hpp"
 
+#include "../../Utility/UUIDUtility.hpp"
 #include "../Algebra/Matrix44.hpp"
 #include "../Utility/MatrixUtility.hpp"
 
@@ -7,12 +8,14 @@ namespace Engine
 {
     Primitive::Primitive()
     {
+        m_uuid = UUIDUtility::Generate();
     }
 
     Primitive::Primitive(const Vector3& position, const Quaternion& orientation)
     {
         transform.position = position;
         transform.rotation = orientation;
+        m_uuid             = UUIDUtility::Generate();
     }
 
     Primitive::~Primitive()
@@ -116,4 +119,8 @@ namespace Engine
         return m_type;
     }
 
-   }
+    size_t Primitive::UUID() const
+    {
+        return m_uuid;
+    }
+}

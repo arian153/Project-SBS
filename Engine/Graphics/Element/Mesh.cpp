@@ -63,7 +63,6 @@ namespace Engine
             break;
         default: ;
         }
-
     }
 
     void Mesh::Update(const MeshData& mesh_data) const
@@ -111,6 +110,45 @@ namespace Engine
     {
         m_vertex_buffer.Shutdown();
         m_index_buffer.Shutdown();
+    }
+
+    void Mesh::Init(const ForwardSubMesh& mesh_data, eTopologyType type)
+    {
+        m_vertex_type = eVertexType::PosVertex;
+        m_vertex_buffer.Initialize(mesh_data.vertices, true);
+        m_index_buffer.Initialize(mesh_data.indices);
+
+        switch (type)
+        {
+        case eTopologyType::DotList:
+            m_topology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+            break;
+        case eTopologyType::LineList:
+            m_topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+            break;
+        case eTopologyType::TriangleList:
+            m_topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+            break;
+        default: ;
+        }
+    }
+
+    void Mesh::Update(const ForwardSubMesh& mesh_data) const
+    {
+        m_vertex_buffer.Update(mesh_data.vertices);
+    }
+
+    void Mesh::Init(const DeferredSubMesh& mesh_data)
+    {
+        m_topology    = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+        m_vertex_type = eVertexType::NormalVertex;
+        m_vertex_buffer.Initialize(mesh_data.vertices, true);
+        m_index_buffer.Initialize(mesh_data.indices);
+    }
+
+    void Mesh::Update(const DeferredSubMesh& mesh_data) const
+    {
+        m_vertex_buffer.Update(mesh_data.vertices);
     }
 
     void Mesh::Render() const

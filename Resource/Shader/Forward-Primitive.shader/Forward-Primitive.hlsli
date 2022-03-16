@@ -1,7 +1,6 @@
 #ifndef P_LINE_HLSLI_
 #define P_LINE_HLSLI_
 #include "../Shader.includes/Params.hlsli"
-#include "../Shader.includes/LightProcessing.hlsli"
 
 struct VS_IN
 {

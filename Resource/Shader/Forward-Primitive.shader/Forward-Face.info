@@ -1,12 +1,12 @@
 {
-  "Name": "PrimitiveLine.shader",
+  "Name": "Forward-Face.shader",
   "Layout": "InstancePosVertex",
   "Shader Model": "5_0",
   "Render Target Type": 0,
   "Rasterizer Type": 0,
   "Depth Stencil Type": 0,
   "Blend Type": 0,
-  "Topology Type": 1,
+  "Topology Type": 2,
 
   "Vertex Shader Entry": "VS_Main",
   "Hull Shader Entry": "",

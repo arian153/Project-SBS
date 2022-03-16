@@ -1,5 +1,5 @@
 {
-  "Name": "PrimitiveFace.shader",
+  "Name": "Deferred-Primitive.shader",
   "Layout": "InstanceNormalVertex",
   "Shader Model": "5_0",
   "Render Target Type": 1,

@@ -50,6 +50,27 @@ namespace Engine
             material->SetTexture(3, RESOURCE_MANAGER->GetCreatedTexture("SpecularLightTarget"));
             m_materials.emplace("Final", material);
         }
+
+        {
+            auto material = std::make_shared<Material>();
+            material->SetShader(GET_SHADER("Forward-Line.shader"));
+            material->SetSint(0, 1);
+            m_materials.emplace("PrimitiveRenderer-Line", material);
+        }
+
+        {
+            auto material = std::make_shared<Material>();
+            material->SetShader(GET_SHADER("Forward-Face.shader"));
+            material->SetSint(0, 1);
+            m_materials.emplace("PrimitiveRenderer-Face", material);
+        }
+
+        {
+            auto material = std::make_shared<Material>();
+            material->SetShader(GET_SHADER("Deferred-Primitive.shader"));
+            material->SetSint(0, 1);
+            m_materials.emplace("PrimitiveRenderer-Deferred", material);
+        }
     }
 
     SPtr<Material> MaterialManager::GetMaterial(const String& name)

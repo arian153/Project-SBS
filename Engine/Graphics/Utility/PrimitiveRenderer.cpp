@@ -1,178 +1,274 @@
 #include "PrimitiveRenderer.hpp"
 
+#include "../GraphicsDefine.hpp"
+#include "../../Math/Structure/Transform.hpp"
+#include "../DirectX12/Buffer/ConstantBuffer.hpp"
+#include "../DirectX12/Buffer/InstancingBuffer.hpp"
+#include "../Element/Model.hpp"
+
 namespace Engine
 {
     PrimitiveRenderer::PrimitiveRenderer()
     {
+        m_line_mesh = std::make_shared<Model>();
     }
 
     PrimitiveRenderer::~PrimitiveRenderer()
     {
     }
 
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Circle& primitive, eRenderingMode mode)
+    void PrimitiveRenderer::Update(const Matrix44& view, const Matrix44& proj)
     {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
+        m_view = view;
+        m_proj = proj;
+
+        for (auto& [uuid, model] : m_inst_deferred_mesh)
         {
+            model->ClearInstance();
         }
-        else if (mode == eRenderingMode::Face)
+
+        for (auto& [uuid, model] : m_instanced_line_mesh)
         {
+            model->ClearInstance();
         }
-        return result;
+
+        for (auto& [uuid, model] : m_instanced_face_mesh)
+        {
+            model->ClearInstance();
+        }
+
+        m_line_data.indices.clear();
+        m_line_data.vertices.clear();
     }
 
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Ellipse& primitive, eRenderingMode mode)
+    void PrimitiveRenderer::DrawPrimitive(const Primitive& primitive, const Transform& tf, const Color& color, eRenderingMode mode)
     {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
-        {
-        }
-        else if (mode == eRenderingMode::Face)
-        {
-        }
-        return result;
-    }
+        SPtr<Model> model          = nullptr;
+        size_t      uuid           = primitive.UUID();
+        bool        is_created     = false;
+        auto        primitive_type = primitive.Type();
 
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Rectangle& primitive, eRenderingMode mode)
-    {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
-        {
-        }
-        else if (mode == eRenderingMode::Face)
-        {
-        }
-        return result;
-    }
-
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Triangle& primitive, eRenderingMode mode)
-    {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
-        {
-        }
-        else if (mode == eRenderingMode::Face)
-        {
-        }
-        return result;
-    }
-
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Box& primitive, eRenderingMode mode)
-    {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
-        {
-        }
-        else if (mode == eRenderingMode::Face)
-        {
-        }
-        return result;
-    }
-
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Capsule& primitive, eRenderingMode mode)
-    {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
-        {
-        }
-        else if (mode == eRenderingMode::Face)
-        {
-        }
-
-        return result;
-    }
-
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Cone& primitive, eRenderingMode mode)
-    {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
-        {
-        }
-        else if (mode == eRenderingMode::Face)
-        {
-        }
-        return result;
-    }
-
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Cylinder& primitive, eRenderingMode mode)
-    {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
-        {
-        }
-        else if (mode == eRenderingMode::Face)
-        {
-        }
-        return result;
-    }
-
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Dome& primitive, eRenderingMode mode)
-    {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
-        {
-        }
-        else if (mode == eRenderingMode::Face)
-        {
-        }
-        return result;
-    }
-
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Ellipsoid& primitive, eRenderingMode mode)
-    {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
-        {
-        }
-        else if (mode == eRenderingMode::Face)
-        {
-        }
-        return result;
-    }
-
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Sphere& primitive, eRenderingMode mode)
-    {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
-        {
-        }
-        else if (mode == eRenderingMode::Face)
-        {
-        }
-        return result;
-    }
-
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const Tetrahedron& primitive, eRenderingMode mode)
-    {
-        PrimitiveSubMesh result;
-        if (mode == eRenderingMode::Line)
-        {
-        }
-        else if (mode == eRenderingMode::Face)
-        {
-        }
-
-        return result;
-    }
-
-    PrimitiveSubMesh PrimitiveRenderer::GenSubMesh(const TruncatedCone& primitive, eRenderingMode mode)
-    {
-        PrimitiveSubMesh result;
+        if (primitive_type == ePrimitiveType::Polygon ||
+            primitive_type == ePrimitiveType::Polyhedron ||
+            primitive_type == ePrimitiveType::Last)
+            return;
 
         if (mode == eRenderingMode::Line)
         {
+            model = AddLineModel(uuid, is_created);
+            if (is_created)
+            {
+                switch (primitive_type)
+                {
+                case ePrimitiveType::Circle:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Circle&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::Ellipse:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Ellipse&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::Rectangle:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Rectangle&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::Triangle:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Triangle&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::Box:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Box&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::Capsule:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Capsule&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::Cone:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Cone&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::Cylinder:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Cylinder&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::Dome:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Dome&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::Ellipsoid:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Ellipsoid&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::Sphere:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Sphere&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::Tetrahedron:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const Tetrahedron&>(primitive)), eTopologyType::LineList);
+                    break;
+                case ePrimitiveType::TruncatedCone:
+                    model->SetMeshData(GenLineSubMesh(static_cast<const TruncatedCone&>(primitive)), eTopologyType::LineList);
+                    break;
+                default: ;
+                }
+            }
         }
         else if (mode == eRenderingMode::Face)
         {
+            model = AddFaceModel(uuid, is_created);
+            if (is_created)
+            {
+                switch (primitive.Type())
+                {
+                case ePrimitiveType::Circle:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Circle&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::Ellipse:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Ellipse&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::Rectangle:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Rectangle&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::Triangle:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Triangle&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::Box:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Box&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::Capsule:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Capsule&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::Cone:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Cone&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::Cylinder:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Cylinder&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::Dome:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Dome&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::Ellipsoid:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Ellipsoid&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::Sphere:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Sphere&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::Tetrahedron:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const Tetrahedron&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                case ePrimitiveType::TruncatedCone:
+                    model->SetMeshData(SubMeshUtility::ToForward(GenFaceSubMesh(static_cast<const TruncatedCone&>(primitive))), eTopologyType::TriangleList);
+                    break;
+                default: ;
+                }
+            }
+        }
+        else if (mode == eRenderingMode::Lighting)
+        {
+            model = AddDeferredModel(uuid, is_created);
+            if (is_created)
+            {
+                switch (primitive.Type())
+                {
+                case ePrimitiveType::Circle:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Circle&>(primitive)));
+                    break;
+                case ePrimitiveType::Ellipse:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Ellipse&>(primitive)));
+                    break;
+                case ePrimitiveType::Rectangle:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Rectangle&>(primitive)));
+                    break;
+                case ePrimitiveType::Triangle:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Triangle&>(primitive)));
+                    break;
+                case ePrimitiveType::Box:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Box&>(primitive)));
+                    break;
+                case ePrimitiveType::Capsule:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Capsule&>(primitive)));
+                    break;
+                case ePrimitiveType::Cone:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Cone&>(primitive)));
+                    break;
+                case ePrimitiveType::Cylinder:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Cylinder&>(primitive)));
+                    break;
+                case ePrimitiveType::Dome:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Dome&>(primitive)));
+                    break;
+                case ePrimitiveType::Ellipsoid:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Ellipsoid&>(primitive)));
+                    break;
+                case ePrimitiveType::Sphere:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Sphere&>(primitive)));
+                    break;
+                case ePrimitiveType::Tetrahedron:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const Tetrahedron&>(primitive)));
+                    break;
+                case ePrimitiveType::TruncatedCone:
+                    model->SetMeshData(GenFaceSubMesh(static_cast<const TruncatedCone&>(primitive)));
+                    break;
+                default: ;
+                }
+            }
         }
 
-        return result;
+        if (model == nullptr)
+            return;
+
+        InstancingParams params;
+        params.mat_world = tf.LocalToWorldMatrix();
+        params.mat_wv    = params.mat_world * m_view;
+        params.mat_wvp   = params.mat_world * m_view * m_proj;
+        params.diffuse   = color;
+        model->AddInstance(params);
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Circle& primitive)
+    void PrimitiveRenderer::DrawLine(const Vector3& start, const Vector3& end)
     {
-        FaceSubMesh sub_mesh;
+        Uint32 index = static_cast<Uint32>(m_line_data.vertices.size());
+
+        PosVertex vertex;
+        vertex.pos = start;
+        m_line_data.vertices.push_back(vertex);
+        vertex.pos = end;
+        m_line_data.vertices.push_back(vertex);
+
+        m_line_data.indices.push_back(index);
+        m_line_data.indices.push_back(index + 1);
+    }
+
+    void PrimitiveRenderer::RenderDeferred(SPtr<ConstantBuffer> material_buffer)
+    {
+        for (auto& [fst, snd] : m_inst_deferred_mesh)
+        {
+            snd->Render(material_buffer);
+        }
+    }
+
+    void PrimitiveRenderer::RenderForward(SPtr<ConstantBuffer> material_buffer)
+    {
+        for (auto& [fst, snd] : m_instanced_line_mesh)
+        {
+            snd->Render(material_buffer);
+        }
+
+        for (auto& [fst, snd] : m_instanced_face_mesh)
+        {
+            snd->Render(material_buffer);
+        }
+    }
+
+    void PrimitiveRenderer::RenderLines(SPtr<ConstantBuffer> matrix_buffer, SPtr<ConstantBuffer> material_buffer) const
+    {
+        m_line_mesh->SetMeshData(m_line_data, eTopologyType::LineList);
+        m_line_mesh->SetShader(GET_SHADER("Forward-Line.shader"));
+
+        MatrixParams matrix_params;
+        matrix_params.view  = m_view;
+        matrix_params.proj  = m_proj;
+        matrix_params.world = Matrix44::Identity();
+        matrix_params.wv    = matrix_params.view;
+        matrix_params.wvp   = matrix_params.view * matrix_params.proj;
+
+        matrix_buffer->PushData(&matrix_params, sizeof(matrix_params));
+        m_line_mesh->Render(material_buffer);
+    }
+
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Circle& primitive)
+    {
+        DeferredSubMesh sub_mesh;
 
         sub_mesh.vertices.resize(202);
 
@@ -220,9 +316,9 @@ namespace Engine
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Ellipse& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Ellipse& primitive)
     {
-        FaceSubMesh sub_mesh;
+        DeferredSubMesh sub_mesh;
 
         sub_mesh.vertices.resize(202);
 
@@ -271,9 +367,9 @@ namespace Engine
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Rectangle& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Rectangle& primitive)
     {
-        FaceSubMesh sub_mesh;
+        DeferredSubMesh sub_mesh;
 
         sub_mesh.vertices.resize(8);
 
@@ -303,29 +399,29 @@ namespace Engine
         sub_mesh.indices[7] = 6;
         sub_mesh.indices[8] = 5;
 
-        sub_mesh.indices[9] = 5;
+        sub_mesh.indices[9]  = 5;
         sub_mesh.indices[10] = 6;
         sub_mesh.indices[11] = 7;
 
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Triangle& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Triangle& primitive)
     {
-        FaceSubMesh sub_mesh;
+        DeferredSubMesh sub_mesh;
 
         sub_mesh.vertices.resize(6);
 
         for (Uint32 i = 0; i < 3; ++i)
         {
             sub_mesh.vertices[i].pos = primitive.vertices[i];
-            sub_mesh.vertices[i].n = Vector3(0, 1, 0);
+            sub_mesh.vertices[i].n   = Vector3(0, 1, 0);
         }
 
         for (Uint32 i = 3; i < 6; ++i)
         {
             sub_mesh.vertices[i].pos = primitive.vertices[i % 3];
-            sub_mesh.vertices[i].n = Vector3(0, -1, 0);
+            sub_mesh.vertices[i].n   = Vector3(0, -1, 0);
         }
 
         sub_mesh.indices.resize(12);
@@ -342,16 +438,16 @@ namespace Engine
         sub_mesh.indices[7] = 4;
         sub_mesh.indices[8] = 5;
 
-        sub_mesh.indices[9] = 3;
+        sub_mesh.indices[9]  = 3;
         sub_mesh.indices[10] = 5;
         sub_mesh.indices[11] = 4;
 
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Box& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Box& primitive)
     {
-        FaceSubMesh sub_mesh;
+        DeferredSubMesh sub_mesh;
 
         sub_mesh.vertices.resize(8);
 
@@ -422,9 +518,9 @@ namespace Engine
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Capsule& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Capsule& primitive)
     {
-        FaceSubMesh sub_mesh;
+        DeferredSubMesh sub_mesh;
 
         Uint32 slice_count = 50;
         Uint32 stack_count = 25;
@@ -508,11 +604,11 @@ namespace Engine
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Cone& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Cone& primitive)
     {
-        FaceSubMesh sub_mesh;
-        Uint32      stack_count = 1;
-        Uint32      slice_count = 100;
+        DeferredSubMesh sub_mesh;
+        Uint32          stack_count = 1;
+        Uint32          slice_count = 100;
 
         Real stack_height = primitive.height / stack_count;
         // Amount to increment radius as we move up each stack level from bottom to top.
@@ -590,11 +686,11 @@ namespace Engine
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Cylinder& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Cylinder& primitive)
     {
-        FaceSubMesh sub_mesh;
-        Uint32      stack_count = 1;
-        Uint32      slice_count = 100;
+        DeferredSubMesh sub_mesh;
+        Uint32          stack_count = 1;
+        Uint32          slice_count = 100;
 
         Real stack_height = primitive.height / stack_count;
         // Amount to increment radius as we move up each stack level from bottom to top.
@@ -700,9 +796,9 @@ namespace Engine
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Dome& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Dome& primitive)
     {
-        FaceSubMesh sub_mesh;
+        DeferredSubMesh sub_mesh;
 
         Uint32 slice_count = 50;
         Uint32 stack_count = 24;
@@ -798,9 +894,9 @@ namespace Engine
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Ellipsoid& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Ellipsoid& primitive)
     {
-        FaceSubMesh sub_mesh;
+        DeferredSubMesh sub_mesh;
 
         Uint32 slice_count = 50;
         Uint32 stack_count = 25;
@@ -880,9 +976,9 @@ namespace Engine
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Sphere& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Sphere& primitive)
     {
-        FaceSubMesh sub_mesh;
+        DeferredSubMesh sub_mesh;
 
         Uint32 slice_count = 50;
         Uint32 stack_count = 25;
@@ -962,9 +1058,9 @@ namespace Engine
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const Tetrahedron& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const Tetrahedron& primitive)
     {
-        FaceSubMesh sub_mesh;
+        DeferredSubMesh sub_mesh;
         sub_mesh.vertices.resize(4);
 
         for (Uint32 i = 0; i < 4; ++i)
@@ -1020,9 +1116,9 @@ namespace Engine
         return sub_mesh;
     }
 
-    FaceSubMesh PrimitiveRenderer::GenFaceSubMesh(const TruncatedCone& primitive)
+    DeferredSubMesh PrimitiveRenderer::GenFaceSubMesh(const TruncatedCone& primitive)
     {
-        FaceSubMesh sub_mesh;
+        DeferredSubMesh sub_mesh;
 
         Uint32 stack_count = 1;
         Uint32 slice_count = 100;
@@ -1133,5 +1229,153 @@ namespace Engine
         }
 
         return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Circle& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+
+        size_t count = 100;
+        sub_mesh.vertices.resize(count);
+
+        Real radian_step = Math::TWO_PI / static_cast<Real>(count);
+        for (size_t i = 0; i < count; ++i)
+        {
+            Real angle               = static_cast<Real>(i) * radian_step;
+            sub_mesh.vertices[i].pos = Vector3(cosf(angle) * primitive.radius, sinf(angle) * primitive.radius, 0.0f);
+        }
+
+        sub_mesh.indices.reserve(count * 2);
+
+        Uint32 size = static_cast<Uint32>(count - 1);
+        for (Uint32 i = 0; i < size; ++i)
+        {
+            sub_mesh.indices.push_back(i);
+            sub_mesh.indices.push_back(i + 1);
+        }
+
+        sub_mesh.indices.push_back(size);
+        sub_mesh.indices.push_back(0);
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Ellipse& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Rectangle& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Triangle& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Box& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Capsule& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Cone& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Cylinder& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Dome& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Ellipsoid& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Sphere& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Tetrahedron& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const TruncatedCone& primitive)
+    {
+        ForwardSubMesh sub_mesh;
+        return sub_mesh;
+    }
+
+    SPtr<Model> PrimitiveRenderer::AddLineModel(size_t uuid, bool& is_created)
+    {
+        auto found = m_instanced_line_mesh.find(uuid);
+        if (found == m_instanced_line_mesh.end())
+        {
+            is_created = true;
+            auto model = std::make_shared<Model>();
+            model->SetSize(1);
+            model->SetMaterial(MATERIAL_MANAGER->GetMaterial("PrimitiveRenderer-Line"));
+            m_instanced_line_mesh.emplace(uuid, model);
+            return model;
+        }
+        is_created = false;
+        return found->second;
+    }
+
+    SPtr<Model> PrimitiveRenderer::AddFaceModel(size_t uuid, bool& is_created)
+    {
+        auto found = m_instanced_face_mesh.find(uuid);
+        if (found == m_instanced_face_mesh.end())
+        {
+            auto model = std::make_shared<Model>();
+            model->SetSize(1);
+            model->SetMaterial(MATERIAL_MANAGER->GetMaterial("PrimitiveRenderer-Face"));
+            m_instanced_face_mesh.emplace(uuid, model);
+            is_created = true;
+            return model;
+        }
+        is_created = false;
+        return found->second;
+    }
+
+    SPtr<Model> PrimitiveRenderer::AddDeferredModel(size_t uuid, bool& is_created)
+    {
+        auto found = m_inst_deferred_mesh.find(uuid);
+        if (found == m_inst_deferred_mesh.end())
+        {
+            auto model = std::make_shared<Model>();
+            model->SetSize(1);
+            model->SetMaterial(MATERIAL_MANAGER->GetMaterial("PrimitiveRenderer-Deferred"));
+            m_inst_deferred_mesh.emplace(uuid, model);
+            is_created = true;
+            return model;
+        }
+        is_created = false;
+        return found->second;
     }
 }

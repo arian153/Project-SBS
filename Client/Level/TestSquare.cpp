@@ -65,6 +65,10 @@ namespace Client
             tr_cone.radius = Vector2(0.13f, 0.1f);
             tr_cone.ratio  = 0.3f;
 
+            m_tr_cone.height = 3.0f;
+            m_tr_cone.radius = Vector2(3.0f, 4.0f);
+            m_tr_cone.ratio = 0.3f;
+
             Cone cone;
             cone.height = 0.3f;
             cone.radius = Vector2(0.13f, 0.1f);
@@ -94,6 +98,8 @@ namespace Client
             Triangle triangle;
             triangle.SetUnit();
 
+            m_sphere.radius = 1.0f;
+
             auto [vertices, indices] = PrimitiveRenderer::GenFaceSubMesh(capsule);
 
             MeshData mesh_data;
@@ -102,7 +108,7 @@ namespace Client
 
             //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
             mesh->SetMeshData(mesh_data);
-            mesh->SetShader(GET_SHADER("PrimitiveFace.shader"));
+            mesh->SetShader(GET_SHADER("Deferred-Primitive.shader"));
             mesh->SetMaterialInfo(0, 1);
 
             /* mesh->SetMaterialInfoReal(0, 0.3f);
@@ -195,6 +201,8 @@ namespace Client
             WIN32_MANAGER->SetQuit(true);
         }
 
+       
+
         /* ImGui::Begin("Console");
  
          eButtonState curr_state = INPUT_MANAGER->GetButtonState(eKeyCodeKeyboard::A);
@@ -248,6 +256,20 @@ namespace Client
 
     void TestSquare::Render()
     {
+        auto primitive_renderer = m_render_subsystem->GetPrimitiveRenderer();
+
+        Transform tf;
+        tf.position = Vector3(-14, 0, 0);
+        primitive_renderer->DrawPrimitive(m_sphere, tf, Color(1.0f, 0.0f, 0.0f, 1.0f), eRenderingMode::Lighting);
+        tf.position = Vector3(-24, 0, 0);
+        primitive_renderer->DrawPrimitive(m_sphere, tf, Color(1.0f, 1.0f, 0.0f, 1.0f), eRenderingMode::Lighting);
+        tf.position = Vector3(-34, 0, 0);
+        primitive_renderer->DrawPrimitive(m_sphere, tf, Color(1.0f, 0.0f, 1.0f, 1.0f), eRenderingMode::Lighting);
+        tf.position = Vector3(-44, 0, 0);
+        primitive_renderer->DrawPrimitive(m_sphere, tf, Color(0.0f, 1.0f, 1.0f, 1.0f), eRenderingMode::Lighting);
+
+        primitive_renderer->DrawLine(Vector3(1, 0, 0), Vector3(0, 4, 0));
+        primitive_renderer->DrawLine(Vector3(0, 4, 0), Vector3(-9, 4, 0));
     }
 
     void TestSquare::Shutdown()

@@ -1,5 +1,6 @@
 #pragma once
 #include "../Data/MeshData.hpp"
+#include "../Data/SubMeshData.hpp"
 #include "../DirectX12/Buffer/IndexBuffer.hpp"
 #include "../DirectX12/Buffer/VertexBuffer.hpp"
 #include "../Shader/ShaderInfo.hpp"
@@ -15,6 +16,12 @@ namespace Engine
         void Init(const MeshData& mesh_data, eTopologyType type);
         void Update(const MeshData& mesh_data) const;
         void Shutdown();
+
+        void Init(const ForwardSubMesh& mesh_data, eTopologyType type);
+        void Update(const ForwardSubMesh& mesh_data) const;
+
+        void Init(const DeferredSubMesh& mesh_data);
+        void Update(const DeferredSubMesh& mesh_data) const;
 
         void Render() const;
         void Render(const SPtr<InstancingBuffer>& instancing_buffer) const;
