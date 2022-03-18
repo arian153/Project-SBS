@@ -14,6 +14,10 @@ namespace Engine::Math
     Vector3Pair GetTangentUsingQuaternion(const Engine::Vector3& normal);
     bool        SolveQuadratic(Real a, Real b, Real c, Real& result1, Real& result2);
 
+    Vector3Pair GetTBPairFast(const Engine::Vector3& normal);
+
+    Engine::Vector3 GetTangentFast(const Engine::Vector3& normal);
+
     template <typename T>
     T Min(const T& a, const T& b)
     {

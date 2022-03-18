@@ -3,6 +3,7 @@
 #include <iostream>
 #include <Core/ComponentManager/Components/LightCompo.hpp>
 #include <Core/ComponentManager/Components/OrbitCameraCompo.hpp>
+#include <Core/ComponentManager/Components/SoftBodyCompo.hpp>
 #include <Core/ObjectManager/Object.hpp>
 using namespace Engine;
 
@@ -19,113 +20,129 @@ namespace Client
 
     void TestSquare::Initialize()
     {
-        //Mesh Object
+        ////Mesh Object
+        //{
+        //    auto obj       = m_object_manager->AddObject("Bunny");
+        //    auto transform = obj->AddComponent<TransformCompo>();
+        //    auto mesh      = obj->AddComponent<MeshCompo>();
+
+        //    Transform tf;
+        //    tf.position = Vector3(-40, 0, 0);
+        //    tf.scale    = Vector3(100, 100, 100);
+
+        //    transform->SetTransform(tf);
+
+        //    MeshData cube = MeshDataGenerator::CreateBox(0.1f, 0.1f, 0.1f, 3);
+
+        //    mesh->CreateModel("Cube-Custom");
+        //    mesh->SetMeshData(cube);
+        //    //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
+        //    mesh->SetShader(GET_SHADER("Deferred-Geometry.shader"));
+        //    mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Leather.jpg")->GetTexture());
+        //    mesh->SetNormalMapTexture(RESOURCE_MANAGER->GetTextureResourceName("Leather_Normal.jpg")->GetTexture());
+        //    mesh->SetMaterialInfo(0, 1);
+        //}
+
+        //{
+        //    auto obj       = m_object_manager->AddObject("Capsule");
+        //    auto transform = obj->AddComponent<TransformCompo>();
+        //    auto mesh      = obj->AddComponent<MeshCompo>();
+        //    mesh->CreateModel("Test-Primitive");
+        //    obj->AddComponent<RigidBodyCompo>();
+
+        //    Transform tf;
+        //    tf.position = Vector3(0, 0, 0);
+        //    tf.scale    = Vector3(50, 50, 50);
+
+        //    transform->SetTransform(tf);
+
+        //    Capsule capsule;
+        //    capsule.height = 0.3f;
+        //    capsule.radius = Vector3(0.1f, 0.1f, 0.1f);
+
+        //    TruncatedCone tr_cone;
+        //    tr_cone.height = 0.3f;
+        //    tr_cone.radius = Vector2(0.13f, 0.1f);
+        //    tr_cone.ratio  = 0.3f;
+
+        //    m_tr_cone.height = 3.0f;
+        //    m_tr_cone.radius = Vector2(3.0f, 4.0f);
+        //    m_tr_cone.ratio  = 0.3f;
+
+        //    Cone cone;
+        //    cone.height = 0.3f;
+        //    cone.radius = Vector2(0.13f, 0.1f);
+
+        //    Cylinder cylinder;
+        //    cylinder.height = 0.3f;
+        //    cylinder.radius = Vector2(0.13f, 0.1f);
+
+        //    Dome dome;
+        //    dome.radius = Vector3(0.1f, 0.1f, 0.1f);
+
+        //    Ellipsoid ellipsoid;
+        //    ellipsoid.radius = Vector3(0.1f, 0.12f, 0.11f);
+
+        //    Tetrahedron tetrahedron;
+        //    tetrahedron.SetUnit();
+
+        //    Box box;
+        //    box.SetBox(0.3f, 0.2f, 0.2f);
+
+        //    Circle circle;
+        //    circle.radius = 0.2f;
+
+        //    Engine::Rectangle rect;
+        //    rect.SetUnit();
+
+        //    Triangle triangle;
+        //    triangle.SetUnit();
+
+        //    m_sphere.radius = 1.0f;
+
+        //    auto [vertices, indices] = PrimitiveRenderer::GenFaceSubMesh(capsule);
+
+        //    MeshData mesh_data;
+        //    mesh_data.Set(vertices);
+        //    mesh_data.indices = indices;
+
+        //    //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
+        //    mesh->SetMeshData(mesh_data);
+        //    mesh->SetShader(GET_SHADER("Deferred-Primitive.shader"));
+        //    mesh->SetMaterialInfo(0, 1);
+
+        //    /* mesh->SetMaterialInfoReal(0, 0.3f);
+        //     mesh->SetMaterialInfoReal(1, -0.4f);
+        //     mesh->SetMaterialInfoReal(2, 0.3f);*/
+        //}
+
+        //{
+        //    auto obj       = m_object_manager->AddObject("Capsule2");
+        //    auto transform = obj->AddComponent<TransformCompo>();
+        //    auto mesh      = obj->AddComponent<MeshCompo>();
+        //    mesh->CreateModel("Test-Primitive");
+        //    Transform tf;
+        //    tf.position = Vector3(20, 0, 0);
+        //    tf.scale    = Vector3(50, 50, 50);
+
+        //    transform->SetTransform(tf);
+        //}
+
         {
-            auto obj       = m_object_manager->AddObject("Bunny");
-            auto transform = obj->AddComponent<TransformCompo>();
-            auto mesh      = obj->AddComponent<MeshCompo>();
+            auto obj = m_object_manager->AddObject("Cloth");
+            obj->AddComponent<TransformCompo>();
+            auto soft_body = obj->AddComponent<SoftBodyCompo>();
+            soft_body->CreateSample(10, 10);
 
-            Transform tf;
-            tf.position = Vector3(-40, 0, 0);
-            tf.scale    = Vector3(100, 100, 100);
-
-            transform->SetTransform(tf);
-
-            MeshData cube = MeshDataGenerator::CreateBox(0.1f, 0.1f, 0.1f, 3);
-                    
-            mesh->CreateModel("Cube-Custom");
-            mesh->SetMeshData(cube);
-            //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
+            auto mesh = obj->AddComponent<MeshCompo>();
+            mesh->CreateModel("SoftBody-Custom");
+            mesh->SetMeshData(soft_body->GetSoftBodyMeshData());
             mesh->SetShader(GET_SHADER("Deferred-Geometry.shader"));
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Leather.jpg")->GetTexture());
             mesh->SetNormalMapTexture(RESOURCE_MANAGER->GetTextureResourceName("Leather_Normal.jpg")->GetTexture());
             mesh->SetMaterialInfo(0, 1);
-        }
-
-        {
-            auto obj       = m_object_manager->AddObject("Capsule");
-            auto transform = obj->AddComponent<TransformCompo>();
-            auto mesh      = obj->AddComponent<MeshCompo>();
-            mesh->CreateModel("Test-Primitive");
-            obj->AddComponent<RigidBodyCompo>();
-
-            Transform tf;
-            tf.position = Vector3(0, 0, 0);
-            tf.scale    = Vector3(50, 50, 50);
-
-            transform->SetTransform(tf);
 
 
-            Capsule capsule;
-            capsule.height = 0.3f;
-            capsule.radius = Vector3(0.1f, 0.1f, 0.1f);
-
-            TruncatedCone tr_cone;
-            tr_cone.height = 0.3f;
-            tr_cone.radius = Vector2(0.13f, 0.1f);
-            tr_cone.ratio  = 0.3f;
-
-            m_tr_cone.height = 3.0f;
-            m_tr_cone.radius = Vector2(3.0f, 4.0f);
-            m_tr_cone.ratio = 0.3f;
-
-            Cone cone;
-            cone.height = 0.3f;
-            cone.radius = Vector2(0.13f, 0.1f);
-
-            Cylinder cylinder;
-            cylinder.height = 0.3f;
-            cylinder.radius = Vector2(0.13f, 0.1f);
-
-            Dome dome;
-            dome.radius = Vector3(0.1f, 0.1f, 0.1f);
-
-            Ellipsoid ellipsoid;
-            ellipsoid.radius = Vector3(0.1f, 0.12f, 0.11f);
-
-            Tetrahedron tetrahedron;
-            tetrahedron.SetUnit();
-
-            Box box;
-            box.SetBox(0.3f, 0.2f, 0.2f);
-
-            Circle circle;
-            circle.radius = 0.2f;
-
-            Engine::Rectangle rect;
-            rect.SetUnit();
-
-            Triangle triangle;
-            triangle.SetUnit();
-
-            m_sphere.radius = 1.0f;
-
-            auto [vertices, indices] = PrimitiveRenderer::GenFaceSubMesh(capsule);
-
-            MeshData mesh_data;
-            mesh_data.Set(vertices);
-            mesh_data.indices = indices;
-
-            //mesh->SetMeshData(RESOURCE_MANAGER->GetModelResourceName("bunny_high_poly.obj")->GetMeshData(0));
-            mesh->SetMeshData(mesh_data);
-            mesh->SetShader(GET_SHADER("Deferred-Primitive.shader"));
-            mesh->SetMaterialInfo(0, 1);
-
-            /* mesh->SetMaterialInfoReal(0, 0.3f);
-             mesh->SetMaterialInfoReal(1, -0.4f);
-             mesh->SetMaterialInfoReal(2, 0.3f);*/
-        }
-
-        {
-            auto obj = m_object_manager->AddObject("Capsule2");
-            auto transform = obj->AddComponent<TransformCompo>();
-            auto mesh = obj->AddComponent<MeshCompo>();
-            mesh->CreateModel("Test-Primitive");
-            Transform tf;
-            tf.position = Vector3(20, 0, 0);
-            tf.scale = Vector3(50, 50, 50);
-
-            transform->SetTransform(tf);
         }
 
         //Camera Object
@@ -154,7 +171,7 @@ namespace Client
         {
             auto obj = m_object_manager->AddObject("SkyBox");
             obj->AddComponent<TransformCompo>();
-            auto mesh = obj->AddComponent<MeshCompo>();
+            auto     mesh       = obj->AddComponent<MeshCompo>();
             MeshData sky_sphere = MeshDataGenerator::CreateSphere(1.0f, 30, 30);
 
             mesh->CreateModel("SkyBox");
@@ -174,7 +191,6 @@ namespace Client
             light->SetAmbient(Color(0.1f, 0.f, 0.f, 1.0f));
             light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
             light->SetLightRange(200.f);
-
         }
 
         //Light 3 Blue Spot Light
@@ -190,7 +206,6 @@ namespace Client
             light->SetSpecular(Color(0.1f, 0.1f, 0.1f, 1.0f));
             light->SetLightRange(200.f);
             light->SetLightAngle(Math::PI_DIV_4);
-
         }
     }
 
@@ -200,8 +215,6 @@ namespace Client
         {
             WIN32_MANAGER->SetQuit(true);
         }
-
-       
 
         /* ImGui::Begin("Console");
  
@@ -256,7 +269,7 @@ namespace Client
 
     void TestSquare::Render()
     {
-        auto primitive_renderer = m_render_subsystem->GetPrimitiveRenderer();
+       /* auto primitive_renderer = m_render_subsystem->GetPrimitiveRenderer();
 
         Transform tf;
         tf.position = Vector3(-14, 0, 0);
@@ -269,7 +282,7 @@ namespace Client
         primitive_renderer->DrawPrimitive(m_sphere, tf, Color(0.0f, 1.0f, 1.0f, 1.0f), eRenderingMode::Lighting);
 
         primitive_renderer->DrawLine(Vector3(1, 0, 0), Vector3(0, 4, 0));
-        primitive_renderer->DrawLine(Vector3(0, 4, 0), Vector3(-9, 4, 0));
+        primitive_renderer->DrawLine(Vector3(0, 4, 0), Vector3(-9, 4, 0));*/
     }
 
     void TestSquare::Shutdown()

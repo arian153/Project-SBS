@@ -252,6 +252,9 @@ namespace Engine
 
     void PrimitiveRenderer::RenderLines(SPtr<ConstantBuffer> matrix_buffer, SPtr<ConstantBuffer> material_buffer) const
     {
+        if (m_line_data.vertices.empty())
+            return;
+
         m_line_mesh->SetMeshData(m_line_data, eTopologyType::LineList);
         m_line_mesh->SetShader(GET_SHADER("Forward-Line.shader"));
 

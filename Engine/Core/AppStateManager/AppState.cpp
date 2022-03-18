@@ -114,6 +114,14 @@ namespace Engine
             m_render_subsystem = g_core->GetRenderSystem()->CreateSubsystem();
             m_render_subsystem->Initialize();
         }
+
+        if (HasFlag(m_creation_flag, eSubsystemFlag::PhysicsSubsystem))
+        {
+            if (HasFlag(m_creation_flag, eSubsystemFlag::RenderSubsystem))
+            {
+                m_physics_subsystem->SetPrimitiveRenderer(m_render_subsystem->GetPrimitiveRenderer());
+            }
+        }
     }
 
     void AppState::UpdateEngineSys(float dt, eSubsystemFlag flag) const

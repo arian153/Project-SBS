@@ -36,7 +36,7 @@ namespace Engine
             transform->SetOrientation(m_body.GetOrientation());
         }
 
-        Vector3 force;
+       /* Vector3 force;
         Vector3 at;
 
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::ArrowRight))
@@ -76,7 +76,7 @@ namespace Engine
             m_body.SetAngularVelocity(Vector3());
         }
 
-        m_body.ApplyForce(force, at);
+        m_body.ApplyForce(force, at);*/
     }
 
     void RigidBodyCompo::Shutdown()

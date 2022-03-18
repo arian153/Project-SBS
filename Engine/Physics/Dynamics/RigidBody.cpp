@@ -247,12 +247,12 @@ namespace Engine
         m_world_inverse_inertia          = m_transform.rotation * m_mass_data.local_inverse_inertia * m_transform.rotation.Inverse().Unit();
     }
 
-    VecQuatScale& RigidBody::GetVQS()
+    VecQuatScale& RigidBody::GetVqs()
     {
         return m_transform;
     }
 
-    const VecQuatScale& RigidBody::GetVQS() const
+    const VecQuatScale& RigidBody::GetVqs() const
     {
         return m_transform;
     }

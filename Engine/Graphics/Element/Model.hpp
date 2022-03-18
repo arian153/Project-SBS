@@ -26,6 +26,8 @@ namespace Engine
         void SetMeshData(const ForwardSubMesh& mesh_data, eTopologyType type);
         void SetMeshData(const DeferredSubMesh& mesh_data);
 
+        void UpdateMeshData(const MeshData& mesh_data) const;
+
         void SetShader(SPtr<ShaderProgram> shader);
         void SetShader(size_t i, SPtr<ShaderProgram> shader);
 

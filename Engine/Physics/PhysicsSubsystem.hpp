@@ -4,6 +4,8 @@
 
 namespace Engine
 {
+    class PrimitiveRenderer;
+    class SoftBodyCompo;
     class RigidBodyCompo;
 
     class PhysicsSubsystem final : public Subsystem
@@ -22,13 +24,18 @@ namespace Engine
         void AddCompo(RPtr<RigidBodyCompo> compo);
         void RemoveCompo(RPtr<RigidBodyCompo> compo);
 
+        void AddCompo(RPtr<SoftBodyCompo> compo);
+        void RemoveCompo(RPtr<SoftBodyCompo> compo);
 
+        void SetPrimitiveRenderer(SPtr<PrimitiveRenderer> renderer);
 
     private:
         std::vector<RPtr<RigidBodyCompo>> m_rigid_body_compos;
+        std::vector<RPtr<SoftBodyCompo>>  m_soft_body_compos;
         std::vector<RigidBody>            m_rigid_bodies;
 
+        bool m_b_show_wire_frame = false;
 
-
+        SPtr<PrimitiveRenderer> m_primitive_renderer = nullptr;
     };
 }

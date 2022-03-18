@@ -58,8 +58,8 @@ namespace Engine
         Matrix33 InverseLocalInertia() const;
         void     SetLocalInertia(const Matrix33& inertia);
 
-        VecQuatScale& GetVQS();
-        const VecQuatScale& GetVQS() const;
+        VecQuatScale& GetVqs();
+        const VecQuatScale& GetVqs() const;
 
     private:
         VecQuatScale m_transform;

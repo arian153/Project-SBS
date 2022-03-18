@@ -45,7 +45,7 @@ namespace Engine
         Uint32 data_count = GetInstanceCount();
         if (data_count > m_max_count)
         {
-            Init((m_max_count + 1) * 2);
+            Init((data_count + 1) * 2);
         }
 
         Uint32      buffer_size = data_count * sizeof(InstancingParams);

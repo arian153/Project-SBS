@@ -88,6 +88,11 @@ namespace Engine
         m_meshes[0].Init(mesh_data);
     }
 
+    void Model::UpdateMeshData(const MeshData& mesh_data) const
+    {
+        m_meshes[0].Update(mesh_data);
+    }
+
     void Model::SetShader(SPtr<ShaderProgram> shader)
     {
         for (size_t i = 0; i < m_count; ++i)

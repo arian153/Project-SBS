@@ -4,67 +4,95 @@
 #include "../Structure/Vector3Pair.hpp"
 #include "VectorDef.hpp"
 
-namespace Engine
+namespace Engine::Math
 {
-    namespace Math
+    Real SmoothStart(Real t)
     {
-        Real SmoothStart(Real t)
-        {
-            return t * t;
-        }
+        return t * t;
+    }
 
-        Real SmoothStop(Real t)
-        {
-            return 1.0f - ((1.0f - t) * (1.0f - t));
-        }
+    Real SmoothStop(Real t)
+    {
+        return 1.0f - ((1.0f - t) * (1.0f - t));
+    }
 
-        Vector3Pair GetTangentUsingQuaternion(const Engine::Vector3& normal)
-        {
-            Quaternion axis_to_normal(Math::Vector3::Y_AXIS, normal);
-            return Vector3Pair(axis_to_normal.Rotate(Math::Vector3::X_AXIS), axis_to_normal.Rotate(Math::Vector3::Z_AXIS));
-        }
+    Vector3Pair GetTangentUsingQuaternion(const Engine::Vector3& normal)
+    {
+        Quaternion axis_to_normal(Math::Vector3::Y_AXIS, normal);
+        return Vector3Pair(axis_to_normal.Rotate(Math::Vector3::X_AXIS), axis_to_normal.Rotate(Math::Vector3::Z_AXIS));
+    }
 
-        bool SolveQuadratic(Real a, Real b, Real c, Real& result1, Real& result2)
+    bool SolveQuadratic(Real a, Real b, Real c, Real& result1, Real& result2)
+    {
+        if (IsZero(a))
         {
-            if (IsZero(a))
+            if (IsZero(b))
             {
-                if (IsZero(b))
-                {
-                    result1 = -c;
-                    result2 = -c;
-                }
-                else
-                {
-                    result1 = -c / b;
-                    result2 = -c / b;
-                }
-
-                return false;
-            }
-
-            Real discriminant = (b * b) - (4.0f * a * c);
-
-            if (discriminant > 0.0f)
-            {
-                result1 = (-b + sqrtf(discriminant)) / (2.0f * a);
-                result2 = (-b - sqrtf(discriminant)) / (2.0f * a);
-            }
-            else if (IsZero(discriminant) == true)
-            {
-                Real result = -b / (2.0f * a);
-                result1 = result;
-                result2 = result;
+                result1 = -c;
+                result2 = -c;
             }
             else
             {
-                Real real = -b / (2.0f * a);
-                Real imaginary = sqrtf(-discriminant) / (2.0f * a);
-                result1 = real;
-                result2 = imaginary;
-                return false;
+                result1 = -c / b;
+                result2 = -c / b;
             }
 
-            return true;
+            return false;
         }
+
+        Real discriminant = (b * b) - (4.0f * a * c);
+
+        if (discriminant > 0.0f)
+        {
+            result1 = (-b + sqrtf(discriminant)) / (2.0f * a);
+            result2 = (-b - sqrtf(discriminant)) / (2.0f * a);
+        }
+        else if (IsZero(discriminant) == true)
+        {
+            Real result = -b / (2.0f * a);
+            result1     = result;
+            result2     = result;
+        }
+        else
+        {
+            Real real      = -b / (2.0f * a);
+            Real imaginary = sqrtf(-discriminant) / (2.0f * a);
+            result1        = real;
+            result2        = imaginary;
+            return false;
+        }
+
+        return true;
+    }
+
+    Vector3Pair GetTBPairFast(const Engine::Vector3& normal)
+    {
+        Vector3Pair result;
+
+        Engine::Vector3 n = normal.Normalize();
+        Engine::Vector3 t;
+
+        if (n.x >= 0.57735f)
+            t.Set(n.y, -n.x, 0.0f);
+        else
+            t.Set(0.0f, n.z, -n.y);
+
+        result.a = t.Normalize();
+        result.b = CrossProduct(n, result.a);
+
+        return result;
+    }
+
+    Engine::Vector3 GetTangentFast(const Engine::Vector3& normal)
+    {
+        Engine::Vector3 n = normal.Normalize();
+        Engine::Vector3 t;
+
+        if (n.x >= 0.57735f)
+            t.Set(n.y, -n.x, 0.0f);
+        else
+            t.Set(0.0f, n.z, -n.y);
+
+        return t.Normalize();
     }
 }

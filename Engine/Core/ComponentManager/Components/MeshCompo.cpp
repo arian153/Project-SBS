@@ -1,5 +1,6 @@
 #include "MeshCompo.hpp"
 
+#include "SoftBodyCompo.hpp"
 #include "TransformCompo.hpp"
 #include "../../../External/imgui/imgui.h"
 #include "../../../Graphics/DirectX12/Texture.hpp"
@@ -29,6 +30,12 @@ namespace Engine
 
     void MeshCompo::Update(Real dt)
     {
+        if (m_owner->HasComponent<SoftBodyCompo>())
+        {
+            auto soft_body = m_owner->GetComponent<SoftBodyCompo>();
+
+            m_model->UpdateMeshData(soft_body->GetSoftBodyMeshData());
+        }
     }
 
     void MeshCompo::Shutdown()
@@ -61,7 +68,7 @@ namespace Engine
     {
         if (m_model == nullptr)
         {
-            m_model = m_space->GetRenderSubsystem()->AddModel(name);
+            m_model      = m_space->GetRenderSubsystem()->AddModel(name);
             m_b_deferred = m_model->IsDeferred();
         }
     }
