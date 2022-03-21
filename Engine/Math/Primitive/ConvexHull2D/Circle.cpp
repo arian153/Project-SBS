@@ -7,7 +7,6 @@ namespace Engine
     Circle::Circle()
     {
         m_type = ePrimitiveType::Circle;
-
     }
 
     Circle::~Circle()
@@ -108,4 +107,59 @@ namespace Engine
         return Math::Vector3::Z_AXIS;
     }
 
-  }
+    MassData Circle::CalculateMassData(Real density) const
+    {
+        MassData data;
+
+        Real r     = radius;
+        data.mass  = density * CalculateVolume();
+        Real it_xx = 0.25f * data.mass * r * r;
+        Real it_yy = 0.25f * data.mass * r * r;
+        Real it_zz = 0.5f * data.mass * r * r;
+
+        data.local_inertia.SetZero();
+        data.local_inertia.SetDiagonal(it_xx, it_yy, it_zz);
+        data.local_centroid = Math::Vector3::ORIGIN;
+        data.CalculateInverse();
+
+        return data;
+    }
+
+    Real Circle::CalculateVolume() const
+    {
+        return Math::PI * radius * radius;
+    }
+
+    Vector3Pair Circle::CalculateBoundPair(const VecQuatScale& world) const
+    {
+        Vector3 obb_vertices[8];
+        Real    w = radius;
+        Real    h = radius;
+        Real    d = BOUNDING_VOLUME_MARGIN;
+
+        obb_vertices[0].Set(+w, +h, +d);
+        obb_vertices[1].Set(+w, +h, -d);
+        obb_vertices[2].Set(+w, -h, +d);
+        obb_vertices[3].Set(+w, -h, -d);
+        obb_vertices[4].Set(-w, +h, +d);
+        obb_vertices[5].Set(-w, +h, -d);
+        obb_vertices[6].Set(-w, -h, +d);
+        obb_vertices[7].Set(-w, -h, -d);
+
+        Vector3 min = world.LocalToWorldPoint(transform.LocalToWorldPoint(obb_vertices[0]));
+        Vector3 max = min;
+
+        for (int i = 1; i < 8; ++i)
+        {
+            Vector3 vertex = world.LocalToWorldPoint(transform.LocalToWorldPoint(obb_vertices[i]));
+            min.x          = Math::Min(min.x, vertex.x);
+            min.y          = Math::Min(min.y, vertex.y);
+            min.z          = Math::Min(min.z, vertex.z);
+            max.x          = Math::Max(max.x, vertex.x);
+            max.y          = Math::Max(max.y, vertex.y);
+            max.z          = Math::Max(max.z, vertex.z);
+        }
+
+        return Vector3Pair(min, max);
+    }
+}

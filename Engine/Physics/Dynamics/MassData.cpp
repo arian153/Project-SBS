@@ -1,6 +1,7 @@
 #include "MassData.hpp"
 
 #include "../../Math/Algebra/Quaternion.hpp"
+#include "../../Math/Utility/Utility.hpp"
 
 namespace Engine
 {
@@ -35,5 +36,16 @@ namespace Engine
     Matrix33 MassData::RotateInertia(const Matrix33& input, const Quaternion& orientation)
     {
         return orientation * input * (orientation.Inverse());
+    }
+
+    void MassData::CalculateInverse()
+    {
+        bool is_inf  = Math::IsZero(mass);
+        inverse_mass = is_inf ? 0.0f : 1.0f / mass;
+
+        if (is_inf)
+            local_inverse_inertia.SetZero();
+        else
+            local_inverse_inertia = local_inertia.Inverse();
     }
 }

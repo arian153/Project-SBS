@@ -106,10 +106,10 @@ namespace Engine
 
         if (is_fixed)
         {
-            m_rigid_bodies[0].SetMassInfinite();
+           /* m_rigid_bodies[0].SetMassInfinite();
             m_rigid_bodies[w_count - 1].SetMassInfinite();
             m_rigid_bodies[(h_count - 1) * w_count].SetMassInfinite();
-            m_rigid_bodies[(h_count - 1) * w_count + (w_count - 1)].SetMassInfinite();
+            m_rigid_bodies[(h_count - 1) * w_count + (w_count - 1)].SetMassInfinite();*/
 
            /* for (size_t i = 0; i < h_count; ++i)
             {
@@ -120,17 +120,18 @@ namespace Engine
                 m_rigid_bodies[link.b].SetMassInfinite();
             }*/
 
-            /*for (size_t j = 0; j < w_count; ++j)
+            for (size_t j = 0; j < w_count; ++j)
             {
                 link.a = j;
                 link.b = (h_count - 1) * w_count + j;
 
                 m_rigid_bodies[link.a].SetMassInfinite();
-                m_rigid_bodies[link.b].SetMassInfinite();
-            }*/
+                //m_rigid_bodies[link.b].SetMassInfinite();
+            }
         }
 
-        m_mesh_data.vertices.resize(m_rigid_bodies.size());
+        size_t vertex_count = m_rigid_bodies.size();
+        m_mesh_data.vertices.resize(vertex_count * 2);
 
         Real du = 1.0f / (w_count - 1);
         Real dv = 1.0f / (h_count - 1);
@@ -146,9 +147,20 @@ namespace Engine
             }
         }
 
+        for (size_t i = 0; i < h_count; ++i)
+        {
+            for (size_t j = 0; j < w_count; ++j)
+            {
+                size_t idx = i * w_count + j;
+
+                m_mesh_data.vertices[vertex_count + idx].pos = m_rigid_bodies[idx].GetPosition();
+                m_mesh_data.vertices[vertex_count + idx].tex = Vector2(j * du, i * dv);
+            }
+        }
+
         size_t count = (h_count - 1) * (w_count - 1) * 2;
-        m_mesh_data.indices.resize(count * 3); // 3 indices per face
-        m_mesh_data.faces.resize(count);
+        m_mesh_data.indices.resize(count * 6); // 3 indices per face
+        m_mesh_data.faces.resize(count * 2);
 
         size_t k = 0;
         size_t f = 0;
@@ -173,9 +185,29 @@ namespace Engine
             }
         }
 
+     
+        for (size_t i = 0; i < h_count - 1; ++i)
+        {
+            for (size_t j = 0; j < w_count - 1; ++j)
+            {
+                m_mesh_data.indices[k] =  static_cast<Uint32>(i * w_count + j + vertex_count);
+                m_mesh_data.indices[k + 1] = static_cast<Uint32>(i * w_count + j + 1 + vertex_count);
+                m_mesh_data.indices[k + 2] = static_cast<Uint32>((i + 1) * w_count + j + vertex_count);
+
+                m_mesh_data.indices[k + 3] = static_cast<Uint32>((i + 1) * w_count + j + vertex_count);
+                m_mesh_data.indices[k + 4] = static_cast<Uint32>(i * w_count + j + 1 + vertex_count);
+                m_mesh_data.indices[k + 5] = static_cast<Uint32>((i + 1) * w_count + j + 1 + vertex_count);
+
+                m_mesh_data.faces[f] = Face(m_mesh_data.indices[k], m_mesh_data.indices[k + 1], m_mesh_data.indices[k + 2]);
+                m_mesh_data.faces[f + 1] = Face(m_mesh_data.indices[k + 3], m_mesh_data.indices[k + 4], m_mesh_data.indices[k + 5]);
+
+                f += 2;
+                k += 6; // next quad
+            }
+        }
+
         size_t face_count   = m_mesh_data.faces.size();
-        size_t vertex_count = m_rigid_bodies.size();
-        m_adj_faces_per_vertex.resize(vertex_count);
+        m_adj_faces_per_vertex.resize(vertex_count * 2);
 
         for (size_t i = 0; i < face_count; ++i)
         {
@@ -272,10 +304,15 @@ namespace Engine
             m_mesh_data.vertices[i].pos = m_rigid_bodies[i].GetPosition();
         }
 
+        for (size_t i = 0; i < size; ++i)
+        {
+            m_mesh_data.vertices[i + size].pos = m_rigid_bodies[i].GetPosition();
+        }
+
         std::vector<Vector3> normals;
         Vector3              accumulated_normal;
 
-        for (size_t i = 0; i < size; ++i)
+        for (size_t i = 0; i < size * 2; ++i)
         {
             auto& [faces] = m_adj_faces_per_vertex[i];
             normals.clear();

@@ -191,4 +191,50 @@ namespace Engine
         }
         return normal;
     }
+
+    MassData Box::CalculateMassData(Real density) const
+    {
+        MassData data;
+
+        Real w    = (vertices[0] - vertices[4]).x;
+        Real h    = (vertices[0] - vertices[2]).y;
+        Real d    = (vertices[0] - vertices[1]).z;
+        data.mass = density * w * h * d;
+        Real it_a = data.mass / 12.0f * (h * h + d * d);
+        Real it_b = data.mass / 12.0f * (w * w + d * d);
+        Real it_c = data.mass / 12.0f * (w * w + h * h);
+        data.local_inertia.SetZero();
+        data.local_inertia.SetDiagonal(it_a, it_b, it_c);
+        data.local_centroid = Vector3(0.5f * w, 0.5f * h, 0.5f * d) + vertices[7];
+        data.CalculateInverse();
+
+        return data;
+    }
+
+    Real Box::CalculateVolume() const
+    {
+        Real w = (vertices[0] - vertices[4]).x;
+        Real h = (vertices[0] - vertices[2]).y;
+        Real d = (vertices[0] - vertices[1]).z;
+        return w * h * d;
+    }
+
+    Vector3Pair Box::CalculateBoundPair(const VecQuatScale& world) const
+    {
+        Vector3 min = world.LocalToWorldPoint(transform.LocalToWorldPoint(vertices[0]));
+        Vector3 max = min;
+
+        for (int i = 1; i < 8; ++i)
+        {
+            Vector3 vertex = world.LocalToWorldPoint(transform.LocalToWorldPoint(vertices[i]));
+            min.x          = Math::Min(min.x, vertex.x);
+            min.y          = Math::Min(min.y, vertex.y);
+            min.z          = Math::Min(min.z, vertex.z);
+            max.x          = Math::Max(max.x, vertex.x);
+            max.y          = Math::Max(max.y, vertex.y);
+            max.z          = Math::Max(max.z, vertex.z);
+        }
+
+        return Vector3Pair(min, max);
+    }
 }

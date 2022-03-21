@@ -326,6 +326,77 @@ namespace Engine
         return (point - ClosestPoint(point)).LengthSquared();
     }
 
+    MassData Triangle::CalculateMassData(Real density) const
+    {
+        MassData data;
+
+        Real area  = 0.0f;
+        Real it_xx = 0.0f;
+        Real it_yy = 0.0f;
+        Real it_zz = 0.0f;
+        Real inv3  = 1.0f / 3.0f;
+        for (size_t i1 = 0; i1 < 3; ++i1)
+        {
+            // Triangle vertices, third vertex implied as (0, 0)
+            size_t i2 = i1 + 1 < 3 ? i1 + 1 : 0;
+            auto   p1 = Vector3(vertices[i1].x, vertices[i1].y);
+            auto   p2 = Vector3(vertices[i2].x, vertices[i2].y);
+
+            Real triangle_area = 0.5f * p1.CrossProduct(p2).Length();
+            area += triangle_area;
+            // Use area to weight the centroid average, not just vertex position
+            data.local_centroid += (p1 + p2) * triangle_area * inv3;
+            Real it_x = p1.x * p1.x + p2.x * p1.x + p2.x * p2.x;
+            Real it_y = p1.y * p1.y + p2.y * p1.y + p2.y * p2.y;
+            it_xx += 0.25f * inv3 * p1.CrossProduct(p2).Length() * it_y;
+            it_yy += 0.25f * inv3 * p1.CrossProduct(p2).Length() * it_x;
+            it_zz += 0.25f * inv3 * p1.CrossProduct(p2).Length() * (it_x + it_y);
+        }
+        data.local_centroid *= (1.0f / area);
+        data.mass = density * area;
+        data.local_inertia.SetZero();
+        data.local_inertia.SetDiagonal(it_xx * density, it_yy * density, it_zz * density);
+        data.CalculateInverse();
+
+        return data;
+    }
+
+    Real Triangle::CalculateVolume() const
+    {
+        auto v2_edge01 = vertices[1] - vertices[0];
+        auto v2_edge02 = vertices[2] - vertices[0];
+        auto edge01    = Vector3(v2_edge01.x, v2_edge01.y, 0.0f);
+        auto edge02    = Vector3(v2_edge02.x, v2_edge02.y, 0.0f);
+        return edge01.CrossProduct(edge02).Length() * 0.5f;
+    }
+
+    Vector3Pair Triangle::CalculateBoundPair(const VecQuatScale& world) const
+    {
+        Vector3 obb_vertices[6];
+        obb_vertices[0].Set(vertices[0].x, vertices[0].y, BOUNDING_VOLUME_MARGIN);
+        obb_vertices[1].Set(vertices[0].x, vertices[0].y, -BOUNDING_VOLUME_MARGIN);
+        obb_vertices[2].Set(vertices[1].x, vertices[1].y, BOUNDING_VOLUME_MARGIN);
+        obb_vertices[3].Set(vertices[1].x, vertices[1].y, -BOUNDING_VOLUME_MARGIN);
+        obb_vertices[4].Set(vertices[2].x, vertices[2].y, BOUNDING_VOLUME_MARGIN);
+        obb_vertices[5].Set(vertices[2].x, vertices[2].y, -BOUNDING_VOLUME_MARGIN);
+
+        Vector3 min = world.LocalToWorldPoint(transform.LocalToWorldPoint(obb_vertices[0]));
+        Vector3 max = min;
+
+        for (int i = 1; i < 6; ++i)
+        {
+            Vector3 vertex = world.LocalToWorldPoint(transform.LocalToWorldPoint(obb_vertices[i]));
+            min.x          = Math::Min(min.x, vertex.x);
+            min.y          = Math::Min(min.y, vertex.y);
+            min.z          = Math::Min(min.z, vertex.z);
+            max.x          = Math::Max(max.x, vertex.x);
+            max.y          = Math::Max(max.y, vertex.y);
+            max.z          = Math::Max(max.z, vertex.z);
+        }
+
+        return Vector3Pair(min, max);
+    }
+
     Vector3 Triangle::ClosestPoint(const Vector3& point, const Vector3& p0, const Vector3& p1, const Vector3& p2)
     {
         Vector3 a(p0), b(p1), c(p2);

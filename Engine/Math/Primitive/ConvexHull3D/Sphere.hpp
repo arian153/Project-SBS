@@ -1,7 +1,6 @@
 #pragma once
 #include "../Primitive.hpp"
 
-
 namespace Engine
 {
     class Sphere final : public Primitive
@@ -25,6 +24,10 @@ namespace Engine
         Vector3 GetNormal(const Vector3& local_point_on_primitive) override;
 
         bool HasIntersection(const Sphere& sphere) const;
+
+        MassData    CalculateMassData(Real density = 1.0f) const override;
+        Real        CalculateVolume() const override;
+        Vector3Pair CalculateBoundPair(const VecQuatScale& world) const override;
 
     public:
         Real radius = 1.0f;

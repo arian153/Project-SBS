@@ -34,6 +34,10 @@ namespace Engine
         Real Distance(const Vector3& point) const;
         Real DistanceSquared(const Vector3& point) const;
 
+        MassData    CalculateMassData(Real density = 1.0f) const override;
+        Real        CalculateVolume() const override;
+        Vector3Pair CalculateBoundPair(const VecQuatScale& world) const override;
+
     public:
         static Vector3 ClosestPoint(const Vector3& point, const Vector3& p0, const Vector3& p1, const Vector3& p2);
         static Real    DistanceSquared(const Vector3& point, const Vector3& p0, const Vector3& p1, const Vector3& p2);

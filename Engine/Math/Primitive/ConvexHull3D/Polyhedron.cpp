@@ -37,11 +37,11 @@ namespace Engine
         Vector3 scale = m_max_point - m_min_point;
         scale.SetInverse();
 
-        if(vertices != nullptr)
+        if (vertices != nullptr)
         {
-            for(auto& vertex : *vertices)
+            for (auto& vertex : *vertices)
             {
-               vertex = vertex.HadamardProduct(scale);
+                vertex = vertex.HadamardProduct(scale);
             }
         }
     }
@@ -74,7 +74,6 @@ namespace Engine
         return local_point_on_primitive;
     }
 
-   
     void Polyhedron::UpdateMinMaxPoint()
     {
         m_min_point = Vector3(Math::REAL_POSITIVE_MAX, Math::REAL_POSITIVE_MAX, Math::REAL_POSITIVE_MAX);
@@ -112,5 +111,23 @@ namespace Engine
                 m_max_point.z = vertex.z;
             }
         }
+    }
+
+    MassData Polyhedron::CalculateMassData(Real density) const
+    {
+        MassData data;
+
+        data.CalculateInverse();
+        return data;
+    }
+
+    Real Polyhedron::CalculateVolume() const
+    {
+        return 1.0f;
+    }
+
+    Vector3Pair Polyhedron::CalculateBoundPair(const VecQuatScale& world) const
+    {
+        return Vector3Pair();
     }
 }

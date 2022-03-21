@@ -25,6 +25,10 @@ namespace Engine
 
         void UpdateMinMaxPoint();
 
+        MassData    CalculateMassData(Real density = 1.0f) const override;
+        Real        CalculateVolume() const override;
+        Vector3Pair CalculateBoundPair(const VecQuatScale& world) const override;
+
     public:
         std::vector<Vector3>* vertices = nullptr;
 

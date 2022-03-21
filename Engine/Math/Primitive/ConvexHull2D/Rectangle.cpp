@@ -46,7 +46,7 @@ namespace Engine
             if (projection > p)
             {
                 result = vertices[i];
-                p = projection;
+                p      = projection;
             }
         }
         return Vector3(result.x, result.y, 0.0f);
@@ -59,12 +59,12 @@ namespace Engine
         maximum_t = -1.0f;
         //plane elements
         Vector3 normal(0.0f, 0.0f, 1.0f);
-        Vector3 pc = -local_ray.position;
+        Vector3 pc          = -local_ray.position;
         Real    denominator = normal.DotProduct(local_ray.direction);
         Real    t_y_min, t_y_max;
         Vector2 rect_min = vertices[3];
         Vector2 rect_max = vertices[0];
-        Vector3 inv_dir = local_ray.direction;
+        Vector3 inv_dir  = local_ray.direction;
         inv_dir.SetInverse();
         if (Math::IsZero(denominator) == true)
         {
@@ -113,7 +113,7 @@ namespace Engine
         else
         {
             //ray-plane intersect one point.
-            Real    plane_t = pc.DotProduct(normal) / denominator;
+            Real    plane_t            = pc.DotProduct(normal) / denominator;
             Vector3 plane_intersection = local_ray.position + local_ray.direction * plane_t;
             //define rectangle.
             if (rect_min.x <= plane_intersection.x && rect_max.x >= plane_intersection.x &&
@@ -160,4 +160,58 @@ namespace Engine
         return Math::Vector3::Z_AXIS;
     }
 
-   }
+    MassData Rectangle::CalculateMassData(Real density) const
+    {
+        MassData data;
+
+        Real w    = (vertices[0] - vertices[2]).x;
+        Real h    = (vertices[0] - vertices[3]).y;
+        data.mass = density * w * h;
+        Real it_a = data.mass / 12.0f * (h * h);
+        Real it_b = data.mass / 12.0f * (w * w);
+        Real it_c = data.mass / 12.0f * (w * w + h * h);
+
+        data.local_inertia.SetZero();
+        data.local_inertia.SetDiagonal(it_a, it_b, it_c);
+        data.local_centroid = Vector3(0.5f * w, 0.5f * h, 0.0f) + Vector3(vertices[3].x, vertices[3].y, 0.0f);
+        data.CalculateInverse();
+
+        return data;
+    }
+
+    Real Rectangle::CalculateVolume() const
+    {
+        Real w = (vertices[0] - vertices[3]).x;
+        Real h = (vertices[0] - vertices[3]).y;
+        return w * h;
+    }
+
+    Vector3Pair Rectangle::CalculateBoundPair(const VecQuatScale& world) const
+    {
+        Vector3 obb_vertices[8];
+        obb_vertices[0].Set(vertices[0].x, vertices[0].y, BOUNDING_VOLUME_MARGIN);
+        obb_vertices[1].Set(vertices[0].x, vertices[0].y, -BOUNDING_VOLUME_MARGIN);
+        obb_vertices[2].Set(vertices[1].x, vertices[1].y, BOUNDING_VOLUME_MARGIN);
+        obb_vertices[3].Set(vertices[1].x, vertices[1].y, -BOUNDING_VOLUME_MARGIN);
+        obb_vertices[4].Set(vertices[2].x, vertices[2].y, BOUNDING_VOLUME_MARGIN);
+        obb_vertices[5].Set(vertices[2].x, vertices[2].y, -BOUNDING_VOLUME_MARGIN);
+        obb_vertices[6].Set(vertices[3].x, vertices[3].y, BOUNDING_VOLUME_MARGIN);
+        obb_vertices[7].Set(vertices[3].x, vertices[3].y, -BOUNDING_VOLUME_MARGIN);
+
+        Vector3 min = world.LocalToWorldPoint(transform.LocalToWorldPoint(obb_vertices[0]));
+        Vector3 max = min;
+
+        for (int i = 1; i < 8; ++i)
+        {
+            Vector3 vertex = world.LocalToWorldPoint(transform.LocalToWorldPoint(obb_vertices[i]));
+            min.x          = Math::Min(min.x, vertex.x);
+            min.y          = Math::Min(min.y, vertex.y);
+            min.z          = Math::Min(min.z, vertex.z);
+            max.x          = Math::Max(max.x, vertex.x);
+            max.y          = Math::Max(max.y, vertex.y);
+            max.z          = Math::Max(max.z, vertex.z);
+        }
+
+        return Vector3Pair(min, max);
+    }
+}

@@ -74,4 +74,29 @@ namespace Engine
         Real sq_d = transform.position.DistanceSquaredTo(sphere.transform.position);
         return sq_d <= (radius + sphere.radius) * (radius + sphere.radius);
     }
+
+    MassData Sphere::CalculateMassData(Real density) const
+    {
+        MassData data;
+
+        data.mass = density * CalculateVolume();
+        Real it   = data.mass * 0.4f * radius * radius;
+        data.local_inertia.SetZero();
+        data.local_inertia.SetDiagonal(it, it, it);
+        data.local_centroid.SetZero();
+        data.CalculateInverse();
+        return data;
+    }
+
+    Real Sphere::CalculateVolume() const
+    {
+        return 4.0f / 3.0f * Math::PI * radius * radius * radius;
+    }
+
+    Vector3Pair Sphere::CalculateBoundPair(const VecQuatScale& world) const
+    {
+        Vector3 pos = world.LocalToWorldPoint(transform.position);;
+        Vector3 min_max(radius, radius, radius);
+        return Vector3Pair(-min_max + pos, min_max + pos);
+    }
 }

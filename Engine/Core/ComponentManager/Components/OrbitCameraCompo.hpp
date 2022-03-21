@@ -39,6 +39,8 @@ namespace Engine
 
         Vector3 m_eye_pos;
         Vector3 m_target_pos;
+
+        Real m_camera_speed = 5.0f;
     };
 
     class OrbitCameraFactory final : public ComponentFactory

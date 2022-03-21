@@ -76,36 +76,35 @@ namespace Engine
         }
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::R))
         {
-            m_target_pos += basis.j * dt * 10.0f;
+            m_target_pos += basis.j * dt * 10.0f * m_camera_speed;
             m_camera->LookAt(m_target_pos + m_eye_pos, m_target_pos);
         }
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::F))
         {
-            m_target_pos += basis.j * -dt * 10.0f;
+            m_target_pos += basis.j * -dt * 10.0f * m_camera_speed;
             m_camera->LookAt(m_target_pos + m_eye_pos, m_target_pos);
         }
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::A))
         {
-            m_target_pos += basis.i * -dt * 10.0f;
+            m_target_pos += basis.i * -dt * 10.0f * m_camera_speed;
             m_camera->LookAt(m_target_pos + m_eye_pos, m_target_pos);
         }
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::D))
         {
-            m_target_pos += basis.i * dt * 10.0f;
+            m_target_pos += basis.i * dt * 10.0f * m_camera_speed;
             m_camera->LookAt(m_target_pos + m_eye_pos, m_target_pos);
         }
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::W))
         {
-            m_target_pos += basis.k * dt * 10.0f;
+            m_target_pos += basis.k * dt * 10.0f * m_camera_speed;
             m_camera->LookAt(m_target_pos + m_eye_pos, m_target_pos);
         }
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::S))
         {
-            m_target_pos += basis.k * -dt * 10.0f;
+            m_target_pos += basis.k * -dt * 10.0f * m_camera_speed;
             m_camera->LookAt(m_target_pos + m_eye_pos, m_target_pos);
         }
-
-          }
+    }
 
     void OrbitCameraCompo::Shutdown()
     {

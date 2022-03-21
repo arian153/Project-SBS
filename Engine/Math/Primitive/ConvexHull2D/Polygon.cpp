@@ -132,22 +132,21 @@ namespace Engine
         return true;
     }
 
-
     Vector3 Polygon::GetNormal(const Vector3& local_point_on_primitive)
     {
         size_t  size = vertices->size();
         Vector2 v(local_point_on_primitive);
         for (size_t i = 0; i < size; ++i)
         {
-            size_t  j = i + 1 < size ? i + 1 : 0;
-            Vector2 p0 = vertices->at(i);
-            Vector2 p1 = vertices->at(j);
+            size_t  j    = i + 1 < size ? i + 1 : 0;
+            Vector2 p0   = vertices->at(i);
+            Vector2 p1   = vertices->at(j);
             Vector2 edge = p1 - p0;
             if (p0.IsEqual(p1) == false)
             {
                 Real tx = (v.x - p0.x) / edge.x;
                 Real ty = (v.y - p0.y) / edge.y;
-                Real t = Math::IsEqual(tx, ty) ? tx : (!Math::IsZero(tx) ? tx : ty);
+                Real t  = Math::IsEqual(tx, ty) ? tx : (!Math::IsZero(tx) ? tx : ty);
 
                 //is point on edge ?
                 if (t <= 1.0f && t >= 0.0f)
@@ -159,4 +158,19 @@ namespace Engine
         return Math::Vector3::Z_AXIS;
     }
 
-  }
+    MassData Polygon::CalculateMassData(Real density) const
+    {
+        MassData data;
+        return data;
+    }
+
+    Real Polygon::CalculateVolume() const
+    {
+        return 1.0f;
+    }
+
+    Vector3Pair Polygon::CalculateBoundPair(const VecQuatScale& world) const
+    {
+        return Vector3Pair();
+    }
+}

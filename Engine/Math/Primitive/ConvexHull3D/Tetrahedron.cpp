@@ -1,6 +1,5 @@
 #include "Tetrahedron.hpp"
 
-
 #include "../../Utility/Utility.hpp"
 #include "../Others/Ray.hpp"
 
@@ -60,4 +59,63 @@ namespace Engine
         return local_point_on_primitive;
     }
 
-   }
+    MassData Tetrahedron::CalculateMassData(Real density) const
+    {
+        MassData data;
+
+        data.local_centroid.SetZero();
+        data.local_inertia.SetZero();
+        Vector3  ref  = vertices[0];
+        Vector3  v1   = vertices[1];
+        Vector3  v2   = vertices[2];
+        Vector3  v3   = vertices[3];
+        Real     axis = 1.0f / 60.0f;
+        Real     prod = 1.0f / 120.0f;
+        Matrix33 canonical_matrix(axis, prod, prod, prod, axis, prod, prod, prod, axis);
+        Matrix33 transformation_matrix;
+        transformation_matrix.SetColumns(v1 - ref, v2 - ref, v3 - ref);
+        //calculate sub inertia
+        data.local_inertia = transformation_matrix.Determinant() * transformation_matrix * canonical_matrix * transformation_matrix.Transpose();
+        //volume is 1 / 6 of triple product, that is 1/6 det of transformation matrix.
+        data.mass = density * transformation_matrix.Determinant() / 6.0f;
+        //The center-of-mass is just the mean of the four vertex coordinates. 
+        data.local_centroid = (ref + v1 + v2 + v3) * 0.25f;
+        if (!ref.IsZero())
+        {
+            data.local_inertia += data.mass * (ref.OuterProduct(data.local_centroid) + data.local_centroid.OuterProduct(ref) + ref.OuterProduct(ref));
+        }
+
+        data.CalculateInverse();
+        return data;
+    }
+
+    Real Tetrahedron::CalculateVolume() const
+    {
+        Vector3  ref = vertices[0];
+        Vector3  v1  = vertices[1];
+        Vector3  v2  = vertices[2];
+        Vector3  v3  = vertices[3];
+        Matrix33 transformation_matrix;
+        transformation_matrix.SetColumns(v1 - ref, v2 - ref, v3 - ref);
+        return transformation_matrix.Determinant() / 6.0f;
+    }
+
+    Vector3Pair Tetrahedron::CalculateBoundPair(const VecQuatScale& world) const
+    {
+        Vector3 min = world.LocalToWorldPoint(transform.LocalToWorldPoint(vertices[0]));
+        Vector3 max = min;
+
+        for (int i = 1; i < 4; ++i)
+        {
+            Vector3 vertex = world.LocalToWorldPoint(transform.LocalToWorldPoint(vertices[i]));
+            min.x          = Math::Min(min.x, vertex.x);
+            min.y          = Math::Min(min.y, vertex.y);
+            min.z          = Math::Min(min.z, vertex.z);
+            max.x          = Math::Max(max.x, vertex.x);
+            max.y          = Math::Max(max.y, vertex.y);
+            max.z          = Math::Max(max.z, vertex.z);
+        }
+
+        return Vector3Pair(min, max);
+    }
+}

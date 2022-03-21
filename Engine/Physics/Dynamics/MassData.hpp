@@ -13,6 +13,9 @@ namespace Engine
 
         static Matrix33 TranslateInertia(const Matrix33& input, Real mass, const Vector3& translation);
         static Matrix33 RotateInertia(const Matrix33& input, const Quaternion& orientation);
+
+        void CalculateInverse();
+
     public:
         //mass
         Real mass         = 1.0f;

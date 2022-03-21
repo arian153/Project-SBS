@@ -130,4 +130,61 @@ namespace Engine
         ellipsoid_normal.z = 2.0f * local_point_on_primitive.z / radius.z * radius.z;
         return ellipsoid_normal;
     }
+
+    MassData Dome::CalculateMassData(Real density) const
+    {
+        MassData data;
+
+        data.mass = density * CalculateVolume();
+        Real a    = radius.x;
+        Real b    = radius.z;
+        Real c    = radius.y;
+        //0.059375 = 19/320
+        Real it_xx = 0.2f * data.mass * b * b + 0.059375f * data.mass * c * c;
+        Real it_zz = 0.2f * data.mass * a * a + 0.059375f * data.mass * c * c;
+        Real it_yy = 0.2f * data.mass * (a * a + b * b);
+        data.local_inertia.SetZero();
+        data.local_inertia.SetDiagonal(it_xx, it_yy, it_zz);
+        data.local_centroid.Set(0.0f, 0.375f * c, 0.0f);
+        data.CalculateInverse();
+        return data;
+    }
+
+    Real Dome::CalculateVolume() const
+    {
+        return 2.0f / 3.0f * Math::PI * radius.x * radius.y * radius.z;
+    }
+
+    Vector3Pair Dome::CalculateBoundPair(const VecQuatScale& world) const
+    {
+        Real w = radius.x;
+        Real h = radius.y;
+        Real d = radius.z;
+
+        Vector3 obb_vertices[8];
+        obb_vertices[0].Set(+w, +h, +d);
+        obb_vertices[1].Set(+w, +h, -d);
+        obb_vertices[2].Set(+w, 0, +d);
+        obb_vertices[3].Set(+w, 0, -d);
+        obb_vertices[4].Set(-w, +h, +d);
+        obb_vertices[5].Set(-w, +h, -d);
+        obb_vertices[6].Set(-w, 0, +d);
+        obb_vertices[7].Set(-w, 0, -d);
+
+        Vector3 min = world.LocalToWorldPoint(transform.LocalToWorldPoint(obb_vertices[0]));
+        Vector3 max = min;
+
+        for (int i = 1; i < 8; ++i)
+        {
+            Vector3 vertex = world.LocalToWorldPoint(transform.LocalToWorldPoint(obb_vertices[i]));
+            min.x          = Math::Min(min.x, vertex.x);
+            min.y          = Math::Min(min.y, vertex.y);
+            min.z          = Math::Min(min.z, vertex.z);
+            max.x          = Math::Max(max.x, vertex.x);
+            max.y          = Math::Max(max.y, vertex.y);
+            max.z          = Math::Max(max.z, vertex.z);
+        }
+
+        return Vector3Pair(min, max);
+    }
 }

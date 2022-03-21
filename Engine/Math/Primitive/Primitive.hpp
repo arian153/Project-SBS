@@ -1,8 +1,10 @@
 #pragma once
 #include "../../EngineDefine.hpp"
+#include "../../Physics/Dynamics/MassData.hpp"
 #include "../Algebra/Quaternion.hpp"
 #include "../Algebra/Vector3.hpp"
 #include "../Structure/VecQuatScale.hpp"
+#include "../Structure/Vector3Pair.hpp"
 
 namespace Engine
 {
@@ -30,6 +32,8 @@ namespace Engine
         TruncatedCone,
         Last
     };
+
+    constexpr Real BOUNDING_VOLUME_MARGIN = 0.05f;
 
     class Primitive
     {
@@ -60,6 +64,10 @@ namespace Engine
         //Ray - Primitive Intersection
         virtual bool    TestRayIntersection(const Ray& local_ray, Real& minimum_t, Real& maximum_t) const = 0;
         virtual Vector3 GetNormal(const Vector3& local_point_on_primitive) = 0;
+
+        virtual MassData    CalculateMassData(Real density) const = 0;
+        virtual Real        CalculateVolume() const = 0;
+        virtual Vector3Pair CalculateBoundPair(const VecQuatScale& world) const = 0;
 
     public:
         VecQuatScale transform;

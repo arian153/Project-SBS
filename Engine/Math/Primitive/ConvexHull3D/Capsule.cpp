@@ -220,6 +220,66 @@ namespace Engine
         return normal;
     }
 
+    MassData Capsule::CalculateMassData(Real density) const
+    {
+        MassData data;
+
+        data.mass    = density * CalculateVolume();
+        Real a       = radius.x;
+        Real b       = radius.z;
+        Real c       = radius.y;
+        Real h       = height;
+        Real multi_a = 2.0f * c * data.mass / (4.0f * c + 3.0f * h);
+        Real multi_b = 3.0f * h * data.mass / (4.0f * c + 3.0f * h);
+        Real it_xx   = multi_a * (0.4f * (b * b + c * c) + 0.75f * h * c + 0.5f * h * h) + multi_b * (0.25f * b * b + h * h / 12.0f);
+        Real it_zz   = multi_a * (0.4f * (a * a + c * c) + 0.75f * h * c + 0.5f * h * h) + multi_b * (0.25f * a * a + h * h / 12.0f);
+        Real it_yy   = multi_a * 0.4f * (a * a + b * b) + multi_b * 0.25f * (a * a + b * b);
+        data.local_inertia.SetZero();
+        data.local_inertia.SetDiagonal(it_xx, it_yy, it_zz);
+        data.local_centroid = Vector3(0.0f, 0.0f, 0.0f);
+        data.CalculateInverse();
+
+        return data;
+    }
+
+    Real Capsule::CalculateVolume() const
+    {
+        return Math::PI * radius.x * radius.z * (radius.y * 4.0f / 3.0f + height);
+    }
+
+    Vector3Pair Capsule::CalculateBoundPair(const VecQuatScale& world) const
+    {
+        Real w = radius.x;
+        Real h = radius.y + height * 0.5f;
+        Real d = radius.z;
+
+        Vector3 obb_vertices[8];
+        obb_vertices[0].Set(+w, +h, +d);
+        obb_vertices[1].Set(+w, +h, -d);
+        obb_vertices[2].Set(+w, -h, +d);
+        obb_vertices[3].Set(+w, -h, -d);
+        obb_vertices[4].Set(-w, +h, +d);
+        obb_vertices[5].Set(-w, +h, -d);
+        obb_vertices[6].Set(-w, -h, +d);
+        obb_vertices[7].Set(-w, -h, -d);
+
+        Vector3 min = world.LocalToWorldPoint(transform.LocalToWorldPoint(obb_vertices[0]));
+        Vector3 max = min;
+
+        for (int i = 1; i < 8; ++i)
+        {
+            Vector3 vertex = world.LocalToWorldPoint(transform.LocalToWorldPoint(obb_vertices[i]));
+            min.x          = Math::Min(min.x, vertex.x);
+            min.y          = Math::Min(min.y, vertex.y);
+            min.z          = Math::Min(min.z, vertex.z);
+            max.x          = Math::Max(max.x, vertex.x);
+            max.y          = Math::Max(max.y, vertex.y);
+            max.z          = Math::Max(max.z, vertex.z);
+        }
+
+        return Vector3Pair(min, max);
+    }
+
     bool Capsule::TestRayEllipsoid(const Ray& ray, const Vector3& centroid, Real& min_t, Real& max_t) const
     {
         Vector3 co = ray.position - centroid;
