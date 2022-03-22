@@ -23,7 +23,7 @@ namespace Engine
         void CreateSample(size_t w, size_t h);
 
         const MeshData& GetSoftBodyMeshData() const;
-        MeshData& GetSoftBodyMeshData();
+        MeshData&       GetSoftBodyMeshData();
 
     protected:
         void Subscribe() override;
@@ -35,6 +35,7 @@ namespace Engine
 
     private:
         SoftBody m_body;
+        Real     m_scale = 100.0f;
     };
 
     class SoftBodyFactory final : public ComponentFactory

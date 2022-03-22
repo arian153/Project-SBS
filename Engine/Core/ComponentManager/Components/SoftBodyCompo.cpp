@@ -27,9 +27,9 @@ namespace Engine
         if (m_owner->HasComponent<TransformCompo>())
         {
             auto transform = m_owner->GetComponent<TransformCompo>();
+            m_body.SetTransform(transform->GetTransform());
             m_body.SolveSpringDamper();
             m_body.Integrate(dt);
-            //transform->SetPosition(m_body.m_transform.position);
         }
 
         Vector3 force;
@@ -37,27 +37,27 @@ namespace Engine
 
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::ArrowRight))
         {
-            force.x += dt * 100.0f;
+            force.x += m_scale;
         }
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::ArrowLeft))
         {
-            force.x -= dt * 100.0f;
+            force.x -= m_scale;
         }
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::ArrowUp))
         {
-            force.z += dt * 100.0f;
+            force.z += m_scale;
         }
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::ArrowDown))
         {
-            force.z -= dt * 100.0f;
+            force.z -= m_scale;
         }
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::B))
         {
-            force.y += dt * 100.0f;
+            force.y += m_scale;
         }
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::V))
         {
-            force.y -= dt * 100.0f;
+            force.y -= m_scale;
         }
 
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::Space))
@@ -90,10 +90,13 @@ namespace Engine
         if (ImGui::CollapsingHeader(MK_STRING(SoftBodyCompo)))
         {
             ImGui::Text("Spring Constant");
-            ImGui::SliderFloat("##Spring", &m_body.m_spring_constant, 0.01f, 10.0f);
+            ImGui::SliderFloat("##Spring", &m_body.m_spring_constant, 0.01f, 190.0f);
 
             ImGui::Text("Damper Constant");
-            ImGui::SliderFloat("##Damper", &m_body.m_damper_constant, 0.01f, 5.0f);
+            ImGui::SliderFloat("##Damper", &m_body.m_damper_constant, 0.01f, 10.0f);
+
+            ImGui::Text("Force Scale - Temp");
+            ImGui::SliderFloat("##Scale", &m_scale, 1.f, 1000.0f);
         }
     }
 

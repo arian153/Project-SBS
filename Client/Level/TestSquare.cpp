@@ -130,9 +130,10 @@ namespace Client
 
         {
             auto obj = m_object_manager->AddObject("Cloth");
-            obj->AddComponent<TransformCompo>();
+            auto transform = obj->AddComponent<TransformCompo>();
+            transform->SetScale(Vector3(15, 15, 15));
             auto soft_body = obj->AddComponent<SoftBodyCompo>();
-            soft_body->CreateSample(10, 10);
+            soft_body->CreateSample(11, 11);
 
             auto mesh = obj->AddComponent<MeshCompo>();
             mesh->CreateModel("SoftBody-Custom");

@@ -29,10 +29,21 @@ namespace Engine
         void SetScale(const Vector3& scale);
         void SetPosition(const Vector3& pos);
         void SetOrientation(const Quaternion& orientation);
+        void SetOrientation(const AxisRadian& axis_radian);
+        void SetOrientation(const EulerAngle& rotation);
+
+
+        void AddPosition(const Vector3& delta_position);
+        void AddRotation(const Quaternion& delta_rotation);
+        void AddRotation(const AxisRadian& axis_radian);
+        void AddRotationX(Real radian);
+        void AddRotationY(Real radian);
+        void AddRotationZ(Real radian);
+        void AddRotationA(Real radian);
 
         Vector3    GetPosition() const;
+        Vector3 GetScale()const;
         Quaternion GetOrientation() const;
-
 
     protected:
         void Subscribe() override;
@@ -42,7 +53,8 @@ namespace Engine
         friend class TransformFactory;
 
     private:
-        Transform m_transform;
+        Transform  m_transform;
+        AxisRadian m_axis_holder;
     };
 
     class TransformFactory final : public ComponentFactory

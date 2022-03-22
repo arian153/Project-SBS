@@ -8,6 +8,8 @@
 
 namespace Engine
 {
+    class Transform;
+
     struct Link
     {
         size_t a = 0;
@@ -45,14 +47,14 @@ namespace Engine
         void ApplyForceCentroid(const Vector3& force);
 
         void UpdateCentroid();
-        void UpdatePosition();
+        void SetTransform(const Transform& transform);
 
         void Clear();
 
         void Draw(SPtr<PrimitiveRenderer> renderer);
 
         void UpdateMeshData();
-
+        void UpdatePosition();
 
     private:
         friend class PhysicsSubsystem;
@@ -67,11 +69,11 @@ namespace Engine
         Real m_spring_constant = 5.0f;
         Real m_damper_constant = 5.0f;
 
-        std::vector<Link>      m_links;
-        std::vector<RigidBody> m_rigid_bodies;
+        std::vector<Link>          m_links;
+        std::vector<RigidBody>     m_rigid_bodies;
+        std::vector<AdjacentFaces> m_adj_faces_per_vertex;
+        std::vector<Vector3>       m_local_positions;
 
         MeshData m_mesh_data;
-
-        std::vector<AdjacentFaces> m_adj_faces_per_vertex;
     };
 }
