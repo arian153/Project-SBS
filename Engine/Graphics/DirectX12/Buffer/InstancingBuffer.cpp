@@ -43,6 +43,11 @@ namespace Engine
     void InstancingBuffer::Bind()
     {
         Uint32 data_count = GetInstanceCount();
+        if (data_count == 0)
+        {
+            return;
+        }
+
         if (data_count > m_max_count)
         {
             Init((data_count + 1) * 2);

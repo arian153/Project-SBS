@@ -39,7 +39,7 @@ namespace Engine
         void SolveSpringDamper();
 
         void CreateSampleCloth(size_t w_count, size_t h_count, bool is_fixed);
-        void CreateSampleSphere();
+        void CreateSampleSphere(bool is_center_fixed);
 
         VecQuatScale&       GetVqs();
         const VecQuatScale& GetVqs() const;
@@ -68,8 +68,9 @@ namespace Engine
         VecQuatScale m_transform;
         Vector3      m_centroid;
 
-        Real m_spring_constant = 50.0f;
-        Real m_damper_constant = 5.0f;
+        Real m_spring_constant = 0.1f;
+        Real m_damper_constant = 0.1f;
+        bool m_b_doubled_layer = false;
 
         std::vector<Link>          m_links;
         std::vector<RigidBody>     m_rigid_bodies;
@@ -77,5 +78,6 @@ namespace Engine
         std::vector<Vector3>       m_local_positions;
 
         MeshData m_mesh_data;
+        size_t m_mesh_vertex_count = 0;
     };
 }

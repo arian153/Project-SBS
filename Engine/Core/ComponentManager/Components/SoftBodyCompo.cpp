@@ -91,13 +91,13 @@ namespace Engine
         if (ImGui::CollapsingHeader(MK_STRING(SoftBodyCompo)))
         {
             ImGui::Text("Spring Constant");
-            ImGui::SliderFloat("##Spring", &m_body.m_spring_constant, 0.01f, 190.0f);
+            ImGui::SliderFloat("##Spring", &m_body.m_spring_constant, 0.01f, 20.0f);
 
             ImGui::Text("Damper Constant");
-            ImGui::SliderFloat("##Damper", &m_body.m_damper_constant, 0.01f, 10.0f);
+            ImGui::SliderFloat("##Damper", &m_body.m_damper_constant, 0.01f, 5.0f);
 
             ImGui::Text("Force Scale - Temp");
-            ImGui::SliderFloat("##Scale", &m_scale, 1.f, 1000.0f);
+            ImGui::SliderFloat("##Scale", &m_scale, 1.f, 50.0f);
         }
     }
 
@@ -105,9 +105,14 @@ namespace Engine
     {
     }
 
-    void SoftBodyCompo::CreateSample(size_t w, size_t h)
+    void SoftBodyCompo::CreateSampleCloth(size_t w, size_t h, bool is_fixed)
     {
-        m_body.CreateSampleCloth(w, h, true);
+        m_body.CreateSampleCloth(w, h, is_fixed);
+    }
+
+    void SoftBodyCompo::CreateSampleSphere(bool is_fixed)
+    {
+        m_body.CreateSampleSphere(is_fixed);
     }
 
     const MeshData& SoftBodyCompo::GetSoftBodyMeshData() const

@@ -20,7 +20,8 @@ namespace Engine
         void Edit(CommandRegistry* command_registry) override;
         void CloneTo(RPtr<Component> destination) override;
 
-        void CreateSample(size_t w, size_t h);
+        void CreateSampleCloth(size_t w, size_t h, bool is_fixed);
+        void CreateSampleSphere(bool is_fixed);
 
         const MeshData& GetSoftBodyMeshData() const;
         MeshData&       GetSoftBodyMeshData();
@@ -35,7 +36,8 @@ namespace Engine
 
     private:
         SoftBody m_body;
-        Real     m_scale = 100.0f;
+        Real     m_scale = 10.0f;
+
     };
 
     class SoftBodyFactory final : public ComponentFactory

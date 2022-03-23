@@ -34,7 +34,7 @@ namespace Engine
         std::vector<RPtr<SoftBodyCompo>>  m_soft_body_compos;
         std::vector<RigidBody>            m_rigid_bodies;
 
-        bool m_b_show_wire_frame = false;
+        bool m_b_show_wire_frame = true;
 
         SPtr<PrimitiveRenderer> m_primitive_renderer = nullptr;
     };

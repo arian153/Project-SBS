@@ -243,6 +243,16 @@ namespace Engine
         {
             mesh_data.vertices[i].pos = (position[i]);
         }
+
+        mesh_data.faces.resize(20);
+        for(Uint32 i = 0; i < 20; ++i)
+        {
+            mesh_data.faces[i].a = k[3 * i];
+            mesh_data.faces[i].b = k[3 * i + 1];
+            mesh_data.faces[i].c = k[3 * i + 1];
+        }
+
+
         for (Uint32 i = 0; i < max_subdivisions; ++i)
         {
             Subdivide(mesh_data);

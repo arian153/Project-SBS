@@ -49,6 +49,7 @@ namespace Engine
 
     void SoftBody::CreateSampleCloth(size_t w_count, size_t h_count, bool is_fixed)
     {
+        m_b_doubled_layer = true;
         RigidBody body;
 
         Matrix33 inertia;
@@ -85,12 +86,9 @@ namespace Engine
             {
                 link.a = i * w_count + j;
                 link.b = i * w_count + j + 1;
-                //link.local_q_a = m_rigid_bodies[link.a].GetPosition();
-                //link.local_q_b = m_rigid_bodies[link.b].GetPosition();
                 m_links.push_back(link);
 
                 link.b = (i + 1) * w_count + j;
-                //link.local_q_b = m_rigid_bodies[link.b].GetPosition();
                 m_links.push_back(link);
             }
         }
@@ -99,9 +97,6 @@ namespace Engine
         {
             link.a = (h_count - 1) * w_count + j;
             link.b = (h_count - 1) * w_count + j + 1;
-
-            //link.local_q_a = m_rigid_bodies[link.a].GetPosition();
-            //link.local_q_b = m_rigid_bodies[link.b].GetPosition();
             m_links.push_back(link);
         }
 
@@ -109,9 +104,6 @@ namespace Engine
         {
             link.a = i * w_count + (w_count - 1);
             link.b = (i + 1) * w_count + (w_count - 1);
-
-            //link.local_q_a = m_rigid_bodies[link.a].GetPosition();
-            //link.local_q_b = m_rigid_bodies[link.b].GetPosition();
             m_links.push_back(link);
         }
 
@@ -228,23 +220,110 @@ namespace Engine
             m_adj_faces_per_vertex[face.c].faces.push_back(face);
         }
 
+        m_mesh_vertex_count = m_rigid_bodies.size();
+
         UpdateMeshData();
         UpdateCentroid();
     }
 
-    void SoftBody::CreateSampleSphere()
+    void SoftBody::CreateSampleSphere(bool is_center_fixed)
     {
-        m_mesh_data = MeshDataGenerator::CreateGeodesicSphere(0.5f, 1);
+        m_mesh_data = MeshDataGenerator::CreateGeodesicSphere(10.0f, 1);
 
-        size_t vertex_count = m_mesh_data.vertices.size();
+        size_t                     vertex_count = m_mesh_data.vertices.size();
+        size_t                     face_count   = m_mesh_data.faces.size();
+        //std::vector<AdjacentFaces> adj_faces_per_vertex;
+        //adj_faces_per_vertex.resize(vertex_count);
 
-        m_rigid_bodies.resize(vertex_count);
+        //for (size_t i = 0; i < face_count; ++i)
+        //{
+        //    auto& face = m_mesh_data.faces[i];
+
+        //    adj_faces_per_vertex[face.a].faces.push_back(face);
+        //    adj_faces_per_vertex[face.b].faces.push_back(face);
+        //    adj_faces_per_vertex[face.c].faces.push_back(face);
+        //}
+
+        //std::vector<Vector3> positions;
+
+        //for (size_t i = 0; i < vertex_count; ++i)
+        //{
+        //    Vector3 pos = m_mesh_data.vertices[i].pos;
+
+        //    auto found = std::find(positions.begin(), positions.end(), pos);
+
+        //    if (found == positions.end())
+        //    {
+        //        positions.push_back(pos);
+        //        m_adj_faces_per_vertex.push_back(AdjacentFaces());
+        //        m_adj_faces_per_vertex.back().faces.insert(
+        //                                                   m_adj_faces_per_vertex.back().faces.end(),
+        //                                                   adj_faces_per_vertex[i].faces.begin(),
+        //                                                   adj_faces_per_vertex[i].faces.end());
+        //    }
+        //    else
+        //    {
+        //        size_t idx = found - positions.begin();
+        //        m_adj_faces_per_vertex[idx].faces.insert(
+        //                                                 m_adj_faces_per_vertex[idx].faces.end(),
+        //                                                 adj_faces_per_vertex[i].faces.begin(),
+        //                                                 adj_faces_per_vertex[i].faces.end());
+        //    }
+        //}
+
+        m_rigid_bodies.resize(vertex_count + 1);
+        m_local_positions.resize(vertex_count + 1);
 
         for (size_t i = 0; i < vertex_count; ++i)
         {
-            Vector3 local_pos = m_mesh_data.vertices[i].pos;
+            Vector3 local_pos    = m_mesh_data.vertices[i].pos;
+            m_local_positions[i] = local_pos;
             m_rigid_bodies[i].SetPosition(m_transform.LocalToWorldPoint(local_pos));
         }
+
+        m_local_positions[vertex_count] = Vector3();
+        m_rigid_bodies[vertex_count].SetPosition(m_transform.LocalToWorldPoint(Vector3()));
+
+        //size_t face_count = m_mesh_data.faces.size();
+        m_adj_faces_per_vertex.resize(vertex_count);
+
+        for (size_t i = 0; i < face_count; ++i)
+        {
+            auto& face = m_mesh_data.faces[i];
+
+            m_adj_faces_per_vertex[face.a].faces.push_back(face);
+            m_adj_faces_per_vertex[face.b].faces.push_back(face);
+            m_adj_faces_per_vertex[face.c].faces.push_back(face);
+        }
+
+        size_t k = 0;
+        m_links.resize(face_count * 3);
+
+        for (size_t i = 0; i < face_count; ++i)
+        {
+            m_links[k].a     = m_mesh_data.faces[i].a;
+            m_links[k].b     = m_mesh_data.faces[i].b;
+            m_links[k + 1].a = m_mesh_data.faces[i].b;
+            m_links[k + 1].b = m_mesh_data.faces[i].c;
+            m_links[k + 2].a = m_mesh_data.faces[i].c;
+            m_links[k + 2].b = m_mesh_data.faces[i].a;
+            k += 3;
+        }
+
+        if (is_center_fixed)
+        {
+            Link link;
+            link.a = vertex_count;
+            for (size_t i = 0; i < vertex_count; ++i)
+            {
+                link.b = i;
+                m_links.push_back(link);
+            }
+        }
+
+        m_mesh_vertex_count = vertex_count;
+        UpdateMeshData();
+        UpdateCentroid();
     }
 
     VecQuatScale& SoftBody::GetVqs()
@@ -323,37 +402,70 @@ namespace Engine
 
     void SoftBody::UpdateMeshData()
     {
-        size_t size = m_rigid_bodies.size();
+        size_t size = m_mesh_vertex_count;
 
-        for (size_t i = 0; i < size; ++i)
+        if (m_b_doubled_layer)
         {
-            Vector3 pos                        = m_transform.WorldToLocalPoint(m_rigid_bodies[i].GetPosition());
-            m_mesh_data.vertices[i].pos        = pos;
-            m_mesh_data.vertices[i + size].pos = pos;
-        }
-
-        std::vector<Vector3> normals;
-        Vector3              accumulated_normal;
-
-        for (size_t i = 0; i < size * 2; ++i)
-        {
-            auto& [faces] = m_adj_faces_per_vertex[i];
-            normals.clear();
-            accumulated_normal.SetZero();
-            for (auto& face : faces)
+            for (size_t i = 0; i < size; ++i)
             {
-                Vector3 normal = m_mesh_data.GetFaceNormal(face.a, face.b, face.c);
-                auto    found  = std::find(normals.begin(), normals.end(), normal);
-                if (found == normals.end())
-                {
-                    accumulated_normal += normal;
-                    normals.push_back(normal);
-                }
+                Vector3 pos                        = m_transform.WorldToLocalPoint(m_rigid_bodies[i].GetPosition());
+                m_mesh_data.vertices[i].pos        = pos;
+                m_mesh_data.vertices[i + size].pos = pos;
             }
+            std::vector<Vector3> normals;
+            Vector3              accumulated_normal;
 
-            Vector3 n                 = accumulated_normal.Normalize();
-            m_mesh_data.vertices[i].n = n;
-            m_mesh_data.vertices[i].t = Math::GetTangentFast(n);
+            for (size_t i = 0; i < size * 2; ++i)
+            {
+                auto& [faces] = m_adj_faces_per_vertex[i];
+                normals.clear();
+                accumulated_normal.SetZero();
+                for (auto& face : faces)
+                {
+                    Vector3 normal = m_mesh_data.GetFaceNormal(face.a, face.b, face.c);
+                    auto    found  = std::find(normals.begin(), normals.end(), normal);
+                    if (found == normals.end())
+                    {
+                        accumulated_normal += normal;
+                        normals.push_back(normal);
+                    }
+                }
+
+                Vector3 n                 = accumulated_normal.Normalize();
+                m_mesh_data.vertices[i].n = n;
+                m_mesh_data.vertices[i].t = Math::GetTangentFast(n);
+            }
+        }
+        else
+        {
+            for (size_t i = 0; i < size; ++i)
+            {
+                Vector3 pos                 = m_transform.WorldToLocalPoint(m_rigid_bodies[i].GetPosition());
+                m_mesh_data.vertices[i].pos = pos;
+            }
+            std::vector<Vector3> normals;
+            Vector3              accumulated_normal;
+
+            for (size_t i = 0; i < size; ++i)
+            {
+                auto& [faces] = m_adj_faces_per_vertex[i];
+                normals.clear();
+                accumulated_normal.SetZero();
+                for (auto& face : faces)
+                {
+                    Vector3 normal = m_mesh_data.GetFaceNormal(face.a, face.b, face.c);
+                    auto    found  = std::find(normals.begin(), normals.end(), normal);
+                    if (found == normals.end())
+                    {
+                        accumulated_normal += normal;
+                        normals.push_back(normal);
+                    }
+                }
+
+                Vector3 n                 = accumulated_normal.Normalize();
+                m_mesh_data.vertices[i].n = n;
+                m_mesh_data.vertices[i].t = Math::GetTangentFast(n);
+            }
         }
     }
 
