@@ -39,6 +39,7 @@ namespace Engine
         void SolveSpringDamper();
 
         void CreateSampleCloth(size_t w_count, size_t h_count, bool is_fixed);
+        void CreateSampleSphere();
 
         VecQuatScale&       GetVqs();
         const VecQuatScale& GetVqs() const;
@@ -54,7 +55,8 @@ namespace Engine
         void Draw(SPtr<PrimitiveRenderer> renderer);
 
         void UpdateMeshData();
-        void UpdatePosition();
+        void UpdateWorld();
+        void UpdateLocal();
 
     private:
         friend class PhysicsSubsystem;
@@ -66,7 +68,7 @@ namespace Engine
         VecQuatScale m_transform;
         Vector3      m_centroid;
 
-        Real m_spring_constant = 5.0f;
+        Real m_spring_constant = 50.0f;
         Real m_damper_constant = 5.0f;
 
         std::vector<Link>          m_links;

@@ -1,5 +1,6 @@
 #include "SoftBody.hpp"
 
+#include "../../Graphics/Utility/MeshDataGenerator.hpp"
 #include "../../Graphics/Utility/PrimitiveRenderer.hpp"
 #include "../../Math/Structure/Transform.hpp"
 #include "../../Math/Utility/Utility.hpp"
@@ -17,13 +18,12 @@ namespace Engine
 
     void SoftBody::Integrate(Real dt)
     {
-        UpdatePosition();
-
         for (auto& body : m_rigid_bodies)
         {
             body.IntegrateEuler(dt);
         }
 
+        UpdateLocal();
         UpdateCentroid();
         UpdateMeshData();
     }
@@ -232,6 +232,21 @@ namespace Engine
         UpdateCentroid();
     }
 
+    void SoftBody::CreateSampleSphere()
+    {
+        m_mesh_data = MeshDataGenerator::CreateGeodesicSphere(0.5f, 1);
+
+        size_t vertex_count = m_mesh_data.vertices.size();
+
+        m_rigid_bodies.resize(vertex_count);
+
+        for (size_t i = 0; i < vertex_count; ++i)
+        {
+            Vector3 local_pos = m_mesh_data.vertices[i].pos;
+            m_rigid_bodies[i].SetPosition(m_transform.LocalToWorldPoint(local_pos));
+        }
+    }
+
     VecQuatScale& SoftBody::GetVqs()
     {
         return m_transform;
@@ -342,13 +357,23 @@ namespace Engine
         }
     }
 
-    void SoftBody::UpdatePosition()
+    void SoftBody::UpdateWorld()
     {
         size_t size = m_rigid_bodies.size();
 
         for (size_t i = 0; i < size; ++i)
         {
             m_rigid_bodies[i].SetPosition(m_transform.LocalToWorldPoint(m_local_positions[i]));
+        }
+    }
+
+    void SoftBody::UpdateLocal()
+    {
+        size_t size = m_rigid_bodies.size();
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            m_local_positions[i] = m_transform.WorldToLocalPoint(m_rigid_bodies[i].GetPosition());
         }
     }
 }

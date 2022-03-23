@@ -28,6 +28,7 @@ namespace Engine
         {
             auto transform = m_owner->GetComponent<TransformCompo>();
             m_body.SetTransform(transform->GetTransform());
+            m_body.UpdateWorld();
             m_body.SolveSpringDamper();
             m_body.Integrate(dt);
         }
