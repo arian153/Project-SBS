@@ -69,7 +69,7 @@ namespace Engine
         Vector3      m_centroid;
 
         Real m_spring_constant = 0.1f;
-        Real m_damper_constant = 0.1f;
+        Real m_damper_constant = 1.5f;
         bool m_b_doubled_layer = false;
 
         std::vector<Link>          m_links;

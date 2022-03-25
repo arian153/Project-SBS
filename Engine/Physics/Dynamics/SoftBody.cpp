@@ -228,48 +228,76 @@ namespace Engine
 
     void SoftBody::CreateSampleSphere(bool is_center_fixed)
     {
-        m_mesh_data = MeshDataGenerator::CreateGeodesicSphere(10.0f, 1);
+        auto [vertex_type, vertices, indices, faces] = MeshDataGenerator::CreateGeodesicSphere(10.0f, 1);
 
-        size_t                     vertex_count = m_mesh_data.vertices.size();
-        size_t                     face_count   = m_mesh_data.faces.size();
-        //std::vector<AdjacentFaces> adj_faces_per_vertex;
-        //adj_faces_per_vertex.resize(vertex_count);
+        size_t                     vertex_count = vertices.size();
+        size_t                     face_count   = faces.size();
+        std::vector<AdjacentFaces> adj_faces_per_vertex;
+        adj_faces_per_vertex.resize(vertex_count);
 
-        //for (size_t i = 0; i < face_count; ++i)
-        //{
-        //    auto& face = m_mesh_data.faces[i];
+        for (size_t i = 0; i < face_count; ++i)
+        {
+            auto& face = faces[i];
 
-        //    adj_faces_per_vertex[face.a].faces.push_back(face);
-        //    adj_faces_per_vertex[face.b].faces.push_back(face);
-        //    adj_faces_per_vertex[face.c].faces.push_back(face);
-        //}
+            adj_faces_per_vertex[face.a].faces.push_back(face);
+            adj_faces_per_vertex[face.b].faces.push_back(face);
+            adj_faces_per_vertex[face.c].faces.push_back(face);
+        }
 
-        //std::vector<Vector3> positions;
+        std::vector<Vector3> positions;
+        m_mesh_data.vertices.clear();
+        for (size_t i = 0; i < vertex_count; ++i)
+        {
+            Vector3 pos = vertices[i].pos;
 
-        //for (size_t i = 0; i < vertex_count; ++i)
-        //{
-        //    Vector3 pos = m_mesh_data.vertices[i].pos;
+            auto found = std::find(positions.begin(), positions.end(), pos);
 
-        //    auto found = std::find(positions.begin(), positions.end(), pos);
+            if (found == positions.end())
+            {
+                positions.push_back(pos);
+                m_mesh_data.vertices.push_back(vertices[i]);
+            }
+        }
 
-        //    if (found == positions.end())
-        //    {
-        //        positions.push_back(pos);
-        //        m_adj_faces_per_vertex.push_back(AdjacentFaces());
-        //        m_adj_faces_per_vertex.back().faces.insert(
-        //                                                   m_adj_faces_per_vertex.back().faces.end(),
-        //                                                   adj_faces_per_vertex[i].faces.begin(),
-        //                                                   adj_faces_per_vertex[i].faces.end());
-        //    }
-        //    else
-        //    {
-        //        size_t idx = found - positions.begin();
-        //        m_adj_faces_per_vertex[idx].faces.insert(
-        //                                                 m_adj_faces_per_vertex[idx].faces.end(),
-        //                                                 adj_faces_per_vertex[i].faces.begin(),
-        //                                                 adj_faces_per_vertex[i].faces.end());
-        //    }
-        //}
+        size_t new_vertex_count = positions.size();
+        m_adj_faces_per_vertex.resize(new_vertex_count);
+
+        m_mesh_data.faces.clear();
+        m_mesh_data.indices.clear();
+
+        for (size_t i = 0; i < vertex_count; ++i)
+        {
+            for (auto& face : adj_faces_per_vertex[i].faces)
+            {
+                Vector3 pos_a = vertices[face.a].pos;
+                Vector3 pos_b = vertices[face.b].pos;
+                Vector3 pos_c = vertices[face.c].pos;
+
+                auto   found_a = std::find(positions.begin(), positions.end(), pos_a);
+                size_t idx_a   = found_a - positions.begin();
+                auto   found_b = std::find(positions.begin(), positions.end(), pos_b);
+                size_t idx_b   = found_b - positions.begin();
+                auto   found_c = std::find(positions.begin(), positions.end(), pos_c);
+                size_t idx_c   = found_c - positions.begin();
+
+                Face new_face;
+                new_face.a = static_cast<Uint32>(idx_a);
+                new_face.b = static_cast<Uint32>(idx_b);
+                new_face.c = static_cast<Uint32>(idx_c);
+
+                m_adj_faces_per_vertex[idx_a].faces.push_back(new_face);
+                m_adj_faces_per_vertex[idx_b].faces.push_back(new_face);
+                m_adj_faces_per_vertex[idx_c].faces.push_back(new_face);
+                m_mesh_data.faces.push_back(new_face);
+                m_mesh_data.indices.push_back(new_face.a);
+                m_mesh_data.indices.push_back(new_face.b);
+                m_mesh_data.indices.push_back(new_face.c);
+            }
+        }
+
+        m_mesh_vertex_count = 0;
+        vertex_count        = m_mesh_data.vertices.size();
+        face_count          = m_mesh_data.faces.size();
 
         m_rigid_bodies.resize(vertex_count + 1);
         m_local_positions.resize(vertex_count + 1);
@@ -284,18 +312,7 @@ namespace Engine
         m_local_positions[vertex_count] = Vector3();
         m_rigid_bodies[vertex_count].SetPosition(m_transform.LocalToWorldPoint(Vector3()));
 
-        //size_t face_count = m_mesh_data.faces.size();
-        m_adj_faces_per_vertex.resize(vertex_count);
-
-        for (size_t i = 0; i < face_count; ++i)
-        {
-            auto& face = m_mesh_data.faces[i];
-
-            m_adj_faces_per_vertex[face.a].faces.push_back(face);
-            m_adj_faces_per_vertex[face.b].faces.push_back(face);
-            m_adj_faces_per_vertex[face.c].faces.push_back(face);
-        }
-
+       
         size_t k = 0;
         m_links.resize(face_count * 3);
 
@@ -322,6 +339,7 @@ namespace Engine
         }
 
         m_mesh_vertex_count = vertex_count;
+
         UpdateMeshData();
         UpdateCentroid();
     }
@@ -356,6 +374,9 @@ namespace Engine
 
     void SoftBody::UpdateCentroid()
     {
+        if (m_rigid_bodies.empty())
+            return;
+
         Real    total_mass = 0.0f;
         Vector3 total_pos;
 
@@ -403,6 +424,8 @@ namespace Engine
     void SoftBody::UpdateMeshData()
     {
         size_t size = m_mesh_vertex_count;
+        if (m_mesh_vertex_count == 0)
+            return;
 
         if (m_b_doubled_layer)
         {
