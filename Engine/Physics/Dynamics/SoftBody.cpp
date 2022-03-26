@@ -228,7 +228,8 @@ namespace Engine
 
     void SoftBody::CreateSampleSphere(bool is_center_fixed)
     {
-        auto [vertex_type, vertices, indices, faces] = MeshDataGenerator::CreateGeodesicSphere(10.0f, 1);
+        auto [vertex_type, vertices, indices, faces]
+        = MeshDataGenerator::CreateGeodesicSphere(10.0f, 2);
 
         size_t                     vertex_count = vertices.size();
         size_t                     face_count   = faces.size();
@@ -311,7 +312,8 @@ namespace Engine
 
         m_local_positions[vertex_count] = Vector3();
         m_rigid_bodies[vertex_count].SetPosition(m_transform.LocalToWorldPoint(Vector3()));
-
+        m_rigid_bodies[vertex_count].SetMassInfinite();
+    
        
         size_t k = 0;
         m_links.resize(face_count * 3);
