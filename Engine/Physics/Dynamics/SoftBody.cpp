@@ -229,7 +229,7 @@ namespace Engine
     void SoftBody::CreateSampleSphere(bool is_center_fixed)
     {
         auto [vertex_type, vertices, indices, faces]
-        = MeshDataGenerator::CreateGeodesicSphere(10.0f, 2);
+                = MeshDataGenerator::CreateGeodesicSphere(5.0f, 1);
 
         size_t                     vertex_count = vertices.size();
         size_t                     face_count   = faces.size();
@@ -312,9 +312,8 @@ namespace Engine
 
         m_local_positions[vertex_count] = Vector3();
         m_rigid_bodies[vertex_count].SetPosition(m_transform.LocalToWorldPoint(Vector3()));
-        m_rigid_bodies[vertex_count].SetMassInfinite();
-    
-       
+        //m_rigid_bodies[vertex_count].SetMassInfinite();
+
         size_t k = 0;
         m_links.resize(face_count * 3);
 
@@ -326,6 +325,13 @@ namespace Engine
             m_links[k + 1].b = m_mesh_data.faces[i].c;
             m_links[k + 2].a = m_mesh_data.faces[i].c;
             m_links[k + 2].b = m_mesh_data.faces[i].a;
+
+            m_links[k].local_q_a     = m_local_positions[m_links[k].a];
+            m_links[k].local_q_b     = m_local_positions[m_links[k].b];
+            m_links[k + 1].local_q_a = m_local_positions[m_links[k + 1].a];
+            m_links[k + 1].local_q_b = m_local_positions[m_links[k + 1].b];
+            m_links[k + 2].local_q_a = m_local_positions[m_links[k + 2].a];
+            m_links[k + 2].local_q_b = m_local_positions[m_links[k + 2].b];
             k += 3;
         }
 
@@ -336,6 +342,7 @@ namespace Engine
             for (size_t i = 0; i < vertex_count; ++i)
             {
                 link.b = i;
+                link.local_q_b = m_local_positions[i];
                 m_links.push_back(link);
             }
         }

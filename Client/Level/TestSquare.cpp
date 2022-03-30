@@ -131,18 +131,18 @@ namespace Client
         {
             auto obj = m_object_manager->AddObject("Cloth");
             auto transform = obj->AddComponent<TransformCompo>();
-            transform->SetScale(Vector3(15, 15, 15));
+            //transform->SetScale(Vector3(15, 15, 15));
             auto soft_body = obj->AddComponent<SoftBodyCompo>();
-            soft_body->CreateSampleCloth(11, 11, true);
-            //soft_body->CreateSampleSphere(true);
+            //soft_body->CreateSampleCloth(11, 11, true);
+            soft_body->CreateSampleSphere(true);
 
-          /*  auto mesh = obj->AddComponent<MeshCompo>();
+            auto mesh = obj->AddComponent<MeshCompo>();
             mesh->CreateModel("SoftBody-Custom");
             mesh->SetMeshData(soft_body->GetSoftBodyMeshData());
             mesh->SetShader(GET_SHADER("Deferred-Geometry.shader"));
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Leather.jpg")->GetTexture());
             mesh->SetNormalMapTexture(RESOURCE_MANAGER->GetTextureResourceName("Leather_Normal.jpg")->GetTexture());
-            mesh->SetMaterialInfo(0, 1);*/
+            mesh->SetMaterialInfo(0, 1);
 
 
         }

@@ -68,8 +68,8 @@ namespace Engine
         VecQuatScale m_transform;
         Vector3      m_centroid;
 
-        Real m_spring_constant = 5.0f;
-        Real m_damper_constant = 0.01f;
+        Real m_spring_constant = 1.0f;
+        Real m_damper_constant = 1.0f;
         bool m_b_doubled_layer = false;
 
         std::vector<Link>          m_links;
