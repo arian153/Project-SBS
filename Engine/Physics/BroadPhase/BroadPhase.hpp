@@ -40,7 +40,7 @@ namespace Engine
         ~BroadPhase();
 
         void Initialize();
-        void Update(Real dt);
+        void Update();
         void Shutdown();
         void Add(BoundingBox* aabb);
         void Remove(BoundingBox* aabb);

@@ -4,6 +4,7 @@
 
 namespace Engine
 {
+    class RigidBody;
     class BroadPhaseNode;
 
     enum class eBoundingObjectType
@@ -24,6 +25,7 @@ namespace Engine
         ~BoundingBox();
 
         void        Set(const Vector3& lower_bound, const Vector3& upper_bound);
+        void        Set(void* object_data, eBoundingObjectType type);
         void        ExpandMargin(Real margin);
         bool        Intersect(BoundingBox* aabb) const;
         bool        Intersect(const BoundingBox& aabb) const;
@@ -44,6 +46,8 @@ namespace Engine
         //getter
         void*           GetObjectData() const;
         BroadPhaseNode* GetNodeData() const;
+
+        RigidBody* GetRigidBodyData() const;
 
         void UpdateVolume();
     private:

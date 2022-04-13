@@ -1,8 +1,12 @@
 #pragma once
+#include "../../../EngineDefine.hpp"
 #include "../../../Math/Math.hpp"
 
 namespace Engine
 {
+    class Color;
+    class PrimitiveRenderer;
+
     class Constraint
     {
     public:

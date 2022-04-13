@@ -35,11 +35,18 @@ namespace Engine
 
     void PhysicsSubsystem::Render()
     {
+        //ColorFlag node;
+        //ColorFlag prim;
+
+        //node.b_flag = true;
+        //prim.b_flag = false;
+
         if (m_b_show_wire_frame)
         {
             for (auto& soft_body_compo : m_soft_body_compos)
             {
                 soft_body_compo->m_body.Draw(m_primitive_renderer);
+                //soft_body_compo->m_body.m_bvh.Render(m_primitive_renderer.get(), node, prim);
             }
         }
     }

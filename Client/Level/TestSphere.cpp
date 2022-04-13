@@ -1,31 +1,28 @@
-#include "TestSquare.h"
+#include "TestSphere.h"
 
-#include <iostream>
-#include <Core/ComponentManager/Components/LightCompo.hpp>
-#include <Core/ComponentManager/Components/OrbitCameraCompo.hpp>
 #include <Core/ComponentManager/Components/SoftBodyCompo.hpp>
-#include <Core/ObjectManager/Object.hpp>
+
 using namespace Engine;
 
 namespace Client
 {
-    TestSquare::TestSquare()
+    TestSphere::TestSphere()
     {
         SetDefaultSubsystems();
     }
 
-    TestSquare::~TestSquare()
+    TestSphere::~TestSphere()
     {
     }
 
-    void TestSquare::Initialize()
+    void TestSphere::Initialize()
     {
         {
-            auto obj       = m_object_manager->AddObject("Cloth");
-            auto transform = obj->AddComponent<TransformCompo>();
-            transform->SetScale(Vector3(15, 15, 15));
+            auto obj = m_object_manager->AddObject("Hemisphere Slime");
+            obj->AddComponent<TransformCompo>();
             auto soft_body = obj->AddComponent<SoftBodyCompo>();
-            soft_body->CreateSampleCloth(11, 11, true);
+            soft_body->CreateSampleSphere(true);
+            
 
             auto mesh = obj->AddComponent<MeshCompo>();
             mesh->CreateModel("SoftBody-Custom");
@@ -62,7 +59,7 @@ namespace Client
         {
             auto obj = m_object_manager->AddObject("SkyBox");
             obj->AddComponent<TransformCompo>();
-            auto     mesh       = obj->AddComponent<MeshCompo>();
+            auto     mesh = obj->AddComponent<MeshCompo>();
             MeshData sky_sphere = MeshDataGenerator::CreateSphere(1.0f, 30, 30);
 
             mesh->CreateModel("SkyBox");
@@ -73,7 +70,7 @@ namespace Client
 
         //Light 2 Red Point Light
         {
-            auto obj       = m_object_manager->AddObject("Point");
+            auto obj = m_object_manager->AddObject("Point");
             auto transform = obj->AddComponent<TransformCompo>();
             transform->SetPosition(Vector3(0.f, 100.f, 150.f));
             auto light = obj->AddComponent<LightCompo>();
@@ -86,7 +83,7 @@ namespace Client
 
         //Light 3 Blue Spot Light
         {
-            auto obj       = m_object_manager->AddObject("Spot");
+            auto obj = m_object_manager->AddObject("Spot");
             auto transform = obj->AddComponent<TransformCompo>();
             transform->SetPosition(Vector3(75.f, 0.f, 150.f));
             auto light = obj->AddComponent<LightCompo>();
@@ -100,32 +97,36 @@ namespace Client
         }
     }
 
-    void TestSquare::Update(float dt)
+    void TestSphere::Update(float dt)
     {
         if (INPUT_MANAGER->IsDown(eKeyCodeKeyboard::Escape))
         {
             WIN32_MANAGER->SetQuit(true);
         }
-    }
 
-    void TestSquare::FixedUpdate(float dt)
+         }
+
+    void TestSphere::FixedUpdate(float dt)
     {
     }
 
-    void TestSquare::Render()
+    void TestSphere::Render()
+    {
+        /*  m_shader->Bind();
+  
+          m_mesh->Render();*/
+    }
+
+    void TestSphere::Shutdown()
     {
     }
 
-    void TestSquare::Shutdown()
+    TestSphereFactory::~TestSphereFactory()
     {
     }
 
-    TestSquareFactory::~TestSquareFactory()
+    Engine::AppState* TestSphereFactory::Create()
     {
-    }
-
-    Engine::AppState* TestSquareFactory::Create()
-    {
-        return new TestSquare();
+        return new TestSphere();
     }
 }

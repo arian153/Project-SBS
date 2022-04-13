@@ -32,10 +32,10 @@ namespace Engine
         m_motion_a = m_body_a->GetMotionMode();
         m_motion_b = m_body_b->GetMotionMode();
         //set mass
-        m_mass_term.m_a = m_body_a->InverseMass();
-        m_mass_term.i_a = m_body_a->InverseInertia();
-        m_mass_term.m_b = m_body_b->InverseMass();
-        m_mass_term.i_b = m_body_b->InverseInertia();
+        m_mass_term.mass_a = m_body_a->InverseMass();
+        m_mass_term.inertia_a = m_body_a->InverseInertia();
+        m_mass_term.mass_b = m_body_b->InverseMass();
+        m_mass_term.inertia_b = m_body_b->InverseInertia();
         //velocity term
         m_velocity_term.v_a = m_body_a->GetLinearVelocity();
         m_velocity_term.w_a = m_body_a->GetAngularVelocity();
@@ -127,20 +127,20 @@ namespace Engine
         bool motion_b = m_body_b->GetMotionMode() == eMotionMode::Dynamic;
         for (auto& contact : m_manifold->contacts)
         {
-            Vector3 local_to_global_a = m_body_a->LocalToWorldPoint(contact.collider_a->LocalToWorldPoint(contact.local_position_a));
-            Vector3 local_to_global_b = m_body_b->LocalToWorldPoint(contact.collider_b->LocalToWorldPoint(contact.local_position_b));
+            Vector3 local_to_global_a = m_body_a->LocalToWorldPoint(contact.primitive_a->LocalToWorldPoint(contact.local_position_a));
+            Vector3 local_to_global_b = m_body_b->LocalToWorldPoint(contact.primitive_b->LocalToWorldPoint(contact.local_position_b));
             //contact.depth = DotProduct(local_to_global_a - local_to_global_b, contact.normal);
             Real    separation  = DotProduct(local_to_global_b - local_to_global_a, contact.normal) - Physics::Collision::POSITION_SEPARATION_SLOP;
             Real    constraints = Math::Clamp(Physics::Dynamics::BAUMGRATE * (separation + Physics::Collision::POSITION_LINEAR_SLOP), -Physics::Collision::MAX_LINEAR_CORRECTION, 0.0f);
             Vector3 ra_n        = CrossProduct(local_to_global_a - m_position_term.p_a, contact.normal);
             Vector3 rb_n        = CrossProduct(local_to_global_b - m_position_term.p_b, contact.normal);
             Real    k
-                    = (motion_a ? m_mass_term.m_a + ra_n * m_mass_term.i_a * ra_n : 0.0f)
-                    + (motion_b ? m_mass_term.m_b + rb_n * m_mass_term.i_b * rb_n : 0.0f);
+                    = (motion_a ? m_mass_term.mass_a + ra_n * m_mass_term.inertia_a * ra_n : 0.0f)
+                    + (motion_b ? m_mass_term.mass_b + rb_n * m_mass_term.inertia_b * rb_n : 0.0f);
             Real    impulse = k > 0.0f ? -constraints / k : 0.0f;
             Vector3 p       = impulse * contact.normal;
-            m_position_term.p_a -= m_mass_term.m_a * p;
-            m_position_term.p_b += m_mass_term.m_b * p;
+            m_position_term.p_a -= m_mass_term.mass_a * p;
+            m_position_term.p_b += m_mass_term.mass_b * p;
         }
     }
 
@@ -199,10 +199,10 @@ namespace Engine
             Vector3 p = contact_point.normal_lambda * normal_basis.i
                     + contact_point.tangent_lambda * normal_basis.j
                     + contact_point.bitangent_lambda * normal_basis.k;
-            m_velocity_term.v_a -= m_mass_term.m_a * p * 0.8f;
-            m_velocity_term.w_a -= m_mass_term.i_a * CrossProduct(contact_point.r_a, p) * 0.8f;
-            m_velocity_term.v_b += m_mass_term.m_b * p * 0.8f;
-            m_velocity_term.w_b += m_mass_term.i_b * CrossProduct(contact_point.r_b, p) * 0.8f;
+            m_velocity_term.v_a -= m_mass_term.mass_a * p * 0.8f;
+            m_velocity_term.w_a -= m_mass_term.inertia_a * CrossProduct(contact_point.r_a, p) * 0.8f;
+            m_velocity_term.v_b += m_mass_term.mass_b * p * 0.8f;
+            m_velocity_term.w_b += m_mass_term.inertia_b * CrossProduct(contact_point.r_b, p) * 0.8f;
 
             m_normal[i].total_lambda    = contact_point.normal_lambda * 0.8f;
             m_tangent[i].total_lambda   = contact_point.tangent_lambda * 0.8f;
@@ -226,8 +226,8 @@ namespace Engine
         bool motion_a = m_body_a->GetMotionMode() == eMotionMode::Dynamic;
         bool motion_b = m_body_b->GetMotionMode() == eMotionMode::Dynamic;
         Real k
-                = (motion_a ? m_mass_term.m_a + jacobian.w_a * m_mass_term.i_a * jacobian.w_a : 0.0f)
-                + (motion_b ? m_mass_term.m_b + jacobian.w_b * m_mass_term.i_b * jacobian.w_b : 0.0f);
+                = (motion_a ? m_mass_term.mass_a + jacobian.w_a * m_mass_term.inertia_a * jacobian.w_a : 0.0f)
+                + (motion_b ? m_mass_term.mass_b + jacobian.w_b * m_mass_term.inertia_b * jacobian.w_b : 0.0f);
         jacobian.effective_mass = k > 0.0f ? 1.0f / k : 0.0f;;
         jacobian.total_lambda   = 0.0f;
     }
@@ -245,7 +245,7 @@ namespace Engine
         if (b_normal)
         {
             Real    beta              = Physics::Collision::CONTACT_BETA;
-            Real    restitution       = GetRestitution(contact.collider_a, contact.collider_b);
+            Real    restitution       = GetRestitution(contact.primitive_a, contact.primitive_b);
             Vector3 relative_velocity =
                     -m_velocity_term.v_a
                     - CrossProduct(m_velocity_term.w_a, contact.r_a)
@@ -273,17 +273,17 @@ namespace Engine
         else
         {
             //tangent - friction : -max_friction <= lambda <= max_friction
-            auto friction_data    = m_friction_utility->Find(contact.collider_a->GetMaterialCode(), contact.collider_b->GetMaterialCode());
+            auto friction_data    = m_friction_utility->Find(contact.primitive_a->GetMaterialCode(), contact.primitive_b->GetMaterialCode());
             Real max_friction     = friction_data.dynamic_friction * m_normal[i].total_lambda;
             jacobian.total_lambda = Math::Clamp(jacobian.total_lambda + lambda, -max_friction, max_friction);
         }
         lambda = (jacobian.total_lambda - old_total_lambda);
 
         // velocity correction
-        m_velocity_term.v_a += m_mass_term.m_a * jacobian.v_a * lambda;
-        m_velocity_term.w_a += m_mass_term.i_a * jacobian.w_a * lambda;
-        m_velocity_term.v_b += m_mass_term.m_b * jacobian.v_b * lambda;
-        m_velocity_term.w_b += m_mass_term.i_b * jacobian.w_b * lambda;
+        m_velocity_term.v_a += m_mass_term.mass_a * jacobian.v_a * lambda;
+        m_velocity_term.w_a += m_mass_term.inertia_a * jacobian.w_a * lambda;
+        m_velocity_term.v_b += m_mass_term.mass_b * jacobian.v_b * lambda;
+        m_velocity_term.w_b += m_mass_term.inertia_b * jacobian.w_b * lambda;
     }
 
     void ContactConstraint::AwakeState() const

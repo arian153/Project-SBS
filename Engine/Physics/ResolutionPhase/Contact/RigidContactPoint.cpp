@@ -1,5 +1,6 @@
 #include "RigidContactPoint.hpp"
-#include "../../../Core/Utility/CoreUtility.hpp"
+
+#include "../../../Math/Utility/Utility.hpp"
 
 namespace Engine
 {
@@ -30,8 +31,8 @@ namespace Engine
     {
         if (this != &rhs)
         {
-            this->collider_a        = rhs.collider_a;
-            this->collider_b        = rhs.collider_b;
+            this->primitive_a        = rhs.primitive_a;
+            this->primitive_b        = rhs.primitive_b;
             this->global_position_a = rhs.global_position_a;
             this->global_position_b = rhs.global_position_b;
             this->local_position_a  = rhs.local_position_a;
@@ -54,7 +55,7 @@ namespace Engine
 
     void RigidContactPoint::Swap()
     {
-        Math::Swap(collider_a, collider_b);
+        Math::Swap(primitive_a, primitive_b);
         Math::Swap(global_position_a, global_position_b);
         Math::Swap(local_position_a, local_position_b);
         normal = -normal;
@@ -77,8 +78,8 @@ namespace Engine
         RigidContactPoint result;
         result.normal            = -normal;
         result.depth             = this->depth;
-        result.collider_a        = this->collider_b;
-        result.collider_b        = this->collider_a;
+        result.primitive_a        = this->primitive_b;
+        result.primitive_b        = this->primitive_a;
         result.global_position_a = this->global_position_b;
         result.global_position_b = this->global_position_a;
         result.local_position_a  = this->local_position_b;

@@ -22,6 +22,7 @@ namespace Engine
 
         void CreateSampleCloth(size_t w, size_t h, bool is_fixed);
         void CreateSampleSphere(bool is_fixed);
+        void CreateSampleBox();
 
         const MeshData& GetSoftBodyMeshData() const;
         MeshData&       GetSoftBodyMeshData();

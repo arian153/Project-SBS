@@ -71,6 +71,7 @@ namespace Engine
 
     void SoftBodyCompo::Shutdown()
     {
+        m_body.ShutdownBVH();
         Unsubscribe();
     }
 
@@ -113,6 +114,11 @@ namespace Engine
     void SoftBodyCompo::CreateSampleSphere(bool is_fixed)
     {
         m_body.CreateSampleSphere(is_fixed);
+    }
+
+    void SoftBodyCompo::CreateSampleBox()
+    {
+        m_body.CreateSampleBox();
     }
 
     const MeshData& SoftBodyCompo::GetSoftBodyMeshData() const

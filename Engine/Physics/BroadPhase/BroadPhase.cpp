@@ -1,5 +1,8 @@
 #include "BroadPhase.hpp"
 
+#include "../../Graphics/Utility/PrimitiveRenderer.hpp"
+#include "../../Math/Structure/Transform.hpp"
+
 namespace Engine
 {
     BroadPhaseNode::BroadPhaseNode()
@@ -65,10 +68,11 @@ namespace Engine
 
     void BroadPhase::Initialize()
     {
-        m_drawing_box.SetUnit();
+        m_drawing_box.SetBox(1.0f, 1.0f, 1.0f);
+        //m_drawing_box.SetUnit();
     }
 
-    void BroadPhase::Update(Real dt)
+    void BroadPhase::Update()
     {
         if (m_root)
         {
@@ -338,8 +342,14 @@ namespace Engine
             }
             if (broad_phase_color.b_flag)
             {
-                //primitive_renderer->DrawPrimitiveInstancing(m_drawing_box, node->aabb.Center(), node->aabb.Size(), eRenderingMode::Line, broad_phase_color.color);
-                //primitive_renderer->DrawBox(node->aabb.Center(), Quaternion(), node->aabb.Size(), eRenderingMode::Line, broad_phase_color.color);
+                Transform node_transform;
+                node_transform.position = node->aabb.Center();
+                node_transform.scale = node->aabb.Size();
+
+                primitive_renderer->DrawPrimitive(m_drawing_box, node_transform, broad_phase_color.color, eRenderingMode::Line);
+
+             /*   primitive_renderer->DrawPrimitiveInstancing(m_drawing_box, node->aabb.Center(), node->aabb.Size(), eRenderingMode::Line, broad_phase_color.color);
+                primitive_renderer->DrawBox(node->aabb.Center(), Quaternion(), node->aabb.Size(), eRenderingMode::Line, broad_phase_color.color);*/
             }
             if (node->children[0] != nullptr)
             {

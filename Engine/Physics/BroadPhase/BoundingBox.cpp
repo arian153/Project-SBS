@@ -1,5 +1,10 @@
 #include "BoundingBox.hpp"
 
+#include "../../Math/Primitive/Primitive.hpp"
+#include "../../Math/Structure/Transform.hpp"
+#include "../../Math/Utility/Utility.hpp"
+#include "../Dynamics/RigidBody.hpp"
+
 namespace Engine
 {
     BoundingBox::BoundingBox()
@@ -20,6 +25,9 @@ namespace Engine
             m_type = eBoundingObjectType::None;
             return;
         }
+
+        m_object_data = object_data;
+        UpdateVolume();
     }
 
     BoundingBox::~BoundingBox()
@@ -30,6 +38,20 @@ namespace Engine
     {
         m_lower_bound = lower_bound;
         m_upper_bound = upper_bound;
+    }
+
+    void BoundingBox::Set(void* object_data, eBoundingObjectType type)
+    {
+        m_type = type;
+
+        if (object_data == nullptr)
+        {
+            m_type = eBoundingObjectType::None;
+            return;
+        }
+
+        m_object_data = object_data;
+        UpdateVolume();
     }
 
     void BoundingBox::ExpandMargin(Real margin)
@@ -312,8 +334,98 @@ namespace Engine
         return m_node_data;
     }
 
+    RigidBody* BoundingBox::GetRigidBodyData() const
+    {
+        if (m_type == eBoundingObjectType::RigidBody)
+            return static_cast<RigidBody*>(m_object_data);
+
+        return nullptr;
+    }
+
     void BoundingBox::UpdateVolume()
     {
-        m_object_data;
+        if (m_type == eBoundingObjectType::RigidBody)
+        {
+            auto rigid_body = static_cast<RigidBody*>(m_object_data);
+
+            VecQuatScale& transform = rigid_body->GetVqs();
+
+
+            Real w = 0.5f * transform.scale;
+            Real h = 0.5f * transform.scale;
+            Real d = 0.5f * transform.scale;
+
+            Vector3 vertices[8];
+            vertices[0].Set(+w, +h, +d);
+            vertices[1].Set(+w, +h, -d);
+            vertices[2].Set(+w, -h, +d);
+            vertices[3].Set(+w, -h, -d);
+            vertices[4].Set(-w, +h, +d);
+            vertices[5].Set(-w, +h, -d);
+            vertices[6].Set(-w, -h, +d);
+            vertices[7].Set(-w, -h, -d);
+
+            Vector3 min = transform.LocalToWorldPoint(vertices[0]);
+            Vector3 max = min;
+
+            for (int i = 1; i < 8; ++i)
+            {
+                Vector3 vertex = (transform.LocalToWorldPoint(vertices[i]));
+                min.x = Math::Min(min.x, vertex.x);
+                min.y = Math::Min(min.y, vertex.y);
+                min.z = Math::Min(min.z, vertex.z);
+                max.x = Math::Max(max.x, vertex.x);
+                max.y = Math::Max(max.y, vertex.y);
+                max.z = Math::Max(max.z, vertex.z);
+            }
+            m_lower_bound = min;
+            m_upper_bound = max;
+        }
+        else if (m_type == eBoundingObjectType::Transform)
+        {
+            auto transform = static_cast<Transform*>(m_object_data);
+            transform->position;
+            transform->scale;
+
+            Real w = 0.5f * transform->scale.x;
+            Real h = 0.5f * transform->scale.y;
+            Real d = 0.5f * transform->scale.z;
+
+            Vector3 vertices[8];
+            vertices[0].Set(+w, +h, +d);
+            vertices[1].Set(+w, +h, -d);
+            vertices[2].Set(+w, -h, +d);
+            vertices[3].Set(+w, -h, -d);
+            vertices[4].Set(-w, +h, +d);
+            vertices[5].Set(-w, +h, -d);
+            vertices[6].Set(-w, -h, +d);
+            vertices[7].Set(-w, -h, -d);
+
+            Vector3 min = transform->LocalToWorldPoint(vertices[0]);
+            Vector3 max = min;
+
+            for (int i = 1; i < 8; ++i)
+            {
+                Vector3 vertex = (transform->LocalToWorldPoint(vertices[i]));
+                min.x          = Math::Min(min.x, vertex.x);
+                min.y          = Math::Min(min.y, vertex.y);
+                min.z          = Math::Min(min.z, vertex.z);
+                max.x          = Math::Max(max.x, vertex.x);
+                max.y          = Math::Max(max.y, vertex.y);
+                max.z          = Math::Max(max.z, vertex.z);
+            }
+            m_lower_bound = min;
+            m_upper_bound = max;
+        }
+        else if (m_type == eBoundingObjectType::Primitive)
+        {
+            auto primitive = static_cast<Primitive*>(m_object_data);
+            auto pair      = primitive->CalculateBoundPair(VecQuatScale::Identity());
+            m_lower_bound  = pair.a;
+            m_upper_bound  = pair.b;
+        }
+        else if (m_type == eBoundingObjectType::SoftBody)
+        {
+        }
     }
 }

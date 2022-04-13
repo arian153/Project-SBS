@@ -55,11 +55,11 @@ namespace Engine
         ~Polytope();
 
         PolytopeFace PickClosestFace();
-        Real         PointFaceTest(const Vector3& point, const Vector3& normal, const Vector3& v0);
+        static Real  PointFaceTest(const Vector3& point, const Vector3& normal, const Vector3& v0);
         void         Push(SupportPoint& vertex);
         void         PushFromSimplex(const SupportPoint& vertex);
         void         Expand(const SupportPoint& vertex);
-        bool         IsFaceSeen(const PolytopeFace& face, const SupportPoint& vertex);
+        bool         IsFaceSeen(const PolytopeFace& face, const SupportPoint& vertex) const;
         void         AddEdge(size_t a, size_t b);
 
     private:

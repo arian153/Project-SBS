@@ -1,5 +1,6 @@
 #pragma once
 #include "Constraint.hpp"
+#include "../../../Math/Structure/Transform.hpp"
 #include "../../Utility/ConstraintUtility.hpp"
 
 namespace Engine

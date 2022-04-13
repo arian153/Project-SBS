@@ -5,15 +5,15 @@
 
 namespace Engine
 {
+    class Collider;
     class RigidContactPoint;
     class RigidBody;
-    class ColliderSet;
 
     class RigidContactManifold
     {
     public:
         RigidContactManifold() = delete;
-        explicit RigidContactManifold(ColliderSet* a, ColliderSet* b);
+        explicit RigidContactManifold(Collider* a, Collider* b);
         ~RigidContactManifold();
         RigidContactManifold(const RigidContactManifold& rhs);
         RigidContactManifold& operator=(const RigidContactManifold& rhs);
@@ -41,8 +41,8 @@ namespace Engine
         bool is_collide = false;
 
         //data
-        ColliderSet* m_set_a = nullptr;
-        ColliderSet* m_set_b = nullptr;
+        Collider* m_set_a = nullptr;
+        Collider* m_set_b = nullptr;
 
         std::vector<RigidContactPoint> contacts;
     };

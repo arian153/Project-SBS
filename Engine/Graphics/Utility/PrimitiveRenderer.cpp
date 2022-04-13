@@ -1283,6 +1283,51 @@ namespace Engine
     ForwardSubMesh PrimitiveRenderer::GenLineSubMesh(const Box& primitive)
     {
         ForwardSubMesh sub_mesh;
+        sub_mesh.vertices.resize(8);
+
+        for (size_t i = 0; i < 8; ++i)
+        {
+            sub_mesh.vertices[i].pos = primitive.vertices[i];
+        }
+
+        //front
+        sub_mesh.indices.push_back(0);
+        sub_mesh.indices.push_back(2);
+
+        sub_mesh.indices.push_back(2);
+        sub_mesh.indices.push_back(6);
+
+        sub_mesh.indices.push_back(6);
+        sub_mesh.indices.push_back(4);
+
+        sub_mesh.indices.push_back(4);
+        sub_mesh.indices.push_back(0);
+
+        //back
+        sub_mesh.indices.push_back(1);
+        sub_mesh.indices.push_back(3);
+
+        sub_mesh.indices.push_back(3);
+        sub_mesh.indices.push_back(7);
+
+        sub_mesh.indices.push_back(7);
+        sub_mesh.indices.push_back(5);
+
+        sub_mesh.indices.push_back(5);
+        sub_mesh.indices.push_back(1);
+        //side
+        sub_mesh.indices.push_back(0);
+        sub_mesh.indices.push_back(1);
+
+        sub_mesh.indices.push_back(2);
+        sub_mesh.indices.push_back(3);
+
+        sub_mesh.indices.push_back(6);
+        sub_mesh.indices.push_back(7);
+
+        sub_mesh.indices.push_back(4);
+        sub_mesh.indices.push_back(5);
+
         return sub_mesh;
     }
 

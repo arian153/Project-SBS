@@ -2,8 +2,6 @@
 
 #include "../../Math/Structure/Vector3Pair.hpp"
 #include "../ResolutionPhase/Contact/RigidContactManifold.hpp"
-//#include "../Dynamics/ColliderSet.hpp"
-//#include "../ColliderPrimitive/ColliderPrimitive.hpp"
 
 namespace Engine
 {
@@ -24,7 +22,7 @@ namespace Engine
         m_key_table.clear();
     }
 
-    void ManifoldTable::SendHasCollision(ColliderSet* a, ColliderSet* b, bool was_collision)
+    void ManifoldTable::SendHasCollision(Collider* a, Collider* b, bool was_collision)
     {
         size_t key       = reinterpret_cast<size_t>(a) + reinterpret_cast<size_t>(b);
         auto   key_range = m_state_table.equal_range(key);
@@ -85,7 +83,7 @@ namespace Engine
         }
     }
 
-    void ManifoldTable::SendNotCollision(ColliderSet* a, ColliderSet* b, bool was_collision)
+    void ManifoldTable::SendNotCollision(Collider* a, Collider* b, bool was_collision)
     {
         size_t key       = reinterpret_cast<size_t>(a) + reinterpret_cast<size_t>(b);
         auto   key_range = m_state_table.equal_range(key);
@@ -146,7 +144,7 @@ namespace Engine
         }
     }
 
-    void ManifoldTable::SendInvalidCollision(ColliderSet* a, ColliderSet* b)
+    void ManifoldTable::SendInvalidCollision(Collider* a, Collider* b)
     {
         size_t key       = reinterpret_cast<size_t>(a) + reinterpret_cast<size_t>(b);
         auto   key_range = m_state_table.equal_range(key);
@@ -186,27 +184,23 @@ namespace Engine
         }
     }
 
-    size_t ManifoldTable::GenerateKey(ColliderSet* a, ColliderSet* b)
+    size_t ManifoldTable::GenerateKey(Collider* a, Collider* b)
     {
         return reinterpret_cast<size_t>(a) + reinterpret_cast<size_t>(b);
     }
 
-    size_t ManifoldTable::GenerateKey(ColliderPrimitive* a, ColliderPrimitive* b)
-    {
-        return reinterpret_cast<size_t>(a->m_collider_set) + reinterpret_cast<size_t>(b->m_collider_set);
-    }
 
     size_t ManifoldTable::GenerateKey(RigidContactManifold* manifold)
     {
         return reinterpret_cast<size_t>(manifold->m_set_a) + reinterpret_cast<size_t>(manifold->m_set_b);
     }
 
-    auto ManifoldTable::FindAssociatedPairs(ColliderSet* key)
+    auto ManifoldTable::FindAssociatedPairs(Collider* key)
     {
         return m_key_table.equal_range(key);
     }
 
-    auto ManifoldTable::FindCollisionData(ColliderSet* a, ColliderSet* b, size_t at) const
+    auto ManifoldTable::FindCollisionData(Collider* a, Collider* b, size_t at) const
     {
         size_t      key = reinterpret_cast<size_t>(a) + reinterpret_cast<size_t>(b);
         Vector3Pair result;
@@ -238,7 +232,7 @@ namespace Engine
         return result;
     }
 
-    auto ManifoldTable::FindCollisionState(ColliderSet* a, ColliderSet* b)
+    auto ManifoldTable::FindCollisionState(Collider* a, Collider* b)
     {
         size_t key        = reinterpret_cast<size_t>(a) + reinterpret_cast<size_t>(b);
         auto   data_range = m_state_table.equal_range(key);
@@ -256,7 +250,7 @@ namespace Engine
         return eCollisionState::None;
     }
 
-    RigidContactManifold* ManifoldTable::FindManifold(ColliderSet* a, ColliderSet* b)
+    RigidContactManifold* ManifoldTable::FindManifold(Collider* a, Collider* b)
     {
         size_t key        = reinterpret_cast<size_t>(a) + reinterpret_cast<size_t>(b);
         auto   data_range = m_manifold_table.equal_range(key);
@@ -274,14 +268,14 @@ namespace Engine
         return nullptr;
     }
 
-    RigidContactManifold* ManifoldTable::CreateManifold(ColliderSet* a, ColliderSet* b)
+    RigidContactManifold* ManifoldTable::CreateManifold(Collider* a, Collider* b)
     {
         size_t key    = RegisterKey(a, b);
         auto   result = m_manifold_table.emplace(key, RigidContactManifold(a, b));
         return &result->second;
     }
 
-    bool ManifoldTable::HasManifold(ColliderSet* a, ColliderSet* b) const
+    bool ManifoldTable::HasManifold(Collider* a, Collider* b) const
     {
         size_t key        = reinterpret_cast<size_t>(a) + reinterpret_cast<size_t>(b);
         auto   data_range = m_manifold_table.equal_range(key);
@@ -320,7 +314,7 @@ namespace Engine
         }
     }
 
-    size_t ManifoldTable::RegisterKey(ColliderSet* a, ColliderSet* b)
+    size_t ManifoldTable::RegisterKey(Collider* a, Collider* b)
     {
         auto key_range_a = m_key_table.equal_range(a);
         if (key_range_a.first != key_range_a.second)
@@ -367,7 +361,7 @@ namespace Engine
         return reinterpret_cast<size_t>(a) + reinterpret_cast<size_t>(b);
     }
 
-    void ManifoldTable::DeRegisterKey(ColliderSet* a, ColliderSet* b)
+    void ManifoldTable::DeRegisterKey(Collider* a, Collider* b)
     {
         auto key_range_a = m_key_table.equal_range(a);
         if (key_range_a.first != key_range_a.second)

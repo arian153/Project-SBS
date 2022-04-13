@@ -1,12 +1,10 @@
 #include "Polytope.hpp"
 #include "Simplex.hpp"
-#include "../../Core/Utility/CoreDef.hpp"
-#include "../../Core/Utility/CoreUtility.hpp"
 
 namespace Engine
 {
     PolytopeEdge::PolytopeEdge()
-        : a(Core::U64_MAX), b(Core::U64_MAX)
+        : a(UINT64_MAX), b(UINT64_MAX)
     {
     }
 
@@ -73,7 +71,7 @@ namespace Engine
         case 2:
             return c;
         default:
-            E5_ASSERT(false, "access invalid index");
+            //E5_ASSERT(false, "access invalid index");
             return a;
         }
     }
@@ -89,7 +87,7 @@ namespace Engine
         case 2:
             return c;
         default:
-            return Core::U64_MAX;
+            return UINT64_MAX;
         }
     }
 
@@ -122,7 +120,7 @@ namespace Engine
         case 2:
             return c;
         default:
-            E5_ASSERT(false, "access invalid index");
+            //E5_ASSERT(false, "access invalid index");
             return a;
         }
     }
@@ -138,7 +136,7 @@ namespace Engine
         case 2:
             return c;
         default:
-            return Core::U64_MAX;
+            return UINT64_MAX;
         }
     }
 
@@ -186,7 +184,7 @@ namespace Engine
         //not initialized polytope return error polytope.
         if (faces.empty() == true)
         {
-            E5_ASSERT(false, "Error : empty polytope face\n");
+            //E5_ASSERT(false, "Error : empty polytope face\n");
             return PolytopeFace(0, 0, 0, Vector3(), 0.0f);
         }
         for (auto it = faces.begin(); it != faces.end(); ++it)
@@ -199,7 +197,7 @@ namespace Engine
         }
         if (closest_face_iterator == faces.end())
         {
-            E5_ASSERT(false, "Error : fail to find polytope face\n");
+            //E5_ASSERT(false, "Error : fail to find polytope face\n");
             return PolytopeFace(0, 0, 0, Vector3(), 0.0f);
         }
         return *closest_face_iterator;
@@ -250,7 +248,7 @@ namespace Engine
         }
     }
 
-    bool Polytope::IsFaceSeen(const PolytopeFace& face, const SupportPoint& vertex)
+    bool Polytope::IsFaceSeen(const PolytopeFace& face, const SupportPoint& vertex) const
     {
         Vector3 v01    = vertices[face.b].global - vertices[face.a].global;
         Vector3 v02    = vertices[face.c].global - vertices[face.a].global;

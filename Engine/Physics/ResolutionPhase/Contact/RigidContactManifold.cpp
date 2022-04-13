@@ -1,12 +1,13 @@
 #include "RigidContactManifold.hpp"
 #include <list>
-#include "../../ColliderPrimitive/ColliderPrimitive.hpp"
+
+#include "../../../Math/Primitive/Primitive.hpp"
+#include "../../Dynamics/Collider.hpp"
 #include "../../Dynamics/RigidBody.hpp"
-#include "../../Dynamics/ColliderSet.hpp"
 
 namespace Engine
 {
-    RigidContactManifold::RigidContactManifold(ColliderSet* a, ColliderSet* b)
+    RigidContactManifold::RigidContactManifold(Collider* a, Collider* b)
         : m_set_a(a), m_set_b(b)
     {
     }
@@ -60,8 +61,8 @@ namespace Engine
         {
             //convert existing contact point from local space to world space.
             //if both bodies are far enough away, remove contact from manifold data.
-            Vector3 local_to_global_a = m_set_a->m_rigid_body->LocalToWorldPoint(contact.collider_a->LocalToWorldPoint(contact.local_position_a));
-            Vector3 local_to_global_b = m_set_b->m_rigid_body->LocalToWorldPoint(contact.collider_b->LocalToWorldPoint(contact.local_position_b));
+            Vector3 local_to_global_a = m_set_a->LocalToWorldPoint(contact.primitive_a->LocalToWorldPoint(contact.local_position_a));
+            Vector3 local_to_global_b = m_set_b->LocalToWorldPoint(contact.primitive_b->LocalToWorldPoint(contact.local_position_b));
             //current frame's distance between a to b.
             Vector3 r_ab = local_to_global_b - local_to_global_a;
             Vector3 r_a  = contact.global_position_a - local_to_global_a;
@@ -127,8 +128,8 @@ namespace Engine
         else
         {
             //add new contact
-            auto set_a = new_contact.collider_a->GetColliderSet();
-            auto set_b = new_contact.collider_b->GetColliderSet();
+            auto set_a = new_contact.primitive_a->GetColliderSet();
+            auto set_b = new_contact.primitive_b->GetColliderSet();
             if (set_a == m_set_b && set_b == m_set_a)
             {
                 contacts.push_back(new_contact.SwappedContactPoint());
@@ -148,7 +149,7 @@ namespace Engine
         }
         // find the deepest penetrating one
         RigidContactPoint* deepest     = nullptr;
-        Real          penetration = Math::REAL_NEGATIVE_MAX;
+        Real               penetration = Math::REAL_NEGATIVE_MAX;
         for (auto& contact : contacts)
         {
             if (contact.depth > penetration)
@@ -159,7 +160,7 @@ namespace Engine
         }
         // find second contact
         RigidContactPoint* furthest1         = nullptr;
-        Real          distance_squared1 = Math::REAL_NEGATIVE_MAX;
+        Real               distance_squared1 = Math::REAL_NEGATIVE_MAX;
         for (auto& contact : contacts)
         {
             Real dist = DistanceFromPoint(contact, deepest);
@@ -171,7 +172,7 @@ namespace Engine
         }
         // find third contact
         RigidContactPoint* furthest2         = nullptr;
-        float         distance_squared2 = Math::REAL_NEGATIVE_MAX;
+        float              distance_squared2 = Math::REAL_NEGATIVE_MAX;
         for (auto& contact : contacts)
         {
             Real dist = DistanceFromLineSegment(contact, deepest, furthest1);
@@ -183,7 +184,7 @@ namespace Engine
         }
         // find fourth contact
         RigidContactPoint* furthest3         = nullptr;
-        float         distance_squared3 = Math::REAL_NEGATIVE_MAX;
+        float              distance_squared3 = Math::REAL_NEGATIVE_MAX;
         for (auto& contact : contacts)
         {
             Real dist = DistanceFromTriangle(contact, deepest, furthest1, furthest2);

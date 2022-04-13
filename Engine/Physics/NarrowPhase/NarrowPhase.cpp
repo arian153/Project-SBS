@@ -309,8 +309,8 @@ namespace Engine
             result.b_valid = false;
             return false;
         }
-        result.collider_a = a;
-        result.collider_b = b;
+        result.primitive_a = a;
+        result.primitive_b = b;
         result.local_position_a
                 = u * polytope.vertices[closest_face.a].local_a
                 + v * polytope.vertices[closest_face.b].local_a

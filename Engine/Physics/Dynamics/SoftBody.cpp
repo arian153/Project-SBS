@@ -26,6 +26,8 @@ namespace Engine
         UpdateLocal();
         UpdateCentroid();
         UpdateMeshData();
+
+        /*   m_bvh.Update();*/
     }
 
     void SoftBody::SolveSpringDamper()
@@ -49,7 +51,7 @@ namespace Engine
 
     void SoftBody::CreateSampleCloth(size_t w_count, size_t h_count, bool is_fixed)
     {
-        m_b_doubled_layer = true;
+        m_mesh_type = 0;
         RigidBody body;
 
         Matrix33 inertia;
@@ -86,9 +88,13 @@ namespace Engine
             {
                 link.a = i * w_count + j;
                 link.b = i * w_count + j + 1;
+
+                // link.local_q_a = m_local_positions[link.a];
+                //   link.local_q_b = m_local_positions[link.b];
                 m_links.push_back(link);
 
                 link.b = (i + 1) * w_count + j;
+                //   link.local_q_b = m_local_positions[link.b];
                 m_links.push_back(link);
             }
         }
@@ -97,6 +103,8 @@ namespace Engine
         {
             link.a = (h_count - 1) * w_count + j;
             link.b = (h_count - 1) * w_count + j + 1;
+            //      link.local_q_a = m_local_positions[link.a];
+            //     link.local_q_b = m_local_positions[link.b];
             m_links.push_back(link);
         }
 
@@ -104,6 +112,8 @@ namespace Engine
         {
             link.a = i * w_count + (w_count - 1);
             link.b = (i + 1) * w_count + (w_count - 1);
+            //       link.local_q_a = m_local_positions[link.a];
+            //        link.local_q_b = m_local_positions[link.b];
             m_links.push_back(link);
         }
 
@@ -228,8 +238,10 @@ namespace Engine
 
     void SoftBody::CreateSampleSphere(bool is_center_fixed)
     {
+        m_mesh_type = 1;
+
         auto [vertex_type, vertices, indices, faces]
-                = MeshDataGenerator::CreateGeodesicSphere(5.0f, 1);
+                = MeshDataGenerator::CreateGeodesicSphere(10.0f, 2);
 
         size_t                     vertex_count = vertices.size();
         size_t                     face_count   = faces.size();
@@ -308,11 +320,16 @@ namespace Engine
             Vector3 local_pos    = m_mesh_data.vertices[i].pos;
             m_local_positions[i] = local_pos;
             m_rigid_bodies[i].SetPosition(m_transform.LocalToWorldPoint(local_pos));
+            m_rigid_bodies[i].GetVqs().scale = 0.025f;
+
+            if (local_pos.y < -1.0f)
+                m_rigid_bodies[i].SetMassInfinite();
         }
 
         m_local_positions[vertex_count] = Vector3();
         m_rigid_bodies[vertex_count].SetPosition(m_transform.LocalToWorldPoint(Vector3()));
-        //m_rigid_bodies[vertex_count].SetMassInfinite();
+        m_rigid_bodies[vertex_count].GetVqs().scale = 0.025f;
+        m_rigid_bodies[vertex_count].SetMassInfinite();
 
         size_t k = 0;
         m_links.resize(face_count * 3);
@@ -326,12 +343,12 @@ namespace Engine
             m_links[k + 2].a = m_mesh_data.faces[i].c;
             m_links[k + 2].b = m_mesh_data.faces[i].a;
 
-            m_links[k].local_q_a     = m_local_positions[m_links[k].a];
-            m_links[k].local_q_b     = m_local_positions[m_links[k].b];
-            m_links[k + 1].local_q_a = m_local_positions[m_links[k + 1].a];
-            m_links[k + 1].local_q_b = m_local_positions[m_links[k + 1].b];
-            m_links[k + 2].local_q_a = m_local_positions[m_links[k + 2].a];
-            m_links[k + 2].local_q_b = m_local_positions[m_links[k + 2].b];
+            m_links[k].local_q_a     = m_local_positions[m_links[k].b];
+            m_links[k].local_q_b     = m_local_positions[m_links[k].a];
+            m_links[k + 1].local_q_a = m_local_positions[m_links[k + 1].b];
+            m_links[k + 1].local_q_b = m_local_positions[m_links[k + 1].a];
+            m_links[k + 2].local_q_a = m_local_positions[m_links[k + 2].b];
+            m_links[k + 2].local_q_b = m_local_positions[m_links[k + 2].a];
             k += 3;
         }
 
@@ -341,8 +358,9 @@ namespace Engine
             link.a = vertex_count;
             for (size_t i = 0; i < vertex_count; ++i)
             {
-                link.b = i;
-                link.local_q_b = m_local_positions[i];
+                link.b         = i;
+                link.local_q_a = m_local_positions[i];
+                link.local_q_b = -m_local_positions[i];
                 m_links.push_back(link);
             }
         }
@@ -351,6 +369,427 @@ namespace Engine
 
         UpdateMeshData();
         UpdateCentroid();
+
+        GenerateBVH();
+
+        m_damper_constant = 1.125f;
+        m_spring_constant = 3.875f;
+    }
+
+    void SoftBody::CreateSampleBox()
+    {
+        m_mesh_type = 2;
+
+        RigidBody body;
+
+        Matrix33 inertia;
+        inertia.SetDiagonal(150.0f, 150.0f, 150.0f);
+        body.SetInertia(inertia);
+
+        int width  = 8;
+        int height = 7;
+        int depth  = 5;
+
+        m_box_w = width;
+        m_box_h = height;
+        m_box_d = depth;
+
+        for (int i = 0; i < width; ++i)
+        {
+            for (int j = 0; j < height; ++j)
+            {
+                for (int k = 0; k < depth; ++k)
+                {
+                    Vector3 local_pos;
+                    local_pos.x = static_cast<Real>(i);
+                    local_pos.y = static_cast<Real>(j);
+                    local_pos.z = static_cast<Real>(k);
+
+                    m_local_positions.push_back(local_pos);
+                    body.SetPosition(m_transform.LocalToWorldPoint(local_pos));
+                    m_rigid_bodies.push_back(body);
+                }
+            }
+        }
+
+        m_rigid_bodies[0].SetMassInfinite(); //000
+        m_rigid_bodies[static_cast<size_t>(depth - 1)].SetMassInfinite(); //001
+
+        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth)].SetMassInfinite(); //100
+        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth + depth - 1)].SetMassInfinite(); //101
+
+        m_rigid_bodies[static_cast<size_t>((height - 1) * depth)].SetMassInfinite(); //010
+        m_rigid_bodies[static_cast<size_t>((height - 1) * depth + depth - 1)].SetMassInfinite(); //011
+
+        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth + (height - 1) * depth)].SetMassInfinite(); //110
+        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth + (height - 1) * depth + depth - 1)].SetMassInfinite(); //111
+
+        Link link;
+
+        for (int i = 0; i < width; ++i)
+        {
+            int i_base = i * height * depth;
+            int i_next = (i + 1) * height * depth;
+            int i_prev = (i - 1) * height * depth;
+
+            for (int j = 0; j < height; ++j)
+            {
+                int j_base = j * depth;
+                int j_next = (j + 1) * depth;
+                int j_prev = (j - 1) * depth;
+
+                for (int k = 0; k < depth; ++k)
+                {
+                    int k_base = k;
+                    int k_next = k + 1;
+                    int k_prev = k - 1;
+
+                    //next
+                    {
+                        if (k_next < depth)
+                            AddLink(
+                                    static_cast<size_t>(i_base + j_base + k_base),
+                                    static_cast<size_t>(i_base + j_base + k_next));
+
+                        if (j_next < height)
+                            AddLink(
+                                    static_cast<size_t>(i_base + j_base + k_base),
+                                    static_cast<size_t>(i_base + j_next + k_base));
+
+                        if (i_next < width)
+                            AddLink(
+                                    static_cast<size_t>(i_base + j_base + k_base),
+                                    static_cast<size_t>(i_next + j_base + k_base));
+
+                        /*     if (j_next < height && k_next < depth)
+                                 AddLink(
+                                         static_cast<size_t>(i_base + j_base + k_base),
+                                         static_cast<size_t>(i_base + j_next + k_next));
+     
+                             if (i_next < width && j_next < height)
+                                 AddLink(
+                                         static_cast<size_t>(i_base + j_base + k_base),
+                                         static_cast<size_t>(i_next + j_next + k_base));
+     
+                             if (i_next < width && k_next < depth)
+                                 AddLink(
+                                         static_cast<size_t>(i_base + j_base + k_base),
+                                         static_cast<size_t>(i_next + j_base + k_next));*/
+                    }
+
+                    //prev
+                    {
+                        if (k_prev >= 0)
+                            AddLink(
+                                    static_cast<size_t>(i_base + j_base + k_base),
+                                    static_cast<size_t>(i_base + j_base + k_prev));
+
+                        if (j_prev >= 0)
+                            AddLink(
+                                    static_cast<size_t>(i_base + j_base + k_base),
+                                    static_cast<size_t>(i_base + j_prev + k_base));
+
+                        if (i_prev >= 0)
+                            AddLink(
+                                    static_cast<size_t>(i_base + j_base + k_base),
+                                    static_cast<size_t>(i_prev + j_base + k_base));
+
+                        /*            if (i_prev >= 0 && j_prev >= 0)
+                                        AddLink(
+                                                static_cast<size_t>(i_base + j_base + k_base),
+                                                static_cast<size_t>(i_prev + j_prev + k_base));
+            
+                                    if (i_prev >= 0 && k_prev >= 0)
+                                        AddLink(
+                                                static_cast<size_t>(i_base + j_base + k_base),
+                                                static_cast<size_t>(i_prev + j_base + k_prev));
+            
+                                    if (k_prev >= 0 && j_prev >= 0)
+                                        AddLink(
+                                                static_cast<size_t>(i_base + j_base + k_base),
+                                                static_cast<size_t>(i_base + j_prev + k_prev));*/
+                    }
+
+                    ////prev + next
+                    //{
+                    //    if (k_prev >= 0 && j_next < height)
+                    //        AddLink(
+                    //                static_cast<size_t>(i_base + j_base + k_base),
+                    //                static_cast<size_t>(i_base + j_next + k_prev));
+
+                    //    if (j_prev >= 0 && k_next < depth)
+                    //        AddLink(
+                    //                static_cast<size_t>(i_base + j_base + k_base),
+                    //                static_cast<size_t>(i_base + j_prev + k_next));
+
+                    //    if (i_prev >= 0 && k_next < depth)
+                    //        AddLink(
+                    //                static_cast<size_t>(i_base + j_base + k_base),
+                    //                static_cast<size_t>(i_prev + j_base + k_next));
+
+                    //    if (k_prev >= 0 && i_next < width)
+                    //        AddLink(
+                    //                static_cast<size_t>(i_base + j_base + k_base),
+                    //                static_cast<size_t>(i_next + j_base + k_prev));
+
+                    //    if (i_prev >= 0 && j_next < height)
+                    //        AddLink(
+                    //                static_cast<size_t>(i_base + j_base + k_base),
+                    //                static_cast<size_t>(i_prev + j_next + k_base));
+
+                    //    if (j_prev >= 0 && i_next < width)
+                    //        AddLink(
+                    //                static_cast<size_t>(i_base + j_base + k_base),
+                    //                static_cast<size_t>(i_next + j_prev + k_base));
+                    //}
+                }
+            }
+        }
+
+        m_rigid_bodies[0].SetMassInfinite(); //000
+        m_rigid_bodies[static_cast<size_t>(depth - 1)].SetMassInfinite(); //001
+
+        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth)].SetMassInfinite(); //100
+        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth + depth - 1)].SetMassInfinite(); //101
+
+        m_rigid_bodies[static_cast<size_t>((height - 1) * depth)].SetMassInfinite(); //010
+        m_rigid_bodies[static_cast<size_t>((height - 1) * depth + depth - 1)].SetMassInfinite(); //011
+
+        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth + (height - 1) * depth)].SetMassInfinite(); //110
+        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth + (height - 1) * depth + depth - 1)].SetMassInfinite(); //111
+
+        int side_count  = height * depth;
+        int top_count   = width * depth;
+        int front_count = width * height;
+
+        m_mesh_data.vertices.resize(2 * static_cast<size_t>(side_count + top_count + front_count));
+
+        Real du = 1.0f / (width - 1);
+        Real dv = 1.0f / (height - 1);
+        Real dw = 1.0f / (depth - 1);
+
+        //(width - 1) * height * depth + (height - 1) * depth + depth - 1
+
+        for (int i = 0; i < width; ++i)
+        {
+            for (int j = 0; j < height; ++j)
+            {
+                int i_base = i * height * depth;
+                int j_base = j * depth;
+                int k_base = depth - 1;
+
+                int body_1 = i_base + j_base;
+                int body_2 = body_1 + k_base;
+                int vert_1 = i * height + j;
+                int vert_2 = vert_1 + front_count;
+
+                m_mesh_data.vertices[vert_1].pos = m_rigid_bodies[body_1].GetPosition();
+                m_mesh_data.vertices[vert_1].tex = Vector2(i * du, j * dv);
+
+                m_mesh_data.vertices[vert_2].pos = m_rigid_bodies[body_2].GetPosition();
+                m_mesh_data.vertices[vert_2].tex = Vector2(i * du, j * dv);
+            }
+        }
+
+        for (int i = 0; i < width; ++i)
+        {
+            for (int k = 0; k < depth; ++k)
+            {
+                int i_base = i * height * depth;
+                int j_base = (height - 1) * depth;
+                int k_base = k;
+
+                int body_1 = i_base + k_base;
+                int body_2 = body_1 + j_base;
+
+                int vert_1 = front_count + front_count + i * depth + k;
+                int vert_2 = vert_1 + top_count;
+
+                m_mesh_data.vertices[vert_1].pos = m_rigid_bodies[body_1].GetPosition();
+                m_mesh_data.vertices[vert_1].tex = Vector2(i * du, k * dw);
+
+                m_mesh_data.vertices[vert_2].pos = m_rigid_bodies[body_2].GetPosition();
+                m_mesh_data.vertices[vert_2].tex = Vector2(i * du, k * dw);
+            }
+        }
+
+        for (int j = 0; j < height; ++j)
+        {
+            for (int k = 0; k < depth; ++k)
+            {
+                int i_base = (width - 1) * height * depth;
+                int j_base = j * depth;
+                int k_base = k;
+
+                int body_1 = j_base + k_base;
+                int body_2 = i_base + body_1;
+                int vert_1 = front_count + front_count + top_count + top_count + j * depth + k;
+                int vert_2 = vert_1 + side_count;
+
+                m_mesh_data.vertices[vert_1].pos = m_rigid_bodies[body_1].GetPosition();
+                m_mesh_data.vertices[vert_1].tex = Vector2(j * dv, k * dw);
+
+                m_mesh_data.vertices[vert_2].pos = m_rigid_bodies[body_2].GetPosition();
+                m_mesh_data.vertices[vert_2].tex = Vector2(j * dv, k * dw);
+            }
+        }
+
+        size_t count = static_cast<size_t>((width - 1) * (height - 1) + (width - 1) * (depth - 1) + (depth - 1) * (height - 1)) * 2;
+        m_mesh_data.indices.resize(count * 6); // 3 indices per face
+        m_mesh_data.faces.resize(count * 2);
+
+        size_t k = 0;
+        size_t f = 0;
+
+        int prev_count = 0;
+
+        for (int i = 0; i < width - 1; ++i)
+        {
+            for (int j = 0; j < height - 1; ++j)
+            {
+                m_mesh_data.indices[k]     = static_cast<Uint32>(i * height + j);
+                m_mesh_data.indices[k + 1] = static_cast<Uint32>(i * height + j + 1);
+                m_mesh_data.indices[k + 2] = static_cast<Uint32>((i + 1) * height + j);
+
+                m_mesh_data.indices[k + 3] = static_cast<Uint32>((i + 1) * height + j);
+                m_mesh_data.indices[k + 4] = static_cast<Uint32>(i * height + j + 1);
+                m_mesh_data.indices[k + 5] = static_cast<Uint32>((i + 1) * height + j + 1);
+
+                m_mesh_data.faces[f]     = Face(m_mesh_data.indices[k], m_mesh_data.indices[k + 1], m_mesh_data.indices[k + 2]);
+                m_mesh_data.faces[f + 1] = Face(m_mesh_data.indices[k + 3], m_mesh_data.indices[k + 4], m_mesh_data.indices[k + 5]);
+
+                f += 2;
+                k += 6; // next quad
+            }
+        }
+        prev_count = front_count;
+
+        for (int i = 0; i < width - 1; ++i)
+        {
+            for (int j = 0; j < height - 1; ++j)
+            {
+                m_mesh_data.indices[k]     = static_cast<Uint32>(i * height + j + prev_count);
+                m_mesh_data.indices[k + 2] = static_cast<Uint32>(i * height + j + 1 + prev_count);
+                m_mesh_data.indices[k + 1] = static_cast<Uint32>((i + 1) * height + j + prev_count);
+
+                m_mesh_data.indices[k + 3] = static_cast<Uint32>((i + 1) * height + j + prev_count);
+                m_mesh_data.indices[k + 5] = static_cast<Uint32>(i * height + j + 1 + prev_count);
+                m_mesh_data.indices[k + 4] = static_cast<Uint32>((i + 1) * height + j + 1 + prev_count);
+
+                m_mesh_data.faces[f]     = Face(m_mesh_data.indices[k], m_mesh_data.indices[k + 1], m_mesh_data.indices[k + 2]);
+                m_mesh_data.faces[f + 1] = Face(m_mesh_data.indices[k + 3], m_mesh_data.indices[k + 4], m_mesh_data.indices[k + 5]);
+
+                f += 2;
+                k += 6; // next quad
+            }
+        }
+
+        ///////////////////
+        ///
+        ///
+
+         prev_count = front_count + front_count;
+        for (int i = 0; i < width - 1; ++i)
+        {
+            for (int j = 0; j < depth - 1; ++j)
+            {
+                m_mesh_data.indices[k]     = static_cast<Uint32>(i * depth + j + prev_count);
+                m_mesh_data.indices[k + 2] = static_cast<Uint32>(i * depth + j + 1 + prev_count);
+                m_mesh_data.indices[k + 1] = static_cast<Uint32>((i + 1) * depth + j + prev_count);
+
+                m_mesh_data.indices[k + 3] = static_cast<Uint32>((i + 1) * depth + j + prev_count);
+                m_mesh_data.indices[k + 5] = static_cast<Uint32>(i * depth + j + 1 + prev_count);
+                m_mesh_data.indices[k + 4] = static_cast<Uint32>((i + 1) * depth + j + 1 + prev_count);
+
+                m_mesh_data.faces[f]     = Face(m_mesh_data.indices[k], m_mesh_data.indices[k + 1], m_mesh_data.indices[k + 2]);
+                m_mesh_data.faces[f + 1] = Face(m_mesh_data.indices[k + 3], m_mesh_data.indices[k + 4], m_mesh_data.indices[k + 5]);
+
+                f += 2;
+                k += 6; // next quad
+            }
+        }
+
+        prev_count = front_count + front_count + top_count;
+
+        for (int i = 0; i < width - 1; ++i)
+        {
+            for (int j = 0; j < depth - 1; ++j)
+            {
+                m_mesh_data.indices[k]     = static_cast<Uint32>(i * depth + j + prev_count);
+                m_mesh_data.indices[k + 1] = static_cast<Uint32>(i * depth + j + 1 + prev_count);
+                m_mesh_data.indices[k + 2] = static_cast<Uint32>((i + 1) * depth + j + prev_count);
+
+                m_mesh_data.indices[k + 3] = static_cast<Uint32>((i + 1) * depth + j + prev_count);
+                m_mesh_data.indices[k + 4] = static_cast<Uint32>(i * depth + j + 1 + prev_count);
+                m_mesh_data.indices[k + 5] = static_cast<Uint32>((i + 1) * depth + j + 1 + prev_count);
+
+                m_mesh_data.faces[f]     = Face(m_mesh_data.indices[k], m_mesh_data.indices[k + 1], m_mesh_data.indices[k + 2]);
+                m_mesh_data.faces[f + 1] = Face(m_mesh_data.indices[k + 3], m_mesh_data.indices[k + 4], m_mesh_data.indices[k + 5]);
+
+                f += 2;
+                k += 6; // next quad
+            }
+        }
+
+        /////////////////////////////////
+
+        prev_count = front_count + front_count + top_count + top_count;
+
+        for (int i = 0; i < height - 1; ++i)
+        {
+            for (int j = 0; j < depth - 1; ++j)
+            {
+                m_mesh_data.indices[k]     = static_cast<Uint32>(i * depth + j + prev_count);
+                m_mesh_data.indices[k + 1] = static_cast<Uint32>(i * depth + j + 1 + prev_count);
+                m_mesh_data.indices[k + 2] = static_cast<Uint32>((i + 1) * depth + j + prev_count);
+
+                m_mesh_data.indices[k + 3] = static_cast<Uint32>((i + 1) * depth + j + prev_count);
+                m_mesh_data.indices[k + 4] = static_cast<Uint32>(i * depth + j + 1 + prev_count);
+                m_mesh_data.indices[k + 5] = static_cast<Uint32>((i + 1) * depth + j + 1 + prev_count);
+
+                m_mesh_data.faces[f]     = Face(m_mesh_data.indices[k], m_mesh_data.indices[k + 1], m_mesh_data.indices[k + 2]);
+                m_mesh_data.faces[f + 1] = Face(m_mesh_data.indices[k + 3], m_mesh_data.indices[k + 4], m_mesh_data.indices[k + 5]);
+
+                f += 2;
+                k += 6; // next quad
+            }
+        }
+
+        prev_count = front_count + front_count + top_count + top_count + side_count;
+
+        for (int i = 0; i < height - 1; ++i)
+        {
+            for (int j = 0; j < depth - 1; ++j)
+            {
+                m_mesh_data.indices[k]     = static_cast<Uint32>(i * depth + j + prev_count);
+                m_mesh_data.indices[k + 2] = static_cast<Uint32>(i * depth + j + 1 + prev_count);
+                m_mesh_data.indices[k + 1] = static_cast<Uint32>((i + 1) * depth + j + prev_count);
+
+                m_mesh_data.indices[k + 3] = static_cast<Uint32>((i + 1) * depth + j + prev_count);
+                m_mesh_data.indices[k + 5] = static_cast<Uint32>(i * depth + j + 1 + prev_count);
+                m_mesh_data.indices[k + 4] = static_cast<Uint32>((i + 1) * depth + j + 1 + prev_count);
+
+                m_mesh_data.faces[f]     = Face(m_mesh_data.indices[k], m_mesh_data.indices[k + 1], m_mesh_data.indices[k + 2]);
+                m_mesh_data.faces[f + 1] = Face(m_mesh_data.indices[k + 3], m_mesh_data.indices[k + 4], m_mesh_data.indices[k + 5]);
+
+                f += 2;
+                k += 6; // next quad
+            }
+        }
+
+        size_t face_count = m_mesh_data.faces.size();
+        m_adj_faces_per_vertex.resize(m_mesh_data.vertices.size());
+
+        for (size_t i = 0; i < face_count; ++i)
+        {
+            auto& face = m_mesh_data.faces[i];
+
+            m_adj_faces_per_vertex[face.a].faces.push_back(face);
+            m_adj_faces_per_vertex[face.b].faces.push_back(face);
+            m_adj_faces_per_vertex[face.c].faces.push_back(face);
+        }
+
+        m_mesh_vertex_count = m_mesh_data.vertices.size();
     }
 
     VecQuatScale& SoftBody::GetVqs()
@@ -430,13 +869,43 @@ namespace Engine
         }
     }
 
+    void SoftBody::AddLink(size_t a, size_t b)
+    {
+        Link link;
+        link.a = a;
+        link.b = b;
+        /*  link.local_q_a = -m_local_positions[a];
+          link.local_q_b = -m_local_positions[b];*/
+
+        bool has_link = false;
+        for (auto& [prev_a, prev_b, local_q_a, local_q_b] : m_links)
+        {
+            if (prev_a == a && prev_b == b)
+            {
+                has_link = true;
+                break;
+            }
+
+            if (prev_a == b && prev_b == a)
+            {
+                has_link = true;
+                break;
+            }
+        }
+
+        if (has_link == false)
+        {
+            m_links.push_back(link);
+        }
+    }
+
     void SoftBody::UpdateMeshData()
     {
         size_t size = m_mesh_vertex_count;
         if (m_mesh_vertex_count == 0)
             return;
 
-        if (m_b_doubled_layer)
+        if (m_mesh_type == 0)
         {
             for (size_t i = 0; i < size; ++i)
             {
@@ -468,7 +937,7 @@ namespace Engine
                 m_mesh_data.vertices[i].t = Math::GetTangentFast(n);
             }
         }
-        else
+        else if (m_mesh_type == 1)
         {
             for (size_t i = 0; i < size; ++i)
             {
@@ -479,6 +948,97 @@ namespace Engine
             Vector3              accumulated_normal;
 
             for (size_t i = 0; i < size; ++i)
+            {
+                auto& [faces] = m_adj_faces_per_vertex[i];
+                normals.clear();
+                accumulated_normal.SetZero();
+                for (auto& face : faces)
+                {
+                    Vector3 normal = m_mesh_data.GetFaceNormal(face.a, face.b, face.c);
+                    auto    found  = std::find(normals.begin(), normals.end(), normal);
+                    if (found == normals.end())
+                    {
+                        accumulated_normal += normal;
+                        normals.push_back(normal);
+                    }
+                }
+
+                Vector3 n                 = accumulated_normal.Normalize();
+                m_mesh_data.vertices[i].n = n;
+                m_mesh_data.vertices[i].t = Math::GetTangentFast(n);
+            }
+        }
+        else if (m_mesh_type == 2)
+        {
+            int width  = m_box_w;
+            int height = m_box_h;
+            int depth  = m_box_d;
+
+            int side_count  = height * depth;
+            int top_count   = width * depth;
+            int front_count = width * height;
+
+            for (int i = 0; i < width; ++i)
+            {
+                for (int j = 0; j < height; ++j)
+                {
+                    int i_base = i * height * depth;
+                    int j_base = j * depth;
+                    int k_base = depth - 1;
+
+                    int body_1 = i_base + j_base;
+                    int body_2 = body_1 + k_base;
+                    int vert_1 = i * height + j;
+                    int vert_2 = vert_1 + front_count;
+
+                    m_mesh_data.vertices[vert_1].pos = m_transform.WorldToLocalPoint(m_rigid_bodies[body_1].GetPosition());
+                    m_mesh_data.vertices[vert_2].pos = m_transform.WorldToLocalPoint(m_rigid_bodies[body_2].GetPosition());
+                }
+            }
+
+            for (int i = 0; i < width; ++i)
+            {
+                for (int k = 0; k < depth; ++k)
+                {
+                    int i_base = i * height * depth;
+                    int j_base = (height - 1) * depth;
+                    int k_base = k;
+
+                    int body_1 = i_base + k_base;
+                    int body_2 = body_1 + j_base;
+
+                    int vert_1 = front_count + front_count + i * depth + k;
+                    int vert_2 = vert_1 + top_count;
+
+                    m_mesh_data.vertices[vert_1].pos = m_transform.WorldToLocalPoint(m_rigid_bodies[body_1].GetPosition());
+                    m_mesh_data.vertices[vert_2].pos = m_transform.WorldToLocalPoint(m_rigid_bodies[body_2].GetPosition());
+                }
+            }
+
+            for (int j = 0; j < height; ++j)
+            {
+                for (int k = 0; k < depth; ++k)
+                {
+                    int i_base = (width - 1) * height * depth;
+                    int j_base = j * depth;
+                    int k_base = k;
+
+                    int body_1 = j_base + k_base;
+                    int body_2 = i_base + body_1;
+                    int vert_1 = front_count + front_count + top_count + top_count + j * depth + k;
+                    int vert_2 = vert_1 + side_count;
+
+                    m_mesh_data.vertices[vert_1].pos = m_transform.WorldToLocalPoint(m_rigid_bodies[body_1].GetPosition());
+                    m_mesh_data.vertices[vert_2].pos = m_transform.WorldToLocalPoint(m_rigid_bodies[body_2].GetPosition());
+                }
+            }
+
+            std::vector<Vector3> normals;
+            Vector3              accumulated_normal;
+
+            size_t adj_vert_count = m_adj_faces_per_vertex.size();
+
+            for (size_t i = 0; i < adj_vert_count; ++i)
             {
                 auto& [faces] = m_adj_faces_per_vertex[i];
                 normals.clear();
@@ -519,5 +1079,31 @@ namespace Engine
         {
             m_local_positions[i] = m_transform.WorldToLocalPoint(m_rigid_bodies[i].GetPosition());
         }
+    }
+
+    void SoftBody::GenerateBVH()
+    {
+        /* m_bvh.Initialize();
+ 
+         size_t size = m_rigid_bodies.size();
+         m_bounding_boxes.resize(size);
+ 
+         for (size_t i = 0; i < size; ++i)
+         {
+             m_rigid_bodies[i].GetVqs().scale = 0.025f;
+             m_bounding_boxes[i].Set(&m_rigid_bodies[i], eBoundingObjectType::RigidBody);
+             m_bvh.Add(&m_bounding_boxes[i]);
+         }*/
+    }
+
+    void SoftBody::RenderBVH()
+    {
+        //m_bvh.Render();
+        //m_bvh.Render();
+    }
+
+    void SoftBody::ShutdownBVH()
+    {
+        //m_bvh.Shutdown();
     }
 }

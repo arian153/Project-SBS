@@ -1,6 +1,7 @@
 #pragma once
 #include "../../../Math/Math.hpp"
 #include "Constraint.hpp"
+#include "../../../Math/Algebra/Matrix33.hpp"
 #include "../../Utility/FrictionUtility.hpp"
 #include "../../Utility/PhysicsDef.hpp"
 
@@ -46,10 +47,10 @@ namespace Engine
         class MassTerm
         {
         public:
-            Real     m_a = 0.0f;
-            Real     m_b = 0.0f;
-            Matrix33 i_a;
-            Matrix33 i_b;
+            Real     mass_a = 0.0f;
+            Real     mass_b = 0.0f;
+            Matrix33 inertia_a;
+            Matrix33 inertia_b;
         };
 
     public:

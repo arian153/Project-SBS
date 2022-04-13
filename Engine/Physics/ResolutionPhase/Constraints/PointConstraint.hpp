@@ -1,5 +1,7 @@
 #pragma once
 #include "Constraint.hpp"
+#include "../../../Math/Algebra/Matrix33.hpp"
+#include "../../../Math/Algebra/Vector3.hpp"
 #include "../../Utility/ConstraintUtility.hpp"
 
 namespace Engine
@@ -10,7 +12,7 @@ namespace Engine
     {
     public:
         explicit PointConstraint(RigidBody* body, ConstraintUtility* utility);
-        ~PointConstraint();
+        ~PointConstraint() override;
 
         void Shutdown() override;
 

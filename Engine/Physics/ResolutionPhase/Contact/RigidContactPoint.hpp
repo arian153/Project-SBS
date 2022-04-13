@@ -1,20 +1,21 @@
 #pragma once
 #include "../../../Math/Math.hpp"
+#include "../../../Math/Algebra/Vector3.hpp"
 
 namespace Engine
 {
-    class ColliderPrimitive;
+    class Primitive;
 
     class RigidContactPoint
     {
     public:
         RigidContactPoint();
         ~RigidContactPoint();
-        void          Clear();
+        void               Clear();
         RigidContactPoint& operator=(const RigidContactPoint& rhs);
-        bool          operator==(const RigidContactPoint& rhs) const;
-        void          Swap();
-        void          UpdateContactPoint(const RigidContactPoint& rhs);
+        bool               operator==(const RigidContactPoint& rhs) const;
+        void               Swap();
+        void               UpdateContactPoint(const RigidContactPoint& rhs);
         RigidContactPoint  SwappedContactPoint() const;
     public:
         //Two contact points in world space, each representing the deepest penetrating point of one collider.
@@ -39,8 +40,8 @@ namespace Engine
         Real tangent_lambda   = 0.0f;
         Real bitangent_lambda = 0.0f;
 
-        ColliderPrimitive* collider_a = nullptr;
-        ColliderPrimitive* collider_b = nullptr;
+        Primitive* primitive_a = nullptr;
+        Primitive* primitive_b = nullptr;
 
         bool b_valid      = true;
         bool b_persistent = false;
