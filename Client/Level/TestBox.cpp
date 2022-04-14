@@ -135,13 +135,13 @@ namespace Client
             auto soft_body = obj->AddComponent<SoftBodyCompo>();
             soft_body->CreateSampleBox();
 
-               auto mesh = obj->AddComponent<MeshCompo>();
-               mesh->CreateModel("SoftBody-Custom");
-               mesh->SetMeshData(soft_body->GetSoftBodyMeshData());
-               mesh->SetShader(GET_SHADER("Deferred-Geometry.shader"));
-               mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Fabric05 diffuse 1k.jpg")->GetTexture());
-               mesh->SetNormalMapTexture(RESOURCE_MANAGER->GetTextureResourceName("Fabric05 normal 1k.jpg")->GetTexture());
-               mesh->SetMaterialInfo(0, 1);
+            auto mesh = obj->AddComponent<MeshCompo>();
+            mesh->CreateModel("SoftBody-Custom");
+            mesh->SetMeshData(soft_body->GetSoftBodyMeshData());
+            mesh->SetShader(GET_SHADER("Deferred-Geometry.shader"));
+            mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Fabric05 diffuse 1k.jpg")->GetTexture());
+            mesh->SetNormalMapTexture(RESOURCE_MANAGER->GetTextureResourceName("Fabric05 normal 1k.jpg")->GetTexture());
+            mesh->SetMaterialInfo(0, 1);
         }
 
         //Camera Object
@@ -214,6 +214,20 @@ namespace Client
         {
             WIN32_MANAGER->SetQuit(true);
         }
+
+        ImGui::Begin("Scene State Manager");
+
+        if (ImGui::Button("Hemisphere"))
+        {
+            APP_STATE_MANAGER->ChangeState("TestSphere");
+        }
+
+        if (ImGui::Button("Cloth"))
+        {
+            APP_STATE_MANAGER->ChangeState("TestSquare");
+        }
+
+        ImGui::End();
     }
 
     void TestBox::FixedUpdate(float dt)

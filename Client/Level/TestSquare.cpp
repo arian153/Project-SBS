@@ -106,6 +106,20 @@ namespace Client
         {
             WIN32_MANAGER->SetQuit(true);
         }
+
+        ImGui::Begin("Scene State Manager");
+
+        if (ImGui::Button("Cube"))
+        {
+            APP_STATE_MANAGER->ChangeState("TestBox");
+        }
+
+        if (ImGui::Button("Hemisphere"))
+        {
+            APP_STATE_MANAGER->ChangeState("TestSphere");
+        }
+
+        ImGui::End();
     }
 
     void TestSquare::FixedUpdate(float dt)

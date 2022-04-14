@@ -93,6 +93,7 @@ namespace Engine
                 m_app_state = nullptr;
             }
 
+            m_in_app_editor.Reset();
             GetCore()->GetWin32Manager()->SetQuit(m_b_quit_state_machine);
         }
     }

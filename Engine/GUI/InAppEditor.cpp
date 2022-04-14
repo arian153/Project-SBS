@@ -78,4 +78,10 @@ namespace Engine
     {
         m_app_state = app_state;
     }
+
+    void InAppEditor::Reset()
+    {
+        m_app_state = nullptr;
+        m_object = nullptr;
+    }
 }

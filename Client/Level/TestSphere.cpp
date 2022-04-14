@@ -22,7 +22,6 @@ namespace Client
             obj->AddComponent<TransformCompo>();
             auto soft_body = obj->AddComponent<SoftBodyCompo>();
             soft_body->CreateSampleSphere(true);
-            
 
             auto mesh = obj->AddComponent<MeshCompo>();
             mesh->CreateModel("SoftBody-Custom");
@@ -59,7 +58,7 @@ namespace Client
         {
             auto obj = m_object_manager->AddObject("SkyBox");
             obj->AddComponent<TransformCompo>();
-            auto     mesh = obj->AddComponent<MeshCompo>();
+            auto     mesh       = obj->AddComponent<MeshCompo>();
             MeshData sky_sphere = MeshDataGenerator::CreateSphere(1.0f, 30, 30);
 
             mesh->CreateModel("SkyBox");
@@ -70,7 +69,7 @@ namespace Client
 
         //Light 2 Red Point Light
         {
-            auto obj = m_object_manager->AddObject("Point");
+            auto obj       = m_object_manager->AddObject("Point");
             auto transform = obj->AddComponent<TransformCompo>();
             transform->SetPosition(Vector3(0.f, 100.f, 150.f));
             auto light = obj->AddComponent<LightCompo>();
@@ -83,7 +82,7 @@ namespace Client
 
         //Light 3 Blue Spot Light
         {
-            auto obj = m_object_manager->AddObject("Spot");
+            auto obj       = m_object_manager->AddObject("Spot");
             auto transform = obj->AddComponent<TransformCompo>();
             transform->SetPosition(Vector3(75.f, 0.f, 150.f));
             auto light = obj->AddComponent<LightCompo>();
@@ -103,8 +102,20 @@ namespace Client
         {
             WIN32_MANAGER->SetQuit(true);
         }
+        ImGui::Begin("Scene State Manager");
 
-         }
+        if (ImGui::Button("Cube"))
+        {
+            APP_STATE_MANAGER->ChangeState("TestBox");
+        }
+
+        if (ImGui::Button("Cloth"))
+        {
+            APP_STATE_MANAGER->ChangeState("TestSquare");
+        }
+
+        ImGui::End();
+    }
 
     void TestSphere::FixedUpdate(float dt)
     {
