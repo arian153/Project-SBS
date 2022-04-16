@@ -120,14 +120,16 @@ namespace Engine
 
             m_primitive_renderer->RenderDeferred(GetConstantBuffer(eConstantBufferType::Material));
 
-            for (auto& model : m_models)
+            if (m_show_meshes)
             {
-                if (model->IsInstanced())
+                for (auto& model : m_models)
                 {
-                    model->Render(GetConstantBuffer(eConstantBufferType::Material));
+                    if (model->IsInstanced())
+                    {
+                        model->Render(GetConstantBuffer(eConstantBufferType::Material));
+                    }
                 }
             }
-
             RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer)->WaitTargetToResource();
         }
 
@@ -180,15 +182,9 @@ namespace Engine
 
     void RenderSubsystem::Edit()
     {
-        if (ImGui::CollapsingHeader("Render Subsystem"))
+        if (ImGui::CollapsingHeader("Render Subsystem", ImGuiTreeNodeFlags_DefaultOpen))
         {
-            auto   g_buffer = RENDER_SYS->GetRTGroup(eRenderTargetGroupType::GBuffer);
-            Uint32 size     = g_buffer->RTCount();
-
-            for (Uint32 i = 0; i < size; ++i)
-            {
-                //ImGui::Image((ImTextureID)g_buffer->GetRTTexture(i)->GetSRV()->GetCPUDescriptorHandleForHeapStart().ptr, ImVec2(100, 100));
-            }
+            ImGui::Checkbox("Show Mesh", &m_show_meshes);
         }
     }
 

@@ -35,6 +35,7 @@ namespace Engine
         std::vector<RigidBody>            m_rigid_bodies;
 
         bool m_b_show_wire_frame = true;
+        Real m_global_radius = 0.25f;
 
         SPtr<PrimitiveRenderer> m_primitive_renderer = nullptr;
     };

@@ -37,7 +37,8 @@ namespace Engine
         SoftBody();
         ~SoftBody();
 
-        void Integrate(Real dt);
+        void IntegrateEuler(Real dt);
+        void IntegrateVerlet(Real dt);
         void SolveSpringDamper();
 
         void CreateSampleCloth(size_t w_count, size_t h_count, bool is_fixed);
@@ -55,7 +56,7 @@ namespace Engine
 
         void Clear();
 
-        void Draw(SPtr<PrimitiveRenderer> renderer);
+        void Draw(SPtr<PrimitiveRenderer> renderer, Real global_radius);
 
         void AddLink(size_t a, size_t b);
 

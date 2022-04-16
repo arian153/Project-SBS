@@ -27,6 +27,34 @@ namespace Engine
         UpdatePosition();
     }
 
+    void RigidBody::IntegrateVelocity(Real dt)
+    {
+        // integrate linear velocity
+        m_linear_velocity += m_mass_data.inverse_mass * m_force_accumulator * dt;
+        // integrate angular velocity
+        m_angular_velocity += m_world_inverse_inertia * m_torque_accumulator * dt;
+        // zero out accumulated force and torque
+        m_force_accumulator.SetZero();
+        m_torque_accumulator.SetZero();
+    }
+
+    void RigidBody::IntegratePosition(Real dt)
+    {
+        Vector3 delta_linear_velocity = m_linear_velocity * dt;
+        delta_linear_velocity         = delta_linear_velocity.HadamardProduct(m_linear_constraints);
+        m_world_centroid += delta_linear_velocity;
+        // integrate orientation
+        Vector3 delta_angular_velocity = m_angular_velocity;
+        delta_angular_velocity         = delta_angular_velocity.HadamardProduct(m_angular_constraints);
+        Vector3 axis                   = delta_angular_velocity.Unit();
+        Real    radian                 = delta_angular_velocity.Length() * dt;
+        m_transform.rotation.AddRotation(axis, radian);
+        // update remain properties
+        m_transform.rotation.SetNormalize();
+        UpdateInertia();
+        UpdatePosition();
+    }
+
     void RigidBody::UpdateCentroid()
     {
         m_world_centroid = m_transform.rotation.Rotate(m_mass_data.local_centroid) + m_transform.position;
@@ -215,7 +243,7 @@ namespace Engine
 
     void RigidBody::SetInertia(const Matrix33& inertia_tensor)
     {
-        m_world_inverse_inertia          = inertia_tensor.Inverse();
+        m_world_inverse_inertia           = inertia_tensor.Inverse();
         m_mass_data.local_inverse_inertia = m_transform.rotation.Inverse().Unit() * m_world_inverse_inertia * m_transform.rotation;
         m_mass_data.local_inertia         = m_mass_data.local_inverse_inertia.Inverse();
     }
@@ -244,7 +272,7 @@ namespace Engine
     {
         m_mass_data.local_inertia         = inertia;
         m_mass_data.local_inverse_inertia = inertia.Inverse();
-        m_world_inverse_inertia          = m_transform.rotation * m_mass_data.local_inverse_inertia * m_transform.rotation.Inverse().Unit();
+        m_world_inverse_inertia           = m_transform.rotation * m_mass_data.local_inverse_inertia * m_transform.rotation.Inverse().Unit();
     }
 
     VecQuatScale& RigidBody::GetVqs()

@@ -24,7 +24,7 @@ namespace Engine
 
         void Update(const Matrix44& view, const Matrix44& proj);
 
-        void DrawPrimitive(const Primitive& primitive, const Transform& tf, const Color& color, eRenderingMode mode);
+        void DrawPrimitive(const Primitive& primitive, const Transform& tf, const Color& color, eRenderingMode mode, bool is_updated);
         void DrawLine(const Vector3& start, const Vector3& end);
 
         void RenderDeferred(SPtr<ConstantBuffer> material_buffer);
@@ -62,9 +62,9 @@ namespace Engine
         static ForwardSubMesh GenLineSubMesh(const TruncatedCone& primitive);
 
     private:
-        SPtr<Model> AddLineModel(size_t uuid, bool& is_created);
-        SPtr<Model> AddFaceModel(size_t uuid, bool& is_created);
-        SPtr<Model> AddDeferredModel(size_t uuid, bool& is_created);
+        SPtr<Model> AddLineModel(size_t uuid, bool& is_created, bool is_updated);
+        SPtr<Model> AddFaceModel(size_t uuid, bool& is_created, bool is_updated);
+        SPtr<Model> AddDeferredModel(size_t uuid, bool& is_created, bool is_updated);
 
     private:
         HashMap<size_t, SPtr<Model>> m_instanced_line_mesh;

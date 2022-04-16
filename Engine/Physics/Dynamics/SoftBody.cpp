@@ -16,7 +16,7 @@ namespace Engine
     {
     }
 
-    void SoftBody::Integrate(Real dt)
+    void SoftBody::IntegrateEuler(Real dt)
     {
         for (auto& body : m_rigid_bodies)
         {
@@ -28,6 +28,32 @@ namespace Engine
         UpdateMeshData();
 
         /*   m_bvh.Update();*/
+    }
+
+    void SoftBody::IntegrateVerlet(Real dt)
+    {
+        // Verlet method
+        // hv = v + a * dt/2;
+        // p = hv * dt;
+        // calculate force
+        // v = hv + a * dt/2;
+
+        for (auto& body : m_rigid_bodies)
+        {
+            body.IntegrateVelocity(0.5f * dt);
+            body.IntegratePosition(dt);
+        }
+
+        SolveSpringDamper();
+
+        for (auto& body : m_rigid_bodies)
+        {
+            body.IntegrateVelocity(0.5f * dt);
+        }
+
+        UpdateLocal();
+        UpdateCentroid();
+        UpdateMeshData();
     }
 
     void SoftBody::SolveSpringDamper()
@@ -343,12 +369,12 @@ namespace Engine
             m_links[k + 2].a = m_mesh_data.faces[i].c;
             m_links[k + 2].b = m_mesh_data.faces[i].a;
 
-            m_links[k].local_q_a     = m_local_positions[m_links[k].b];
-            m_links[k].local_q_b     = m_local_positions[m_links[k].a];
-            m_links[k + 1].local_q_a = m_local_positions[m_links[k + 1].b];
-            m_links[k + 1].local_q_b = m_local_positions[m_links[k + 1].a];
-            m_links[k + 2].local_q_a = m_local_positions[m_links[k + 2].b];
-            m_links[k + 2].local_q_b = m_local_positions[m_links[k + 2].a];
+            m_links[k].local_q_a     = -m_local_positions[m_links[k].a];
+            m_links[k].local_q_b     = -m_local_positions[m_links[k].b];
+            m_links[k + 1].local_q_a = -m_local_positions[m_links[k + 1].a];
+            m_links[k + 1].local_q_b = -m_local_positions[m_links[k + 1].b];
+            m_links[k + 2].local_q_a = -m_local_positions[m_links[k + 2].a];
+            m_links[k + 2].local_q_b = -m_local_positions[m_links[k + 2].b];
             k += 3;
         }
 
@@ -358,8 +384,8 @@ namespace Engine
             link.a = vertex_count;
             for (size_t i = 0; i < vertex_count; ++i)
             {
-                link.b         = i;
-                link.local_q_a = m_local_positions[i];
+                link.b = i;
+                //link.local_q_a = m_local_positions[i];
                 link.local_q_b = -m_local_positions[i];
                 m_links.push_back(link);
             }
@@ -688,7 +714,7 @@ namespace Engine
         ///
         ///
 
-         prev_count = front_count + front_count;
+        prev_count = front_count + front_count;
         for (int i = 0; i < width - 1; ++i)
         {
             for (int j = 0; j < depth - 1; ++j)
@@ -853,14 +879,31 @@ namespace Engine
         }
     }
 
-    void SoftBody::Draw(SPtr<PrimitiveRenderer> renderer)
+    void SoftBody::Draw(SPtr<PrimitiveRenderer> renderer, Real global_radius)
     {
+        bool is_updated = false;
+
+        if (!Math::IsEqual(m_sphere.radius, global_radius))
+        {
+            is_updated      = true;
+            m_sphere.radius = global_radius;
+        }
+
         for (auto& body : m_rigid_bodies)
         {
             Transform tf;
             tf.position    = body.GetPosition();
             tf.orientation = body.GetOrientation();
-            renderer->DrawPrimitive(m_sphere, tf, Color(), eRenderingMode::Lighting);
+
+            if (is_updated)
+            {
+                renderer->DrawPrimitive(m_sphere, tf, Color(), eRenderingMode::Lighting, true);
+                is_updated = false;
+            }
+            else
+            {
+                renderer->DrawPrimitive(m_sphere, tf, Color(), eRenderingMode::Lighting, false);
+            }
         }
 
         for (auto& [a, b, local_q_a, local_q_b] : m_links)

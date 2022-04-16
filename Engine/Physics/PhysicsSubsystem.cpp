@@ -45,7 +45,7 @@ namespace Engine
         {
             for (auto& soft_body_compo : m_soft_body_compos)
             {
-                soft_body_compo->m_body.Draw(m_primitive_renderer);
+                soft_body_compo->m_body.Draw(m_primitive_renderer, m_global_radius);
                 //soft_body_compo->m_body.m_bvh.Render(m_primitive_renderer.get(), node, prim);
             }
         }
@@ -57,9 +57,10 @@ namespace Engine
 
     void PhysicsSubsystem::Edit()
     {
-        if (ImGui::CollapsingHeader("Physics Subsystem"))
+        if (ImGui::CollapsingHeader("Physics Subsystem", ImGuiTreeNodeFlags_DefaultOpen))
         {
             ImGui::Checkbox("Show Wire Frame", &m_b_show_wire_frame);
+            ImGui::SliderFloat("Radius", &m_global_radius, 0.001f, 1.0f);
         }
     }
 

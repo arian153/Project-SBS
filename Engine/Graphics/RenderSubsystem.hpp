@@ -59,6 +59,8 @@ namespace Engine
         SPtr<Camera> m_curr_camera   = nullptr;
         SPtr<Model>  m_deferred_rect = nullptr;
 
+        bool m_show_meshes = true;
+
         std::vector<SPtr<Camera>>           m_cameras;
         std::vector<RPtr<LightCompo>>       m_light_compos;
         std::vector<RPtr<MeshCompo>>        m_mesh_compos;

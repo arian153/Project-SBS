@@ -37,8 +37,8 @@ namespace Engine
 
     private:
         SoftBody m_body;
-        Real     m_scale = 10.0f;
-
+        Real     m_scale            = 10.0f;
+        int      m_integration_type = 0;
     };
 
     class SoftBodyFactory final : public ComponentFactory

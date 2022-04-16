@@ -346,7 +346,7 @@ namespace Engine
                 node_transform.position = node->aabb.Center();
                 node_transform.scale = node->aabb.Size();
 
-                primitive_renderer->DrawPrimitive(m_drawing_box, node_transform, broad_phase_color.color, eRenderingMode::Line);
+                primitive_renderer->DrawPrimitive(m_drawing_box, node_transform, broad_phase_color.color, eRenderingMode::Line, false);
 
              /*   primitive_renderer->DrawPrimitiveInstancing(m_drawing_box, node->aabb.Center(), node->aabb.Size(), eRenderingMode::Line, broad_phase_color.color);
                 primitive_renderer->DrawBox(node->aabb.Center(), Quaternion(), node->aabb.Size(), eRenderingMode::Line, broad_phase_color.color);*/

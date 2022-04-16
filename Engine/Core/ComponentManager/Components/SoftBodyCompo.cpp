@@ -30,7 +30,20 @@ namespace Engine
             m_body.SetTransform(transform->GetTransform());
             m_body.UpdateWorld();
             m_body.SolveSpringDamper();
-            m_body.Integrate(dt);
+
+            switch (m_integration_type)
+            {
+            case 0:
+                m_body.IntegrateEuler(dt);
+                break;
+            case 1:
+                m_body.IntegrateVerlet(dt);
+                break;
+
+            default:
+                m_body.IntegrateEuler(dt);
+                break;
+            }
         }
 
         Vector3 force;
@@ -99,6 +112,14 @@ namespace Engine
 
             ImGui::Text("Force Scale - Temp");
             ImGui::SliderFloat("##Scale", &m_scale, 1.f, 50.0f);
+
+            ImGui::Text("Integration Method");
+
+            const char* light_type[] = { "Euler Method", "Verlet Method", "Midpoint Method", "RK2 Method", "RK4 Method" };
+
+            if (ImGui::Combo("##Integration Type", &m_integration_type, light_type, 5))
+            {
+            }
         }
     }
 

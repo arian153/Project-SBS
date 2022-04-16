@@ -4,10 +4,24 @@
 
 namespace Engine
 {
+    struct VelocityResult
+    {
+        Vector3 linear;
+        Vector3 angular;
+    };
+
+    struct PositionResult
+    {
+        Vector3    linear;
+        Quaternion angular;
+    };
+
     class RigidBody
     {
     public:
         void IntegrateEuler(Real dt);
+        void IntegrateVelocity(Real dt);
+        void IntegratePosition(Real dt);
 
         void UpdateCentroid();
         void UpdatePosition();
@@ -58,7 +72,7 @@ namespace Engine
         Matrix33 InverseLocalInertia() const;
         void     SetLocalInertia(const Matrix33& inertia);
 
-        VecQuatScale& GetVqs();
+        VecQuatScale&       GetVqs();
         const VecQuatScale& GetVqs() const;
 
     private:

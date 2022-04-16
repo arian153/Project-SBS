@@ -41,7 +41,7 @@ namespace Engine
         m_line_data.vertices.clear();
     }
 
-    void PrimitiveRenderer::DrawPrimitive(const Primitive& primitive, const Transform& tf, const Color& color, eRenderingMode mode)
+    void PrimitiveRenderer::DrawPrimitive(const Primitive& primitive, const Transform& tf, const Color& color, eRenderingMode mode, bool is_updated)
     {
         SPtr<Model> model          = nullptr;
         size_t      uuid           = primitive.UUID();
@@ -55,7 +55,7 @@ namespace Engine
 
         if (mode == eRenderingMode::Line)
         {
-            model = AddLineModel(uuid, is_created);
+            model = AddLineModel(uuid, is_created, is_updated);
             if (is_created)
             {
                 switch (primitive_type)
@@ -105,7 +105,7 @@ namespace Engine
         }
         else if (mode == eRenderingMode::Face)
         {
-            model = AddFaceModel(uuid, is_created);
+            model = AddFaceModel(uuid, is_created, is_updated);
             if (is_created)
             {
                 switch (primitive.Type())
@@ -155,7 +155,7 @@ namespace Engine
         }
         else if (mode == eRenderingMode::Lighting)
         {
-            model = AddDeferredModel(uuid, is_created);
+            model = AddDeferredModel(uuid, is_created, is_updated);
             if (is_created)
             {
                 switch (primitive.Type())
@@ -1379,7 +1379,7 @@ namespace Engine
         return sub_mesh;
     }
 
-    SPtr<Model> PrimitiveRenderer::AddLineModel(size_t uuid, bool& is_created)
+    SPtr<Model> PrimitiveRenderer::AddLineModel(size_t uuid, bool& is_created, bool is_updated)
     {
         auto found = m_instanced_line_mesh.find(uuid);
         if (found == m_instanced_line_mesh.end())
@@ -1391,11 +1391,11 @@ namespace Engine
             m_instanced_line_mesh.emplace(uuid, model);
             return model;
         }
-        is_created = false;
+        is_created = is_updated;
         return found->second;
     }
 
-    SPtr<Model> PrimitiveRenderer::AddFaceModel(size_t uuid, bool& is_created)
+    SPtr<Model> PrimitiveRenderer::AddFaceModel(size_t uuid, bool& is_created, bool is_updated)
     {
         auto found = m_instanced_face_mesh.find(uuid);
         if (found == m_instanced_face_mesh.end())
@@ -1407,11 +1407,11 @@ namespace Engine
             is_created = true;
             return model;
         }
-        is_created = false;
+        is_created = is_updated;
         return found->second;
     }
 
-    SPtr<Model> PrimitiveRenderer::AddDeferredModel(size_t uuid, bool& is_created)
+    SPtr<Model> PrimitiveRenderer::AddDeferredModel(size_t uuid, bool& is_created, bool is_updated)
     {
         auto found = m_inst_deferred_mesh.find(uuid);
         if (found == m_inst_deferred_mesh.end())
@@ -1423,7 +1423,8 @@ namespace Engine
             is_created = true;
             return model;
         }
-        is_created = false;
+
+        is_created = is_updated;
         return found->second;
     }
 }
