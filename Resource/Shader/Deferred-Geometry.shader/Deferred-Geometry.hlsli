@@ -71,8 +71,8 @@ struct PS_OUT
 PS_OUT PS_Main(VS_OUT input) 
 {
     PS_OUT output;
-    float4 color = ProcessDiffuse(input.tex, 1, 0, input.diffuse, 2.2f);
-    float3 normal = ProcessNormal(input.tex, 1, input.view_t, input.view_b, input.view_n);
+    float4 color = ProcessDiffuse(input.tex, g_int_1, 0, input.diffuse, 2.2f);
+    float3 normal = ProcessNormal(input.tex, g_int_2, input.view_t, input.view_b, input.view_n);
     
     output.position = float4(input.view_p.xyz, 0.f);
     output.normal = float4(normal.xyz, 0.f);

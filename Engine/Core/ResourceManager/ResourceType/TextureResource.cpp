@@ -23,6 +23,8 @@ namespace Engine
     {
         m_texture = std::make_shared<Texture>();
         Load();
+
+        
     }
 
     void TextureResource::Shutdown()

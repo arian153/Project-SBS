@@ -20,6 +20,8 @@ namespace Engine
 
         bool IsCubeMap() const;
 
+        Uint32 GetMipLevel() const;
+
     public:
         bool Load(const StringWide& path, const String& ext);
 

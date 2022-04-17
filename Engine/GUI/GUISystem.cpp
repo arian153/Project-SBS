@@ -19,9 +19,34 @@ namespace Engine
     {
     }
 
-    void GUISystem::AddImage()
+    void GUISystem::AddImage(SPtr<Texture> texture)
     {
         m_srv_descriptor_heap->Increase();
+
+        // We need to pass a D3D12_CPU_DESCRIPTOR_HANDLE in ImTextureID, so make sure it will fit
+        static_assert(sizeof(ImTextureID) >= sizeof(D3D12_CPU_DESCRIPTOR_HANDLE), "D3D12_CPU_DESCRIPTOR_HANDLE is too large to fit in an ImTextureID");
+
+
+        // Get CPU/GPU handles for the shader resource view
+        // Normally your engine will have some sort of allocator for these - here we assume that there's an SRV descriptor heap in
+        // g_pd3dSrvDescHeap with at least two descriptors allocated, and descriptor 1 is unused
+        UINT                        handle_increment          = DEVICE.Get()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        int                         descriptor_index          = 1; // The descriptor table index to use (not normally a hard-coded constant, but in this case we'll assume we have slot 1 reserved for us)
+        D3D12_CPU_DESCRIPTOR_HANDLE my_texture_srv_cpu_handle = m_srv_descriptor_heap->GetHeap()->GetCPUDescriptorHandleForHeapStart();
+        my_texture_srv_cpu_handle.ptr += (handle_increment * descriptor_index);
+        auto [ptr] = m_srv_descriptor_heap->GetHeap()->GetGPUDescriptorHandleForHeapStart();
+        ptr += (handle_increment * descriptor_index);
+
+        // Load the texture from a file
+
+        D3D12_SHADER_RESOURCE_VIEW_DESC srv_desc;
+        ZeroMemory(&srv_desc, sizeof(srv_desc));
+        srv_desc.Format                    = DXGI_FORMAT_R8G8B8A8_UNORM;
+        srv_desc.ViewDimension             = D3D12_SRV_DIMENSION_TEXTURE2D;
+        srv_desc.Texture2D.MipLevels       = texture->GetMipLevel();
+        srv_desc.Texture2D.MostDetailedMip = 0;
+        srv_desc.Shader4ComponentMapping   = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        DEVICE.Get()->CreateShaderResourceView(texture->GetTex2D().Get(), &srv_desc, my_texture_srv_cpu_handle);
     }
 
     void GUISystem::Initialize()
@@ -93,7 +118,7 @@ namespace Engine
     void GUISystem::RenderDrawData() const
     {
         auto srv_heap = m_srv_descriptor_heap->GetHeap().Get();
-        CMD_LIST->SetDescriptorHeaps(1, &srv_heap);
+        CMD_LIST->SetDescriptorHeaps(m_srv_descriptor_heap->GetNumDescriptor(), &srv_heap);
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), CMD_LIST.Get());
     }
 

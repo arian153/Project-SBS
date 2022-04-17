@@ -42,6 +42,11 @@ namespace Engine
         return m_b_cube_map;
     }
 
+    Uint32 Texture::GetMipLevel() const
+    {
+        return m_mip_level;
+    }
+
     bool Texture::Load(const StringWide& path, const String& ext)
     {
         TexMetadata meta_data;

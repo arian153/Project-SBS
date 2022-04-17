@@ -41,8 +41,8 @@ namespace Engine
                     m_b_resume_restart = false;
                     ShutdownState(m_app_state);
                     InitializeState(m_app_state);
-                    m_in_app_editor.SetAppState(m_app_state);
                 }
+                m_in_app_editor.SetAppState(m_app_state);
             }
             else
             {

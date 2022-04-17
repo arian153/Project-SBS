@@ -30,6 +30,8 @@ namespace Client
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Fabric05 diffuse 1k.jpg")->GetTexture());
             mesh->SetNormalMapTexture(RESOURCE_MANAGER->GetTextureResourceName("Fabric05 normal 1k.jpg")->GetTexture());
             mesh->SetMaterialInfo(0, 1);
+            mesh->SetMaterialInfo(1, 1);
+            mesh->SetMaterialInfo(2, 1);
         }
 
         //Camera Object
@@ -112,6 +114,11 @@ namespace Client
         if (ImGui::Button("Cloth"))
         {
             APP_STATE_MANAGER->ChangeState("TestSquare");
+        }
+
+        if (ImGui::Button("Splash-Screen"))
+        {
+            APP_STATE_MANAGER->PauseAndChangeState("Splash");
         }
 
         ImGui::End();

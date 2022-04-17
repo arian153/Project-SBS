@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <Core/ResourceManager/ResourceType/JsonData.hpp>
 
+#include "Level/Splash.h"
 #include "Level/TestBox.h"
 #include "Level/TestSquare.h"
 #include "Level/TestSphere.h"
@@ -25,7 +26,8 @@ int APIENTRY wWinMain(_In_ [[maybe_unused]] HINSTANCE     hInstance,
     Engine::g_core->GetAppStateManager()->AddFactory("TestSphere", new Client::TestSphereFactory());
     Engine::g_core->GetAppStateManager()->AddFactory("TestSquare", new Client::TestSquareFactory());
     Engine::g_core->GetAppStateManager()->AddFactory("TestBox", new Client::TestBoxFactory());
-    Engine::g_core->GetAppStateManager()->SetInitialState("TestBox");
+    Engine::g_core->GetAppStateManager()->AddFactory("Splash", new Client::SplashFactory());
+    Engine::g_core->GetAppStateManager()->SetInitialState("TestSquare");
 
     Engine::g_core->Update();
     Engine::g_core->Shutdown();

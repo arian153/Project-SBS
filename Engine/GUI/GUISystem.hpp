@@ -2,11 +2,9 @@
 
 #include "../System.hpp"
 
-
-
-
 namespace Engine
 {
+    class Texture;
     class SRVDescriptorHeap;
 
     class GUISystem final : public System
@@ -15,7 +13,7 @@ namespace Engine
         GUISystem();
         ~GUISystem() override;
 
-        void AddImage();
+        void AddImage(SPtr<Texture> texture);
 
     private:
         void Initialize() override;
@@ -37,6 +35,5 @@ namespace Engine
 
     private:
         UPtr<SRVDescriptorHeap> m_srv_descriptor_heap = nullptr;
-
     };
 }
