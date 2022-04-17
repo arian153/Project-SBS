@@ -1,3 +1,13 @@
+/*---------------------------------------------------------------------
+//All content (C) 2022 DigiPen (USA) Corporation, all rights reserved
+Reproduction or disclosure of this file or its contents without the
+prior written consent of DigiPen Institute of Technology is prohibited.
+Author: Eric Han
+E-Mail: jangseok.han@digipen.edu
+Language: C++, std::c++17
+Platform: Visual Studio 2019 (v142), Windows SDK 10.0 x64>
+-----------------------------------------------------------------------*/
+
 #pragma once
 
 #include "MassData.hpp"
@@ -80,7 +90,7 @@ namespace Engine
 
         Real m_spring_constant = 0.01f;
         Real m_damper_constant = 0.01f;
-        int m_mesh_type = 0;
+        int  m_mesh_type       = 0;
 
         std::vector<Link>          m_links;
         std::vector<RigidBody>     m_rigid_bodies;
@@ -92,7 +102,6 @@ namespace Engine
 
         MeshData m_mesh_data;
         size_t   m_mesh_vertex_count = 0;
-
 
         int m_box_w = 0;
         int m_box_h = 0;

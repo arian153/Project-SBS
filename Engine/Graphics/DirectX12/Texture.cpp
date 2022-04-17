@@ -1,3 +1,13 @@
+/*---------------------------------------------------------------------
+//All content (C) 2022 DigiPen (USA) Corporation, all rights reserved
+Reproduction or disclosure of this file or its contents without the
+prior written consent of DigiPen Institute of Technology is prohibited.
+Author: Eric Han
+E-Mail: jangseok.han@digipen.edu
+Language: C++, std::c++17
+Platform: Visual Studio 2019 (v142), Windows SDK 10.0 x64>
+-----------------------------------------------------------------------*/
+
 #include "Texture.hpp"
 
 #include "../GraphicsDefine.hpp"
@@ -44,7 +54,7 @@ namespace Engine
 
     Uint32 Texture::GetMipLevel() const
     {
-        return m_mip_level;
+        return static_cast<Uint32>(m_mip_level);
     }
 
     bool Texture::Load(const StringWide& path, const String& ext)
