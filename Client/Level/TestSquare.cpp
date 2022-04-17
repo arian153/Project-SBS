@@ -111,7 +111,7 @@ namespace Client
 
         ImGui::Begin("Scene State Manager");
 
-        if (ImGui::Button("Cube"))
+        if (ImGui::Button("Trampoline"))
         {
             APP_STATE_MANAGER->ChangeState("TestBox");
         }

@@ -124,7 +124,6 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
 --------------------------------------------------------------------------------------
     )";
 }
@@ -206,7 +205,7 @@ namespace Client
                 ImGui::BeginGroup();
                 ImGui::BeginChild("About", ImVec2(0, -ImGui::GetFrameHeightWithSpacing()));
 
-                ImGui::Text("Soft Body Simulation Project");
+                ImGui::Text("Soft Body Simulation");
                 ImGui::Text("Version 1.0.04162022");
                 ImGui::Text(R"(All content © 2022 DigiPen (USA) Corporation, all rights reserved.)");
 

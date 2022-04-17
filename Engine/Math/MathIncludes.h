@@ -17,9 +17,6 @@
 #include "Algebra/Vector3.hpp"
 #include "Algebra/Vector4.hpp"
 
-//Curve
-#include "Curve/Curve.hpp"
-#include "Curve/CurveGenerator.hpp"
 
 //Primitive
 #include "Primitive/Primitive.hpp"
@@ -53,4 +50,3 @@
 #include "Structure/EulerAngle.hpp"
 #include "Structure/Transform.hpp"
 #include "Structure/Vector3Pair.hpp"
-#include "Structure/Anchor.hpp"

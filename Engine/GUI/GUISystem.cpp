@@ -56,8 +56,8 @@ namespace Engine
 
     void GUISystem::Update()
     {
-        ImGui::Begin("GAM450 Project Tool tip");
-        ImGui::Text("Test UI");
+        ImGui::Begin("Demo Tool tip");
+        ImGui::Text("Press ESC to Close Demo");
         ImGui::Text("Press Mouse RB to Rotate Camera");
         ImGui::Text("Press WASD to move Camera");
         ImGui::Text("Press Arrow Key to apply force to mesh");

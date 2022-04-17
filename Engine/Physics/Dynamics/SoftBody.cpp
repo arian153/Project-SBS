@@ -260,6 +260,9 @@ namespace Engine
 
         UpdateMeshData();
         UpdateCentroid();
+
+        m_damper_constant = 3.125f;
+        m_spring_constant = 13.875f;
     }
 
     void SoftBody::CreateSampleSphere(bool is_center_fixed)
@@ -405,6 +408,8 @@ namespace Engine
     void SoftBody::CreateSampleBox()
     {
         m_mesh_type = 2;
+        m_damper_constant = 3.125f;
+        m_spring_constant = 13.875f;
 
         RigidBody body;
 
@@ -412,9 +417,9 @@ namespace Engine
         inertia.SetDiagonal(150.0f, 150.0f, 150.0f);
         body.SetInertia(inertia);
 
-        int width  = 8;
+        int width  = 14;
         int height = 7;
-        int depth  = 5;
+        int depth  = 12;
 
         m_box_w = width;
         m_box_h = height;
@@ -449,6 +454,46 @@ namespace Engine
 
         m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth + (height - 1) * depth)].SetMassInfinite(); //110
         m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth + (height - 1) * depth + depth - 1)].SetMassInfinite(); //111
+
+        for (int i = 0; i < width; ++i)
+        {
+            for (int k = 0; k < depth; ++k)
+            {
+                int i_base = i * height * depth;
+                //int j_base = (height - 1) * depth;
+                int k_base = k;
+
+                int body_1 = i_base + k_base;
+
+                m_rigid_bodies[body_1].SetMassInfinite();
+            }
+        }
+
+        for (int i = 0; i < width; ++i)
+        {
+            int i_base = i * height * depth;
+            int j_base = (height - 1) * depth;
+            int k_base = (depth - 1);
+
+            int body_1 = i_base + j_base + k_base;
+            int body_2 = i_base + j_base;
+
+            m_rigid_bodies[body_1].SetMassInfinite();
+            m_rigid_bodies[body_2].SetMassInfinite();
+        }
+
+        for (int k = 0; k < depth; ++k)
+        {
+            int i_base = (width - 1) * height * depth;
+            int j_base = (height - 1) * depth;
+            int k_base = k;
+
+            int body_1 = i_base + j_base + k_base;
+            int body_2 = j_base + k_base;
+
+            m_rigid_bodies[body_1].SetMassInfinite();
+            m_rigid_bodies[body_2].SetMassInfinite();
+        }
 
         Link link;
 
@@ -571,18 +616,6 @@ namespace Engine
                 }
             }
         }
-
-        m_rigid_bodies[0].SetMassInfinite(); //000
-        m_rigid_bodies[static_cast<size_t>(depth - 1)].SetMassInfinite(); //001
-
-        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth)].SetMassInfinite(); //100
-        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth + depth - 1)].SetMassInfinite(); //101
-
-        m_rigid_bodies[static_cast<size_t>((height - 1) * depth)].SetMassInfinite(); //010
-        m_rigid_bodies[static_cast<size_t>((height - 1) * depth + depth - 1)].SetMassInfinite(); //011
-
-        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth + (height - 1) * depth)].SetMassInfinite(); //110
-        m_rigid_bodies[static_cast<size_t>((width - 1) * height * depth + (height - 1) * depth + depth - 1)].SetMassInfinite(); //111
 
         int side_count  = height * depth;
         int top_count   = width * depth;

@@ -18,6 +18,7 @@ namespace Engine
 
     void PhysicsSubsystem::Initialize()
     {
+        m_gravity = Vector3(0, -9.8f, 0);
     }
 
     void PhysicsSubsystem::Update(Real dt)
@@ -29,6 +30,7 @@ namespace Engine
 
         for (auto& soft_body_compo : m_soft_body_compos)
         {
+            soft_body_compo->ApplyForce(m_gravity);
             soft_body_compo->Update(dt);
         }
     }
@@ -61,6 +63,10 @@ namespace Engine
         {
             ImGui::Checkbox("Show Wire Frame", &m_b_show_wire_frame);
             ImGui::SliderFloat("Radius", &m_global_radius, 0.001f, 1.0f);
+
+            ImGui::Text("Gravity");
+            ImGui::InputFloat3("##force", &m_gravity.x);
+
         }
     }
 

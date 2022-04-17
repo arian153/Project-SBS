@@ -129,9 +129,10 @@ namespace Client
         //}
 
         {
-            auto obj       = m_object_manager->AddObject("Cloth");
+            auto obj       = m_object_manager->AddObject("Trampoline Object");
             auto transform = obj->AddComponent<TransformCompo>();
-            //transform->SetScale(Vector3(15, 15, 15));
+            transform->SetScale(Vector3(3, 3, 3));
+            transform->SetPosition(Vector3(-20, -10, -10));
             auto soft_body = obj->AddComponent<SoftBodyCompo>();
             soft_body->CreateSampleBox();
 

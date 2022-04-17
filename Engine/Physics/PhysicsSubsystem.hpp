@@ -37,6 +37,8 @@ namespace Engine
         bool m_b_show_wire_frame = true;
         Real m_global_radius = 0.25f;
 
+        Vector3 m_gravity;
+
         SPtr<PrimitiveRenderer> m_primitive_renderer = nullptr;
     };
 }

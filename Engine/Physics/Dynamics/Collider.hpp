@@ -2,7 +2,6 @@
 #include <vector>
 
 #include "MassData.hpp"
-#include "../ResolutionPhase/Contact/RigidContactPoint.hpp"
 
 namespace Engine
 {

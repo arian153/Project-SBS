@@ -110,14 +110,14 @@ namespace Engine
             ImGui::Text("Damper Constant");
             ImGui::SliderFloat("##Damper", &m_body.m_damper_constant, 0.01f, 5.0f);
 
-            ImGui::Text("Force Scale - Temp");
+            ImGui::Text("Custom Force Scale - Use Arrow Key");
             ImGui::SliderFloat("##Scale", &m_scale, 1.f, 50.0f);
 
             ImGui::Text("Integration Method");
 
-            const char* light_type[] = { "Euler Method", "Verlet Method", "Midpoint Method", "RK2 Method", "RK4 Method" };
+            const char* light_type[] = { "Euler Method", "Verlet Method" };
 
-            if (ImGui::Combo("##Integration Type", &m_integration_type, light_type, 5))
+            if (ImGui::Combo("##Integration Type", &m_integration_type, light_type, 2))
             {
             }
         }
@@ -140,6 +140,11 @@ namespace Engine
     void SoftBodyCompo::CreateSampleBox()
     {
         m_body.CreateSampleBox();
+    }
+
+    void SoftBodyCompo::ApplyForce(const Vector3& force)
+    {
+        m_body.ApplyForceCentroid(force);
     }
 
     const MeshData& SoftBodyCompo::GetSoftBodyMeshData() const
