@@ -119,6 +119,16 @@ namespace Engine
         }
     }
 
+    void MeshCompo::SetMaterialInfo(eMaterialInfoInt info_type, Sint32 value) const
+    {
+        size_t size = m_model->Count();
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            m_model->GetMaterial(i).SetSint(static_cast<Uint32>(info_type), value);
+        }
+    }
+
     void MeshCompo::SetMaterialTexture(Uint32 index, SPtr<Texture> texture) const
     {
         size_t size = m_model->Count();

@@ -15,6 +15,7 @@ Platform: Visual Studio 2019 (v142), Windows SDK 10.0 x64>
 
 #include "Level/Splash.h"
 #include "Level/TestBox.h"
+#include "Level/TestSkeletal.h"
 #include "Level/TestSquare.h"
 #include "Level/TestSphere.h"
 
@@ -36,7 +37,8 @@ int APIENTRY wWinMain(_In_ [[maybe_unused]] HINSTANCE     hInstance,
     Engine::g_core->GetAppStateManager()->AddFactory("TestSquare", new Client::TestSquareFactory());
     Engine::g_core->GetAppStateManager()->AddFactory("TestBox", new Client::TestBoxFactory());
     Engine::g_core->GetAppStateManager()->AddFactory("Splash", new Client::SplashFactory());
-    Engine::g_core->GetAppStateManager()->SetInitialState("TestSquare");
+    Engine::g_core->GetAppStateManager()->AddFactory("TestSkeletal", new Client::TestSkeletalFactory());
+    Engine::g_core->GetAppStateManager()->SetInitialState("TestSkeletal");
 
     Engine::g_core->Update();
     Engine::g_core->Shutdown();

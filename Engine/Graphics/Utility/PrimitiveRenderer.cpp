@@ -1389,6 +1389,50 @@ namespace Engine
         return sub_mesh;
     }
 
+    MeshData PrimitiveRenderer::ToMeshData(const DeferredSubMesh& sub_mesh)
+    {
+        MeshData result;
+
+        result.Set(sub_mesh.vertices);
+        result.indices = sub_mesh.indices;
+
+        size_t face_count = result.indices.size() / 3;
+        result.faces.resize(face_count);
+
+        for (size_t i = 0; i < face_count; ++i)
+        {
+            result.faces[i].a = sub_mesh.indices[3 * i + 0];
+            result.faces[i].b = sub_mesh.indices[3 * i + 1];
+            result.faces[i].c = sub_mesh.indices[3 * i + 2];
+        }
+
+        result.vertex_type = eVertexType::NormalVertex;
+
+        return result;
+    }
+
+    MeshData PrimitiveRenderer::ToMeshData(const ForwardSubMesh& sub_mesh)
+    {
+        MeshData result;
+
+        result.Set(sub_mesh.vertices);
+        result.indices = sub_mesh.indices;
+
+        size_t face_count = result.indices.size() / 3;
+        result.faces.resize(face_count);
+
+        for (size_t i = 0; i < face_count; ++i)
+        {
+            result.faces[i].a = sub_mesh.indices[3 * i + 0];
+            result.faces[i].b = sub_mesh.indices[3 * i + 1];
+            result.faces[i].c = sub_mesh.indices[3 * i + 2];
+        }
+
+        result.vertex_type = eVertexType::PosVertex;
+
+        return result;
+    }
+
     SPtr<Model> PrimitiveRenderer::AddLineModel(size_t uuid, bool& is_created, bool is_updated)
     {
         auto found = m_instanced_line_mesh.find(uuid);

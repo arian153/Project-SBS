@@ -71,6 +71,9 @@ namespace Engine
         static ForwardSubMesh GenLineSubMesh(const Tetrahedron& primitive);
         static ForwardSubMesh GenLineSubMesh(const TruncatedCone& primitive);
 
+        static MeshData ToMeshData(const DeferredSubMesh& sub_mesh);
+        static MeshData ToMeshData(const ForwardSubMesh& sub_mesh);
+
     private:
         SPtr<Model> AddLineModel(size_t uuid, bool& is_created, bool is_updated);
         SPtr<Model> AddFaceModel(size_t uuid, bool& is_created, bool is_updated);

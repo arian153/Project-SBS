@@ -24,6 +24,42 @@ namespace Engine
     class ModelResource;
     class Model;
 
+    enum eMaterialInfoInt
+    {
+        ProcessDiffuseColor = 0,
+        ProcessDiffuseMaterial = 1,
+        ProcessNormalMapMaterial = 2,
+        ProcessSpecularMaterial = 3
+    };
+
+    enum eProcessMaterialInfo
+    {
+        SkipProcessing = 0
+    };
+
+    enum eProcessDiffuseColor
+    {
+        HasInstancedColor = 1
+    };
+
+    enum eProcessDiffuseMaterial
+    {
+        SampleDiffuseTexture = 1,
+        SampleAlphaMapTexture = 2,
+        SampleLightMapTexture = 3,
+        SampleMultipleTexture = 4
+    };
+
+    enum eProcessNormalMapMaterial
+    {
+        SampleNormalMapTexture = 1
+    };
+
+    enum eProcessSpecularMaterial
+    {
+        SampleSpecularTexture = 1
+    };
+
     class MeshCompo final : public Component
     {
     public:
@@ -44,6 +80,7 @@ namespace Engine
         void SetMaterial(SPtr<Material> material) const;
         void SetMaterialInfoReal(Uint32 index, Real value) const;
         void SetMaterialInfo(Uint32 index, Sint32 value) const;
+        void SetMaterialInfo(eMaterialInfoInt info_type, Sint32 value) const;
         void SetMaterialTexture(Uint32 index, SPtr<Texture> texture) const;
         void SetDiffuseTexture(Uint32 index, SPtr<Texture> texture) const;
         void SetSpecularMapTexture(SPtr<Texture> texture) const;
@@ -68,7 +105,7 @@ namespace Engine
         friend class MeshFactory;
 
     private:
-        bool m_b_deferred = false;
+        bool  m_b_deferred = false;
         Color m_diffuse_color;
 
         SPtr<Model> m_model = nullptr;

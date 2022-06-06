@@ -32,28 +32,20 @@ VS_OUT VS_Main(VS_IN input)
 {
     VS_OUT output;
 
-    if (g_int_0 == 1)
-    {
-        output.pos = mul(float4(input.pos, 1.f), input.mat_wvp);
-        output.tex = input.tex;
+    output.pos = mul(float4(input.pos, 1.f), input.mat_wvp);
+    output.tex = input.tex;
 
-        output.view_p = mul(float4(input.pos, 1.f), input.mat_wv).xyz;
-        output.view_n = normalize(mul(float4(input.n, 0.f), input.mat_wv).xyz);
-        output.view_t = normalize(mul(float4(input.t, 0.f), input.mat_wv).xyz);
-        output.view_b = normalize(cross(output.view_t, output.view_n));
-        
+    output.view_p = mul(float4(input.pos, 1.f), input.mat_wv).xyz;
+    output.view_n = normalize(mul(float4(input.n, 0.f), input.mat_wv).xyz);
+    output.view_t = normalize(mul(float4(input.t, 0.f), input.mat_wv).xyz);
+    output.view_b = normalize(cross(output.view_t, output.view_n));
+
+    if (g_int_0 == 1)
+    {   
         output.diffuse = input.diffuse;
     }
     else
     {
-        output.pos = mul(float4(input.pos, 1.f), g_mat_wvp);
-        output.tex = input.tex;
-
-        output.view_p = mul(float4(input.pos, 1.f), g_mat_wv).xyz;
-        output.view_n = normalize(mul(float4(input.n, 0.f), g_mat_wv).xyz);
-        output.view_t = normalize(mul(float4(input.t, 0.f), g_mat_wv).xyz);
-        output.view_b = normalize(cross(output.view_t, output.view_n));
-
         output.diffuse = float4(1.f, 1.f, 1.f, 1.f);
     }
 
