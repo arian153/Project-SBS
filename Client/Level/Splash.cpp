@@ -161,9 +161,9 @@ namespace Client
             mesh->SetMeshData(MeshDataGenerator::CreateRectangle(3.f, 3.f));
             mesh->SetShader(GET_SHADER("Deferred-Geometry.shader"));
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Credit.jpg")->GetTexture());
-            mesh->SetMaterialInfo(0, 1);
-            mesh->SetMaterialInfo(1, 1);
-            mesh->SetMaterialInfo(2, 0);
+            mesh->SetMaterialInfo(ProcessInstancedColor, SkipProcessing);
+            mesh->SetMaterialInfo(ProcessDiffuseMaterial, SampleDiffuseTexture);
+            mesh->SetMaterialInfo(ProcessNormalMapMaterial, SkipProcessing);
         }
 
         //Camera Object

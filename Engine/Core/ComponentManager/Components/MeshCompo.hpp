@@ -26,7 +26,7 @@ namespace Engine
 
     enum eMaterialInfoInt
     {
-        ProcessDiffuseColor = 0,
+        ProcessInstancedColor = 0,
         ProcessDiffuseMaterial = 1,
         ProcessNormalMapMaterial = 2,
         ProcessSpecularMaterial = 3

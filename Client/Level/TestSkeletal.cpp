@@ -38,7 +38,7 @@ namespace Client
             mesh->SetMeshData(sphere);
             mesh->SetShader(GET_SHADER("Deferred-Geometry.shader"));
             mesh->SetColor(X11ColorData::CHOCOLATE);
-            mesh->SetMaterialInfo(ProcessDiffuseColor, HasInstancedColor);
+            mesh->SetMaterialInfo(ProcessInstancedColor, HasInstancedColor);
             mesh->SetMaterialInfo(ProcessDiffuseMaterial, SkipProcessing);
             mesh->SetMaterialInfo(ProcessNormalMapMaterial, SkipProcessing);
         }

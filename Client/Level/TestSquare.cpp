@@ -43,9 +43,10 @@ namespace Client
             mesh->SetShader(GET_SHADER("Deferred-Geometry.shader"));
             mesh->SetMaterialTexture(0, RESOURCE_MANAGER->GetTextureResourceName("Fabric05 diffuse 1k.jpg")->GetTexture());
             mesh->SetNormalMapTexture(RESOURCE_MANAGER->GetTextureResourceName("Fabric05 normal 1k.jpg")->GetTexture());
-            mesh->SetMaterialInfo(0, 1);
-            mesh->SetMaterialInfo(1, 1);
-            mesh->SetMaterialInfo(2, 1);
+            mesh->SetMaterialInfo(ProcessInstancedColor, HasInstancedColor);
+            mesh->SetMaterialInfo(ProcessDiffuseMaterial, SampleDiffuseTexture);
+            mesh->SetMaterialInfo(ProcessNormalMapMaterial, SampleNormalMapTexture);
+
         }
 
         //Camera Object
